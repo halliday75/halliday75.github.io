@@ -1,0 +1,36 @@
+body{
+    background-color: black;
+}
+table {
+    width: 500px;
+    height: 500px;
+    background-color:black;
+    padding: 0;
+}
+td {
+ 
+    width: 150px;
+    height: 150px;
+    font-size: 5em;
+    text-align: center;
+    background-color: white;
+}
+#container {
+    font-family: arial;
+    width: 500px;
+    text-align:center;
+    margin-left: auto;
+    margin-right: auto;
+}
+h1{
+    color:white;
+}
+a{
+    color: white;
+    font-size: 1.5em;;
+    border: 5px solid white;
+    border-radius: 5px;
+    padding: 3px;
+    margin: 5px;
+    text-decoration: none;
+}
