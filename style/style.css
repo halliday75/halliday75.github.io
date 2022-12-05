@@ -268,7 +268,7 @@ input[type=number] {
     font-family: Roboto;
     font-style: normal;
     font-weight: 300;
-    src: url(https://www.loftware.com/font/Roboto-Light.woff2) format("woff2"), url(https://www.loftware.com/font/Roboto-Light.woff) format("woff"), url(https://www.loftware.com/fonts/Roboto-Light.ttf) format("truetype")
+    src: url(www.loftware.com/font/Roboto-Light.woff2) format("woff2"), url(www.loftware.com/font/Roboto-Light.woff) format("woff"), url(www.loftware.com/fonts/Roboto-Light.ttf) format("truetype")
 }
 
 @font-face {
@@ -276,7 +276,7 @@ input[type=number] {
     font-family: Roboto;
     font-style: normal;
     font-weight: 400;
-    src: url(https://www.loftware.com/fonts/Roboto-Regular.woff2) format("woff2"), url(https://www.loftware.com/fonts/Roboto-Regular.woff) format("woff"), url(https://www.loftware.com/fonts/Roboto-Regular.ttf) format("truetype")
+    src: url(www.loftware.com/fonts/Roboto-Regular.woff2) format("woff2"), url(www.loftware.com/fonts/Roboto-Regular.woff) format("woff"), url(www.loftware.com/fonts/Roboto-Regular.ttf) format("truetype")
 }
 
 @font-face {
@@ -284,7 +284,7 @@ input[type=number] {
     font-family: Roboto;
     font-style: normal;
     font-weight: 500;
-    src: url(https://www.loftware.com/fonts/Roboto-Medium.woff2) format("woff2"), url(https://www.loftware.com/fonts/Roboto-Medium.woff) format("woff"), url(https://www.loftware.com/fonts/Roboto-Medium.ttf) format("truetype")
+    src: url(www.loftware.com/fonts/Roboto-Medium.woff2) format("woff2"), url(www.loftware.com/fonts/Roboto-Medium.woff) format("woff"), url(www.loftware.com/fonts/Roboto-Medium.ttf) format("truetype")
 }
 
 @font-face {
@@ -292,7 +292,7 @@ input[type=number] {
     font-family: Roboto;
     font-style: normal;
     font-weight: 700;
-    src: url(https://www.loftware.com/fonts/Roboto-Bold.woff2) format("woff2"), url(https://www.loftware.com/fonts/Roboto-Bold.woff) format("woff"), url(https://www.loftware.com/fonts/Roboto-Bold.ttf) format("truetype")
+    src: url(www.loftware.com/fonts/Roboto-Bold.woff2) format("woff2"), url(www.loftware.com/fonts/Roboto-Bold.woff) format("woff"), url(www.loftware.com/fonts/Roboto-Bold.ttf) format("truetype")
 }
 
 body {
