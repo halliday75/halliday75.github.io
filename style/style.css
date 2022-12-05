@@ -268,7 +268,7 @@ input[type=number] {
     font-family: Roboto;
     font-style: normal;
     font-weight: 300;
-    src: url(www.loftware.com/font/Roboto-Light.woff2) format("woff2"), url(www.loftware.com/font/Roboto-Light.woff) format("woff"), url(www.loftware.com/fonts/Roboto-Light.ttf) format("truetype")
+    src: url(www.loftware.com/fonts/Roboto-Light.woff2) format("woff2"), url(www.loftware.com/fonts/Roboto-Light.woff) format("woff"), url(www.loftware.com/fonts/Roboto-Light.ttf) format("truetype")
 }
 
 @font-face {
