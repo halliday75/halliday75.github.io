@@ -1,0 +1,12 @@
+@font-face {
+            font-display: swap;
+            font-family: Roboto;
+            font-style: normal;
+            font-weight: 500;
+            src: url(/fonts/Roboto-Medium.ttf) format("truetype");
+        }
+
+h1{
+		font-family: Roboto;
+		color: blue;
+}
