@@ -54,6 +54,10 @@ h1, h2, h3, h4, h5, h6 {
     margin-block-end: .625rem
 }
 
+p {
+	font-weight:400;
+}
+
 @media (min-width: 64em) {
     h1, h2, h3, h4, h5, h6 {
         -webkit-margin-after: 1.25rem;
