@@ -13,6 +13,6 @@
   "@common_zoom": {
     "description": "video conferencing provider"
   },
-  "common_go-back-home": "Go Back Home",
-  "common_or-logout": "or log out",
+  "common_go-back-home": "This is a brand new sentence",
+  "common_or-logout": "and this one is too probably",
 }
