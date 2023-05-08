@@ -1,0 +1,25 @@
+{
+  "@@locale": "en-US",
+  "common_everything": "Everything",
+  "common_all-folders": "All Folders",
+  "common_docs-home": "Docs Home",
+  "common_onboarding_company-name": "Onboarding | {$companyName}",
+  "route_title--access-denied": "Access denied",
+  "route_title--account-delete": "Delete account",
+  "common_join-workspace": "Join Workspace",
+  "common_support": "Support",
+  "common_sharing-in-clickup": "Sharing in ClickUp",
+  "common_zoom": "Zoom",
+  "@common_zoom": {
+    "description": "video conferencing provider"
+  },
+  "common_go-back-home": "Go Back Home again",
+  "common_or-logout": "or log out again",
+  "common_24-7-world-class-support": "24/7 World-class Support again",
+  "toast_upgrade-msg-title": "ClickUp has been updated again.",
+  "toast_upgrade-msg-body": "Refresh to make it yours again.",
+  "toast_upgrade-refresh-page": "Refresh Page again",
+  "toast_upgrade-upgrading": "Updating again",
+  "common_close": "Close again",
+  "common_avatar-image": "Avatar image again",
+}
