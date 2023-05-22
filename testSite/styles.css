@@ -54,6 +54,12 @@ body{
 	overflow-x:hidden;
 	overflow-y:hidden;
 }
+select{
+	background: none;
+        text-align: center;
+        border: none;
+        color: white;	
+}
 
 /*waves****************************/
 
