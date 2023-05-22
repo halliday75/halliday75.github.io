@@ -11,6 +11,8 @@
         if (term == "") {
           alert("Searchbox is empty");
           return false;
+        } else {
+           document.getElementByClass('searchBox').innerHTML = "<p>No search results found</p>";
         }
       }
     </script>
