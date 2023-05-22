@@ -46,6 +46,9 @@ html {
 #aside h2 {	
 	text-align: center;
 }
+#aside imag {
+	width: 80%;	
+}
 body { 
 	font-family: 'Quicksand', sans-serif;
 }
