@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="/css/styles.css" />
     <title>Test</title>
+    <script>
+      function searchForm() {
+        let term = document.forms["search"]["searchTerm"].value;
+        if (term == "") {
+          alert("Searchbox is empty");
+          return false;
+        }
+      }
+    </script>
 </head>
     <body>
         <p>
@@ -14,8 +23,8 @@
             Don't ingest this
         </p>
         <div class="searchBox">
-            <form>
-                <input type="text" placeholder="Search Here" />
+            <form name="search" onsubmit="return searchForm()">
+                <input type="text" placeholder="Search Here" name="searchTerm"/>
                 <input type="submit" value="Go" />
             </form>
         </div>
