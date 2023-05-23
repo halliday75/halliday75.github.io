@@ -99,7 +99,7 @@ select{
 .wave.-three {
   animation: drift 7500ms infinite linear;
 	position: fixed;
-	background-color: #77daff;
+	background-color: #b0b0b0;
 }
 
 .wave.-two {
@@ -147,9 +147,9 @@ select{
   -ms-flex-align: center;
   align-items: center;
 
-  background: #25a7d7;
-  background: -webkit-linear-gradient(#25a7d7, #2962FF);
-  background: linear-gradient(#25a7d7, #25a7d7);
+  background: #dbdbdb;
+  background: -webkit-linear-gradient(#dbdbdb, #5e5e5e);
+  background: linear-gradient(#dbdbdb, #5e5e5e);
 }
 
 .icon {
