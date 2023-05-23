@@ -4,7 +4,7 @@ html {
 #nav {
 	color: white;
 	text-align: center;
-	background-color: rgba(255, 255, 255, 0.3);
+	background-color: rgba(0, 0, 0, 0.3);
 	padding: 0.1em;
 	font-size: 1.5em;
 }
@@ -25,7 +25,7 @@ html {
 	margin: 1em;
 	color: white;
 	text-align: center;
-	background-color: rgba(255, 255, 255, 0.3);
+	background-color: rgba(0, 0, 0, 0.3);
 	height: 40rem;
 	float: right;
 	clear: both;
@@ -34,7 +34,7 @@ html {
 }
 #aside {
 	float: left;
-	background-color: rgba(255, 255, 255, 0.3);
+	background-color: rgba(0, 0, 0, 0.3);
 	height: 40rem;
 	color: white;
 	width: 25%; 
@@ -57,6 +57,7 @@ body{
 	margin: 0;
 	padding: 0;
 	background-color: #0e6cc4;
+	background-image: url("https://westernhunter.net/wp-content/uploads/2019/03/mountainscapes-0336-e1553722151853.jpg");
 	overflow-x:hidden;
 	overflow-y:hidden;
 }
@@ -86,7 +87,6 @@ select{
   top: 3%;
   left: 10%;
   background: #0af;
-  background-image: url("https://westernhunter.net/wp-content/uploads/2019/03/mountainscapes-0336-e1553722151853.jpg");
   width: 1500px;
   height: 1300px;
   margin-left: -150px;
