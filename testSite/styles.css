@@ -4,6 +4,9 @@ html {
 .custom-select {
 	display: inline;	
 }
+.searchBox {
+	display: inline;	
+}
 #nav {
 	color: white;
 	text-align: center;
