@@ -1,6 +1,9 @@
 html { 
 	color-scheme: light dark; 
 }
+.custom-select {
+	display: inline;	
+}
 #nav {
 	color: white;
 	text-align: center;
