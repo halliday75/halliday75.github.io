@@ -39,8 +39,10 @@
 							</select>
 						</div>
 					</li>
-					</li>
-						<input class="searchBox" type="text" placeholder="Search" onsubmit="alert('error')"/>
+					</li>	
+						<form onsubmit="document.getElementById('main').innerHTML = '<h2>No search results found</h2>'">
+							<input class="searchBox" type="text" placeholder="Search" onsubmit="alert('error')"/>
+						</form>
 					</li>
 				</ul>
 			</div>
