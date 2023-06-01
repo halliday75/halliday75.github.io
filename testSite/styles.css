@@ -2,7 +2,7 @@ html {
 	color-scheme: light dark; 
 }
 article {
-	background-color: rgba(0, 0, 0, 0.8);	
+	border-top: 2px solid rgba(0, 0, 0, 0.8);	
 }
 .custom-select {
 	display: inline;	
@@ -13,7 +13,7 @@ article {
 #nav {
 	color: white;
 	text-align: center;
-	background-color: rgba(0, 0, 0, 0.3);
+	background-color: rgba(0, 0, 0, 0.5);
 	padding: 0.1em;
 	font-size: 1.5em;
 }
@@ -34,7 +34,7 @@ article {
 	margin: 1em;
 	color: white;
 	text-align: center;
-	background-color: rgba(0, 0, 0, 0.3);
+	background-color: rgba(0, 0, 0, 0.5);
 	height: 40rem;
 	float: right;
 	clear: both;
@@ -43,7 +43,7 @@ article {
 }
 #aside {
 	float: left;
-	background-color: rgba(0, 0, 0, 0.3);
+	background-color: rgba(0, 0, 0, 0.5);
 	height: 40rem;
 	color: white;
 	width: 25%; 
