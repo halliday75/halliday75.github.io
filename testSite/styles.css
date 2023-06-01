@@ -1,6 +1,9 @@
 html { 
 	color-scheme: light dark; 
 }
+article {
+	background-color: rgba(0, 0, 0, 0.8);	
+}
 .custom-select {
 	display: inline;	
 }
