@@ -1,4 +1,4 @@
-import data from 'https://halliday75.github.io/testSite/blog.json' assert { type: 'json' };
+import data from 'blog.json' assert { type: 'json' };
 console.log(data);
 var size = Object.keys(data.blogPosts).length;
 for (var i = 0; i < size; i++) {
