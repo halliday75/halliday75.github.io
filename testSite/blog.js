@@ -1,3 +1,2 @@
-fetch('blog.json')
-    .then((response) => response.json())
-    .then((json) => console.log(json));
+import data from 'blog.json';
+console.log(data);
