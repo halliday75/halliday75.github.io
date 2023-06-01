@@ -1,4 +1,3 @@
-import data from '/blog.json' assert { type: 'json' };
-let blogPosts = data;
+import data from 'blog.json' assert { type: 'json' };
 console.log(data);
-document.write(JSON.stringify(blogPosts));
+document.write(JSON.stringify(data));
