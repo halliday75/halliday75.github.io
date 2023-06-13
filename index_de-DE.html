@@ -5,16 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="/css/styles.css" />
     <title>Test wird durchgeführt</title>
+    <script>
+      function searchForm() {
+        let term = document.forms["search"]["searchTerm"].value;
+        if (term == "") {
+          alert("Searchbox is empty");
+          document.getElementById("results").innerHTML = "";
+          return false;
+        } else {
+           document.getElementById("results").innerHTML = "<p>No search results found</p>";
+        }
+      }
+    </script>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 </head>
     <body>
-        <h1>Das sollte Roboto sein</h1>
-        <p>{{widget type=&quot;Magento\Cms\Block\Widget\Block&quot; template=&quot;widget/static_block/default.phtml&quot;1 block_id=&quot;1420&quot; type_name=&quot;CMS statischer Block&quot;}}1</p>
-        <p>{{Dies sollte aufgrund des Musters ausgeschlossen werden}}1</p>
-        <p>Das ist ein Test.1</p>
-        <p>Ennismore |​ Hotels, Restaurants, Nachtleben, Events &amp; Catering1</p>
-        <p>Google Tag-Manager1</p>
-        <p>This is a new string now</p>
-        <p>Testen von MT und HT mit GH-Anschluss</p>
+        <p>
+            Ingest this 
+        </p>
+        <p class ="dontingest">
+            Don't ingest this
+        </p>
+        <div class="searchBox">
+            <form name="search" >
+                <input type="text" placeholder="Search Here" name="searchTerm"/>
+                <input type="button" value="Go" onclick="return searchForm()"/>
+            </form>
+            <p id="results">
+
+            </p>
+        </div>
     </body>
 </html>
