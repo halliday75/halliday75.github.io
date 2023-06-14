@@ -214,3 +214,18 @@ select{
     transform: scale(0,0) rotateZ(90deg);opacity:0
   }
 }
+/* Media Query for Mobile Browsing */
+@media screen and (max-width: 768px) {
+	#main {
+		width: 100%;
+		float: none;
+		margin: 1em auto;
+	}
+
+	#aside {
+		float: none;
+		width: 100%;
+		margin: 1em auto;
+		margin-right: 0;
+	}
+}
