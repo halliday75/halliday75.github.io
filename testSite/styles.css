@@ -75,6 +75,10 @@ select{
         border: none;
         color: white;	
 }
+#formContainer{
+	width: 50%;
+    	margin: auto;
+}
 
 /*waves****************************/
 
