@@ -58,13 +58,16 @@
 				    <h3>Contact Us</h3>
 				    <h4>Contact us today, and get reply within 24 hours!</h4>
 				    <fieldset>
-				      <input placeholder="Your name" type="text" tabindex="1" required autofocus>
+				      <input placeholder="Your name" type="text" tabindex="1" required autofocus oninvalid="this.setCustomValidity('Please complete this field')"
+ oninput="setCustomValidity('')">
 				    </fieldset>
 				    <fieldset>
-				      <input placeholder="Your Email Address" type="email" tabindex="2" required>
+				      <input placeholder="Your Email Address" type="email" tabindex="2" required oninvalid="this.setCustomValidity('Please complete this field')"
+ oninput="setCustomValidity('')">
 				    </fieldset>
 				    <fieldset>
-				      <input placeholder="Your Phone Number" type="tel" tabindex="3" required>
+				      <input placeholder="Your Phone Number" type="tel" tabindex="3" required oninvalid="this.setCustomValidity('Please complete this field')"
+ oninput="setCustomValidity('')">
 				    </fieldset>
 				    <fieldset>
 				      <input name="submit" type="submit" id="contact-submit" data-submit="...Sending" value="Submit">
