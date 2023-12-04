@@ -1,0 +1,10 @@
+<data>
+   <!-- smartling.sltrans = notranslate -->
+  <g:condition>
+    <string>I don't want to ingest this</string>
+  </g:condition>
+    <!-- smartling.sltrans = translate -->
+  <g:condition>
+    <string>Will this String be ingested</string>
+  </g:condition>
+</data>
