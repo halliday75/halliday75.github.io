@@ -1,10 +1,14 @@
 <data>
-   <!-- smartling.sltrans = notranslate -->
-  <g:condition>
-    <string>I don't want to ingest this</string>
-  </g:condition>
-    <!-- smartling.sltrans = translate -->
   <g:condition>
     <string>Will this String be ingested</string>
   </g:condition>
+   <g:country>
+      Ireland
+   </g:country>
+   <g:availability>
+      In Stock
+   </g:availability>
+   <g:price>
+      Unknown
+   </g:price>
 </data>
