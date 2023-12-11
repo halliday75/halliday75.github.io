@@ -26,6 +26,16 @@ article {
 	color:  white;
 	text-decoration: none;
 }
+#center {
+	width: 90%;
+    	margin: auto;
+    	text-align: center;
+    	font-size: 2em;
+    	background-color: slategray;
+    	border-radius: 20px;
+    	padding: 0.1em;
+   	margin-top: 30px;	
+}
 #current {
 	color: pink;
 }
