@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/styles.css" />
+    <link rel="alternate" href="https://www.bentley.com/" hreflang="en-US"" />
+    <link rel="alternate" href="https://www.bentley.com/testPage" hreflang="en-US"" />
+    <title>test28</title>
+    <script>
+      function searchForm() {
+        let term = document.forms["search"]["searchTerm"].value;
+        if (term == "") {
+          alert("Searchbox is empty");
+          document.getElementById("results").innerHTML = "";
+          return false;
+        } else {
+           document.getElementById("results").innerHTML = "<p>No search results found</p>";
+        }
+      }
+    </script>
+    <script>
+        // request permission on page load
+        document.addEventListener('DOMContentLoaded', function() {
+         if (!Notification) {
+          alert('Desktop notifications not available in your browser. Try Chromium.');
+          return;
+         }
+        
+         if (Notification.permission !== 'granted')
+          Notification.requestPermission();
+        });
+        
+        
+        function notifyMe() {
+         if (Notification.permission !== 'granted')
+          Notification.requestPermission();
+         else {
+          var notification = new Notification('Work Available to be claimed', {
+           icon: 'https://d33wubrfki0l68.cloudfront.net/4764a9cca504331fbaaa480fb7102b751022672f/eb18c/static/button-click-smartling-8740728eba63174f6309d309a1c62bca.svg',
+           body: 'New Translation Job Available - Click here to open your Dashboard',
+          });
+          notification.onclick = function() {
+           window.open('https://dashboard.smartling.com/app/account-jobs/?filter=AVAILABLE_TO_ACCEPT');
+          };
+         }
+        }
+    </script>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+    <body>
+        <button onclick="notifyMe()" style="font-size:5em;">Avertis-moi!</button>
+        <div style="display:none;">
+        <p>
+            Ingère Ceci 
+        </p>
+        <p class ="dontingest">
+            Ne l'ingère pas
+        </p>
+        <div class="searchBox">
+            <form name="search" >
+                <input type="text" placeholder="Search Here" name="searchTerm"/>
+                <input type="button" value="Va" onclick="return searchForm()"/>
+            </form>
+            <p id="results">
+
+            </p>
+        </div>
+        <h2 class="sl_nosplit"><span style="font-size: 98px; line-height: 1.2;">Sicherheiten</span><br><span style="font-size: 98px;">  Das ist da </span><br><span style="font-size: 98px;"><span class="lora">Schlepper.</span></span></h2>
+        <p class="sl_nosplit"><span class="TextRun SCXW36674427 BCX0" lang="EN-US" data-contrast="none"><span class="NormalTextRun SCXW36674427 BCX0">Um die erneuerbaren Energiequellen zu begünstigen und auszunutzen, um die rasche Zunahme der Bevölkerung in Botswana zu ernähren, muss ich das Potenzial der Nutzung der thermischen Quellen von Kasan erkunden, um geothermische Energie zu generieren. </span>Die <span class="NormalTextRun SCXW36674427 BCX0">vollständige Bewertung des Standorts erfordert die Erfassung, Kombination und Analyse zahlreicher</span><span class="NormalTextRun SCXW36674427 BCX0"> Arten </span><span class="NormalTextRun SCXW36674427 BCX0">geophysikalischer Daten. Durch die Schaffung eines intuitiven geophysikalischen Modells auf einer einzigartigen Plattform verfügt die Ausrüstung über ein umfassendes Verständnis sowie über die Einschätzung der Risiken und Vorteile der Region. </span> Infolgedessen <span class="NormalTextRun SCXW36674427 BCX0">wurde</span>Kasane Hot Spring zuvor als Standort<span class="NormalTextRun SCXW36674427 BCX0"> identifiziert</span> , der für die geothermische Energie in Botswana geeignet ist, und trägt dazu bei, die Energieverbrauchsbeschränkungen dauerhaft zu berücksichtigen.</span></p>		
+        <p>
+            <strong>4.</strong><strong>Aktivieren Sie die detaillierten Geschäftsinformationen, um alles auf dem Weg zum Kunden zu verfolgen und zu messen.<br /><br /></strong>sous le sapin chez spar.
+        </p>
+        </div>
+    </body>
+</html>

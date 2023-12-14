@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/css/styles.css" />
+    <link rel="alternate" href="https://www.bentley.com/" hreflang="en-US"" />
+    <link rel="alternate" href="https://www.bentley.com/testPage" hreflang="en-US"" />
+    <title>testwird durchgeführt</title>
+    <script>
+      function searchForm() {
+        let term = document.forms["search"]["searchTerm"].value;
+        if (term == "") {
+          alert("Searchbox is empty");
+          document.getElementById("results").innerHTML = "";
+          return false;
+        } else {
+           document.getElementById("results").innerHTML = "<p>No search results found</p>";
+        }
+      }
+    </script>
+    <script>
+        // request permission on page load
+        document.addEventListener('DOMContentLoaded', function() {
+         if (!Notification) {
+          alert('Desktop notifications not available in your browser. Try Chromium.');
+          return;
+         }
+        
+         if (Notification.permission !== 'granted')
+          Notification.requestPermission();
+        });
+        
+        
+        function notifyMe() {
+         if (Notification.permission !== 'granted')
+          Notification.requestPermission();
+         else {
+          var notification = new Notification('Work Available to be claimed', {
+           icon: 'https://d33wubrfki0l68.cloudfront.net/4764a9cca504331fbaaa480fb7102b751022672f/eb18c/static/button-click-smartling-8740728eba63174f6309d309a1c62bca.svg',
+           body: 'New Translation Job Available - Click here to open your Dashboard',
+          });
+          notification.onclick = function() {
+           window.open('https://dashboard.smartling.com/app/account-jobs/?filter=AVAILABLE_TO_ACCEPT');
+          };
+         }
+        }
+    </script>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+    <body>
+        <button onclick="notifyMe()" style="font-size:5em;">Benachrichtige mich !</button>
+        <div style="display:none;">
+        <p>
+            Nehmen Sie dies ein 
+        </p>
+        <p class ="dontingest">
+            Nehmen Sie das nicht ein
+        </p>
+        <div class="searchBox">
+            <form name="search" >
+                <input type="text" placeholder="Search Here" name="searchTerm"/>
+                <input type="button" value="Gehen" onclick="return searchForm()"/>
+            </form>
+            <p id="results">
+
+            </p>
+        </div>
+        <h2 class="sl_nosplit"><span style="font-size: 98px; line-height: 1.2;">Sécurité</span><br><span style="font-size: 98px;">  das ist bereit fürs </span><br><span style="font-size: 98px;"><span class="lora">irgendetwas.</span></span></h2>
+        <p class="sl_nosplit"><span class="TextRun SCXW36674427 BCX0" lang="EN-US" data-contrast="none">Afin de <span class="NormalTextRun SCXW36674427 BCX0">développer et d'exploiter des sources d'</span><span class="NormalTextRun SCXW36674427 BCX0">énergie</span><span class="NormalTextRun SCXW36674427 BCX0"> renouvelables </span><span class="NormalTextRun SCXW36674427 BCX0">et</span> de garantir une augmentation rapide de la consommation d'énergie au Botswana, BIUST étudie le potentiel d'exploitation de la source thermale de Kasane en vue de la production d'énergie géothermique. <span class="NormalTextRun SCXW36674427 BCX0">Grâce à l'élaboration d'un modèle géophysique intuitif sur une plate-forme unique, l'équipe a pu mieux comprendre les risques et les avantages du secteur. Elle s'appuie donc</span><span class="NormalTextRun SCXW36674427 BCX0"> sur le</span> fait que la source thermale de Kasane est le meilleur site de géothermie au Botswana, qu'elle doit être identifiée et que les sources d'énergie du pays doivent être gérées de manière durable.</span></p>		
+        <p>
+            <strong>4.</strong><strong>enregistre les données personnelles pour que l'ensemble de l'entreprise du client puisse être reconnu et géré.<br /><br /></strong>sous le soleil de Holm.
+        </p>
+        </div>
+    </body>
+</html>
