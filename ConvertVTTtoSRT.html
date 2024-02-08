@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subtitle Converter</title>
+</head>
+<body>
+  <input type="file" id="fileInput" accept=".vtt">
+  <button onclick="convertSubtitles()">Convert Subtitles</button>
+
+  <script>
+    function modifyTimestamp(timestamp) {
+      var parts = timestamp.trim().split(" - ");
+      var modifiedParts = [];
+      parts.forEach(function(part) {
+        if (part.split(':').length >= 4) {
+          var modifiedPart = part.split(':').slice(0, 3).join(':') + ',' + part.split(':').slice(-1)[0];
+        } else {
+          var modifiedPart = part;
+        }
+        modifiedParts.push(modifiedPart + '0');
+      });
+      return modifiedParts.join(" --> ") + '\n';
+    }
+
+    function convertSubtitles() {
+        var fileInput = document.getElementById('fileInput');
+        var inputSubtitlesFile = fileInput.files[0];
+
+    if (inputSubtitlesFile) {
+        var outputSubtitlesFileName = inputSubtitlesFile.name.replace('.vtt', '.srt');
+
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var contents = e.target.result;
+      var lines = contents.split('\n');
+      var modifiedLines = [];
+      lines.forEach(function(line) {
+        if (line.includes(" - ")) {
+          modifiedLines.push(modifyTimestamp(line));
+        } else {
+          modifiedLines.push(line + '\n');
+        }
+      });
+
+      var blob = new Blob(modifiedLines, { type: 'text/plain' });
+      var link = document.createElement('a');
+      link.download = outputSubtitlesFileName;
+      link.href = window.URL.createObjectURL(blob);
+      link.click();
+    };
+    reader.readAsText(inputSubtitlesFile);
+  } else {
+    alert('Please select a file.');
+  }
+}
+  </script>
+</body>
+</html>
