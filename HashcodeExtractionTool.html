@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDN HET - Hashcode Extraction Tool</title>
+    <style>
+        /* Add some basic styling */
+        body { font-family: Arial, sans-serif; }
+        .form-group { margin-bottom:  1rem; }
+        .form-control { width:  100%; padding:  0.5rem; border:  1px solid #ccc; }
+        .btn { background-color: #007bff; color: white; padding:  0.5rem  1rem; border: none; cursor: pointer; }
+        .btn:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>GDN HET - Hashcode Extraction Tool</h1>
+    <div id="urlInputSection">
+        <div class="form-group">
+            <label for="urlInput">Which localized URL would you like to Extract Hashcodes from?</label>
+            <input type="text" id="urlInput" class="form-control">
+        </div>
+        <button id="submitUrlBtn" class="btn">Submit</button>
+    </div>
+    <div id="htmlSourceInputSection">
+        <div class="form-group">
+            <label for="htmlSourceInput">Alternatively, Input html source text from EM3:</label>
+            <textarea id="htmlSourceInput" class="form-control"></textarea>
+        </div>
+        <button id="submitHtmlBtn" class="btn">Submit</button>
+    </div>
+    <div id="outputSection">
+        <label for="outputText">Hashcodes:</label>
+        <textarea id="outputText" readonly class="form-control"></textarea>
+        <button id="copyClipboardBtn" class="btn">Copy to Clipboard</button>
+    </div>
+
+    <script>
+        // Function to extract hash values from a URL or HTML source text
+        function extractHashValues(text) {
+            const pattern = /STRING TRANSLATE BEGIN HASH:([a-fA-F0-9]+)/g;
+            let match;
+            let hashValues = [];
+            while ((match = pattern.exec(text)) !== null) {
+                hashValues.push(match[1]);
+            }
+            return hashValues;
+        }
+
+        // Event listener for URL submission
+        document.getElementById('submitUrlBtn').addEventListener('click', () => {
+            const url = document.getElementById('urlInput').value;
+            if (url && url.startsWith('http')) {
+                fetch(url + '?smartling_editmode=3')
+                    .then(response => response.text())
+                    .then(htmlContent => {
+                        const hashValues = extractHashValues(htmlContent);
+                        document.getElementById('outputText').value = hashValues.join(',');
+                    })
+                    .catch(error => console.error('Error fetching URL:', error));
+            } else {
+                alert('Please enter a valid URL starting with "http".');
+            }
+        });
+
+        // Event listener for HTML source text submission
+        document.getElementById('submitHtmlBtn').addEventListener('click', () => {
+            const inputText = document.getElementById('htmlSourceInput').value;
+            const hashValues = extractHashValues(inputText);
+            document.getElementById('outputText').value = hashValues.join(',');
+        });
+
+        // Event listener for copying to clipboard
+        document.getElementById('copyClipboardBtn').addEventListener('click', () => {
+            const outputText = document.getElementById('outputText');
+            outputText.select();
+            document.execCommand('copy');
+        });
+    </script>
+</body>
+</html>
