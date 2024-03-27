@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Splunk Search Query Finder</title>
+    <style>
+        /* Reset some default styles */
+        body, ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Set the background color and text color */
+        body {
+            background-color: #000; /* Black background */
+            color: #fff; /* White text */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+        }
+
+        /* Style the search input */
+        #searchInput {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        a{
+            color:#fff;
+            text-decoration: none;
+        }
+
+        /* Style the list container */
+        #itemList {
+            display: grid; /* Use CSS Grid for layout */
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive grid */
+            gap: 20px; /* Space between grid items */
+            padding: 20px;
+        }
+        
+        /* Hide bullet points */
+        ul {
+            list-style-type: none;
+        }
+       
+
+        /* Style the list items */
+        #itemList li {
+            background-color: rgba(255, 255, 255, 0.1); /* Light background for items */
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+        }
+
+        /* Hover effect for list items */
+        #itemList li:hover {
+            background-color: rgba(255, 255, 255, 0.2); /* Darker background on hover */
+        }
+        
+        /* Style the search input */
+#searchInput {
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    background-color: #000; /* Black background */
+    color: #fff; /* White text */
+    border: 1px solid #fff; /* White border */
+    border-radius: 5px; /* Rounded corners */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Remove the outline when the search bar is focused */
+#searchInput:focus {
+    outline: none;
+}
+    </style>
+</head>
+<body>
+    <h1>Splunk Search Query Finder</h1>
+    <input type="text" id="searchInput" placeholder="Search...">
+    <ul id="itemList">
+        <li><a target="_blank" href='https://slc.smartling.net/en-US/app/search/search?rs%3Aembed=true&earliest=-24h%40h&latest=now&q=search%20%2Fpeople-api%2Fv2%2Faccounts%2FAccountUID%2Fusers%2FUserUID%2Fworkflow-steps%2Fassign%20AND%20method%3Dpost%20%20%7C%20table%20%20_time%2Cuser%2Cservice_uri&display.page.search.mode=smart&dispatch.sample_ratio=1&display.page.search.tab=statistics&display.general.type=statistics&sid=1711545878.283749833'>Assignment Added</a></li>
+        <li>User Removed</li>
+        <li>User Added</li>
+        <li>Assignment Removed</li>
+        <li>Logins</li>
+        <li><a target="_blank" href='https://slc.smartling.net/en-US/app/search/search?q=search%20env%3Dprod%20AND%20index%3D%22smartmatch_audit%22%20AND%20hashcode%3DHashcode%20AND%20LocaleId%0A%7Ctable%20_time%2ClocaleId%2CmLocaleId%2Cmatched%2Chashcode%2CmHashcode%2CmPrecendence%2Creason&display.page.search.mode=smart&dispatch.sample_ratio=1&earliest=-24h%40h&latest=now&display.page.search.tab=statistics&display.general.type=statistics&sid=1711546991.283754244'>Smartmatch Log</a></li>
+    </ul>
+    <iframe style="width: 100%;" src="https://slc.smartling.net/en-US/app/search/search?rs%3Aembed=true&earliest=-24h%40h&latest=now&q=search%20%2Fpeople-api%2Fv2%2Faccounts%2FAccountUID%2Fusers%2FUserUID%2Fworkflow-steps%2Fassign%20AND%20method%3Dpost%20%20%7C%20table%20%20_time%2Cuser%2Cservice_uri&display.page.search.mode=smart&dispatch.sample_ratio=1&display.page.search.tab=statistics&display.general.type=statistics&sid=1711545878.283749833"></iframe>
+    <script src="script.js"></script>
+</body>
+</html>
