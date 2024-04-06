@@ -1,6 +1,3 @@
-function changeIframeSrc(newSrc) {
-    document.getElementById('dynamicIframe').src = newSrc;
-};
 document.getElementById('searchInput').addEventListener('input', function (event) {
     const searchTerm = event.target.value.toLowerCase();
     const listItems = document.querySelectorAll('#itemList li');
