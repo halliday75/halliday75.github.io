@@ -518,6 +518,11 @@
                                 <input type="text" id="urlInput" class="form-control">
                             </div>
                             <button id="submitUrlBtn" class="btn">Submit</button>
+                            <div id="loadingSpinner" style="display: none;">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
                         </div>
                         <div id="htmlSourceInputSection" style="padding-bottom:1em;">
                             <div class="form-group">
@@ -549,39 +554,45 @@
             }
 
             // Event listener for URL submission
-            document.getElementById('submitUrlBtn').addEventListener('click', ()=>{
-                const url = document.getElementById('urlInput').value;
-                if (url && url.startsWith('http')) {
-                    // Create a new XMLHttpRequest object
-                    var xhr = new XMLHttpRequest();
+document.getElementById('submitUrlBtn').addEventListener('click', () => {
+    const url = document.getElementById('urlInput').value;
+    if (url && url.startsWith('http')) {
+        // Show the loading spinner
+        document.getElementById('loadingSpinner').style.display = 'block';
 
-                    // Configure the request
-                    xhr.open('GET', url + '?smartling_editmode=3', true);
+        // Create a new XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
 
-                    // Set up a handler for when the request finishes
-                    xhr.onload = function() {
-                        if (xhr.status === 200) {
-                            const hashValues = extractHashValues(xhr.responseText);
-                            document.getElementById('outputText').value = hashValues.join(',');
-                        } else {
-                            console.error('Error fetching URL:', xhr.statusText);
-                        }
-                    }
-                    ;
+        // Configure the request
+        xhr.open('GET', url + '?smartling_editmode=3', true);
 
-                    // Handle network errors
-                    xhr.onerror = function() {
-                        console.error('Network Error');
-                    }
-                    ;
+        // Set up a handler for when the request finishes
+        xhr.onload = function() {
+            // Hide the loading spinner
+            document.getElementById('loadingSpinner').style.display = 'none';
 
-                    // Send the request
-                    xhr.send();
-                } else {
-                    alert('Please enter a valid URL starting with "http".');
-                }
+            if (xhr.status === 200) {
+                const hashValues = extractHashValues(xhr.responseText);
+                document.getElementById('outputText').value = hashValues.join(',');
+            } else {
+                console.error('Error fetching URL:', xhr.statusText);
             }
-            );
+        };
+
+        // Handle network errors
+        xhr.onerror = function() {
+            // Hide the loading spinner
+            document.getElementById('loadingSpinner').style.display = 'none';
+
+            console.error('Network Error');
+        };
+
+        // Send the request
+        xhr.send();
+    } else {
+        alert('Please enter a valid URL starting with "http".');
+    }
+});
 
             // Event listener for HTML source text submission
             document.getElementById('submitHtmlBtn').addEventListener('click', ()=>{
