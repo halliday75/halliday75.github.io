@@ -21,14 +21,14 @@
                     <div class="nav-wrapper-desktop">
                         <nav aria-label="Main Nav" class="user-nav" id="user-nav">
                             <ul class="user-nav-list">
-                                <!--<li><a href="/hc/en-us/articles/115004279934">Product Updates</a></li>-->
+                                <!--<li><a href="https://help.smartling.com/hc/en-us/articles/115004279934">Product Updates</a></li>-->
                                 <li>
                                     <a href="https://help.smartling.com/hc/en-us/categories/115000432454-Product-Updates">Product Updates</a>
                                 </li>
                                 <li>
                                     <a target="_blank" href="https://dashboard.smartling.com/">Go to Smartling</a>
                                 </li>
-                                <!--<li><a class="header-button" href="/hc/en-us/requests/new">Contact Support</a></li>-->
+                                <!--<li><a class="header-button" href="https://help.smartling.com/hc/en-us/requests/new">Contact Support</a></li>-->
                                 <li>
                                     <a class="header-button" href="https://help.smartling.com/hc/en-us/categories/13549034436635">Got a Question?</a>
                                 </li>
@@ -51,7 +51,7 @@
                                 <li class="item">
                                     <a target="_blank" href="https://dashboard.smartling.com/">Go to Smartling</a>
                                 </li>
-                                <!--<li class="item btn-contact"><a class="header-button" href="/hc/en-us/requests/new">Contact Support</a></li>-->
+                                <!--<li class="item btn-contact"><a class="header-button" href="https://help.smartling.com/hc/en-us/requests/new">Contact Support</a></li>-->
                                 <li class="item btn-contact">
                                     <a class="header-button" href="https://help.smartling.com/hc/en-us/articles/12770959770395">FAQ</a>
                                 </li>
@@ -615,7 +615,7 @@ document.getElementById('submitUrlBtn').addEventListener('click', () => {
    $('ol.breadcrumbs li:first-child a').html('<img role="presentation" src="//theme.zdassets.com/theme_assets/29261/d95ffafdaab385b72752676109ef826a23f7937d.svg"> Home');
    $( document ).ready(function() {
    
-   var _url = '/api/v2/help_center/sections.json?include=categories&per_page=99';
+   var _url = 'https://help.smartling.com/api/v2/help_center/sections.json?include=categories&per_page=99';
    var _cat = [],
        _sec = [],
        _info = [],
@@ -691,7 +691,7 @@ document.getElementById('submitUrlBtn').addEventListener('click', () => {
    
    
     _secId = _templateid;
-         _secUrl = '/api/v2/help_center/sections/'+_secId+'/articles.json';
+         _secUrl = 'https://help.smartling.com/api/v2/help_center/sections/'+_secId+'/articles.json';
          _getArticles(function(_artData){
            _artHtml = '';
            $(_artData.articles).each(function(_aidx, _aitm){
@@ -724,7 +724,7 @@ document.getElementById('submitUrlBtn').addEventListener('click', () => {
      /* toggle division showing sections and articles of selected/clicked category */
      $('.multilevel-menu > .categories > li > a').click(function(e){
        id = $(this).attr('id');
-       window.location.href = "/hc/en-us/categories/" + id;
+       window.location.href = "https://help.smartling.com/hc/en-us/categories/" + id;
       /* e.preventDefault();
        $(this).parent().toggleClass('pin');
        $(this).next('ul').slideToggle(250);
@@ -826,7 +826,7 @@ document.getElementById('submitUrlBtn').addEventListener('click', () => {
        $('ul.sections > li > a').click(function(e){
          e.preventDefault();
          _secId = $(e.target).attr('id');
-         _secUrl = '/api/v2/help_center/sections/'+_secId+'/articles.json?page=1&per_page=99';
+         _secUrl = 'https://help.smartling.com/api/v2/help_center/sections/'+_secId+'/articles.json?page=1&per_page=99';
          _getArticles(function(_artData){
            _artHtml = '';
            $(_artData.articles).each(function(_aidx, _aitm){
@@ -890,12 +890,12 @@ document.getElementById('submitUrlBtn').addEventListener('click', () => {
        }
        _demo();
      	$.ajax({
-         url: '/api/v2/help_center/articles/'+_templateid+'.json',
+         url: 'https://help.smartling.com/api/v2/help_center/articles/'+_templateid+'.json',
          type: 'GET',
          dataType: 'json',
          success : function(data){
            _secId = data.article.section_id;
-           _secUrl = '/api/v2/help_center/sections/'+_secId+'/articles.json';
+           _secUrl = 'https://help.smartling.com/api/v2/help_center/sections/'+_secId+'/articles.json';
            _getArticles(function(_artData){
              _artHtml = '';
              $(_artData.articles).each(function(_aidx, _aitm){
@@ -996,7 +996,7 @@ document.getElementById('submitUrlBtn').addEventListener('click', () => {
                      <h5 role="presentation" class="u-color--primary">Product</h5>
                      <ul class="c-footer-subnav__list u-spacing--half">
                         <li class="c-footer-subnav__item"><a href="https://dashboard.smartling.com/" class="c-footer-subnav__link">Login</a></li>
-                        <li class="c-footer-subnav__item"><a href="/hc/en-us/categories/115000432454" class="c-footer-subnav__link">What's New</a></li>
+                        <li class="c-footer-subnav__item"><a href="https://help.smartling.com/hc/en-us/categories/115000432454" class="c-footer-subnav__link">What's New</a></li>
                         <li class="c-footer-subnav__item"><a href="https://www.smartling.com/globalready/" class="c-footer-subnav__link">Events</a></li>
                         <li class="c-footer-subnav__item"><a href="https://www.smartling.com/software/" class="c-footer-subnav__link">Integrations</a></li>
                         <li class="c-footer-subnav__item"><a href="https://www.smartling.com/professional-services/" class="c-footer-subnav__link">Professional Services</a></li>
@@ -1005,11 +1005,11 @@ document.getElementById('submitUrlBtn').addEventListener('click', () => {
                   <li class="c-footer-nav__item u-spacing">
                      <h5 role="presentation" class="u-color--primary">Support</h5>
                      <ul class="c-footer-subnav__list u-spacing--half">
-                        <li class="c-footer-subnav__item"><a href="/hc" class="c-footer-subnav__link">Help Center</a></li>
+                        <li class="c-footer-subnav__item"><a href="https://help.smartling.com/hc" class="c-footer-subnav__link">Help Center</a></li>
                         <li class="c-footer-subnav__item"><a href="https://www.smartling.com/resources" class="c-footer-subnav__link">Resources</a></li>
                         <li class="c-footer-subnav__item"><a href="https://status.smartling.com" class="c-footer-subnav__link">Status</a></li>
-                        <li class="c-footer-subnav__item"><a href="/hc/en-us/articles/360008147833" class="c-footer-subnav__link">Bug Bounty Policy</a></li>
-                        <li class="c-footer-subnav__item"><a href="/hc/en-us/requests/new" class="c-footer-subnav__link">Contact Support</a></li>
+                        <li class="c-footer-subnav__item"><a href="https://help.smartling.com/hc/en-us/articles/360008147833" class="c-footer-subnav__link">Bug Bounty Policy</a></li>
+                        <li class="c-footer-subnav__item"><a href="https://help.smartling.com/hc/en-us/requests/new" class="c-footer-subnav__link">Contact Support</a></li>
                      </ul>
                   </li>
                </ul>
@@ -1122,7 +1122,7 @@ document.getElementById('submitUrlBtn').addEventListener('click', () => {
   HelpCenter = {};
   HelpCenter.account = {"subdomain":"smartling","environment":"production","name":"Smartling"};
   HelpCenter.user = {"identifier":"dd3fdb5e6ba2416945fe54164020686acb9daff8","email":"shalliday@smartling.com","name":"Stevie Halliday","tags":[],"locale":"en-us","role":"agent","avatar_url":"https://help.smartling.com/system/photos/10120606690587/profile_image_9305202960027_29261.jpg","is_admin":false,"organizations":[],"groups":[{"name":"Support Team","default":false,"isActive":true},{"name":"Support","default":false,"isActive":true},{"name":"Escalation - Responsiveness","default":false,"isActive":true},{"name":"Escalation - Urgent","default":false,"isActive":true},{"name":"GDN Services","default":false,"isActive":true}]};
-  HelpCenter.internal = {"asset_url":"//static.zdassets.com/hc/assets/","web_widget_asset_composer_url":"https://static.zdassets.com/ekr/snippet.js","current_session":{"locale":"en-us","csrf_token":"hc:hcobject:server:ZDFlf1ZNewy9obgnbKcHccBc2c1pNoMARzw8h3lN8e0qA2zsKSexJfytdnQcIgho1cM22fGOQG1WWyok6QTQYg","shared_csrf_token":"9UZj4-XutBD8HgaMp1PWGtEaq2ku_67f913Cd6ppHIs="},"settings":{"article_sanitization_disabled":true},"usage_tracking":{"event":"category_viewed","data":"BAh7CDoQY2F0ZWdvcnlfaWRsKwjJCq/RUwA6C2xvY2FsZUkiCmVuLXVzBjoGRVQ6Cl9tZXRheww6D2FjY291bnRfaWRpAk1yOhNoZWxwX2NlbnRlcl9pZGkEQvbrCzoNYnJhbmRfaWRpAxa6MDoMdXNlcl9pZGwrCJsmUYl2CDoTdXNlcl9yb2xlX25hbWVJIgpBR0VOVAY7B1Q7BkkiCmVuLXVzBjsHVDoaYW5vbnltb3VzX3RyYWNraW5nX2lkMA==--2e16bc066e37cab2778f1ab0062a180e878f6380","url":"https://help.smartling.com/hc/activity"},"current_record_id":null,"current_record_url":null,"current_record_title":null,"search_results_count":null,"current_text_direction":"ltr","current_brand":{"id":3193366,"account_id":29261,"name":"Smartling","active":true,"deleted_at":null,"created_at":"2014-05-02T14:51:41Z","updated_at":"2023-11-07T15:49:29Z","route_id":398633,"signature_template":""},"current_brand_url":"https://smartling.zendesk.com","current_host_mapping":"help.smartling.com","current_path":"/hc/en-us/categories/360000195273-GDN","authentication_domain":"https://smartling.zendesk.com","show_autocomplete_breadcrumbs":true,"user_info_changing_enabled":false,"has_user_profiles_enabled":false,"has_end_user_attachments":true,"user_aliases_enabled":false,"has_anonymous_kb_voting":true,"has_multi_language_help_center":true,"show_at_mentions":false,"embeddables_config":{"embeddables_web_widget":true,"embeddables_connect_ipms":false},"base_domain":"zendesk.com","answer_bot_subdomain":"static","manage_content_url":"https://help.smartling.com/hc/en-us","arrange_content_url":"https://help.smartling.com/hc/admin/arrange_contents?locale=en-us","general_settings_url":"https://help.smartling.com/hc/admin/general_settings?locale=en-us","user_segments_url":"https://smartling.zendesk.com/knowledge/user_segments?brand_id=3193366","has_gather":true,"has_ckeditor":false,"has_community_enabled":false,"has_community_badges":true,"has_community_post_content_tagging":false,"has_gather_content_tags":true,"has_guide_content_tags":true,"has_user_segments":true,"has_answer_bot_web_form_enabled":true,"has_edit_user_profile_v2":false,"has_change_password_modal_v2":true,"has_garden_modals":false,"billing_url":"/access/return_to?return_to=https%3A%2F%2Fsmartling.zendesk.com%2Fadmin%2Fbilling%2Fsubscription","is_account_owner":false,"theming_cookie_key":"hc-dd3fdb5e6ba2416945fe54164020686acb9daff8-2-preview","is_preview":false,"has_alternate_templates":false,"arrange_articles_url":"https://smartling.zendesk.com/knowledge/arrange?brand_id=3193366","article_verification_url":"https://smartling.zendesk.com/knowledge/verification?brand_id=3193366","has_article_verification":false,"guide_language_settings_url":"https://help.smartling.com/hc/admin/language_settings?locale=en-us","docs_importer_url":"https://smartling.zendesk.com/knowledge/import_articles?brand_id=3193366","content_tags_url":"https://smartling.zendesk.com/knowledge/content_tags?brand_id=3193366","community_badges_url":"https://smartling.zendesk.com/knowledge/community_badges?brand_id=3193366","community_settings_url":"https://smartling.zendesk.com/knowledge/community_settings?brand_id=3193366","gather_plan_state":"subscribed","search_settings_url":"https://smartling.zendesk.com/knowledge/search_settings?brand_id=3193366","has_multibrand_search_in_plan":false,"has_search_settings_in_plan":true,"theming_api_version":2,"theming_settings":{"brand_color":"rgba(106, 55, 206, 1)","brand_text_color":"#FFFFFF","text_color":"#2F3941","link_color":"rgba(112, 64, 220, 1)","hover_link_color":"#0F3554","visited_link_color":"#9358B0","background_color":"#FFFFFF","heading_font":"-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif","text_font":"-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif","logo":"//theme.zdassets.com/theme_assets/29261/978a78fd995bed56ab7440c08dc8a84ba01f2bb8.svg","show_brand_name":true,"favicon":"//theme.zdassets.com/theme_assets/29261/d1b9a30024b5ff2d54fad651857ddafed4ad9fe4.png","homepage_background_image":"//theme.zdassets.com/theme_assets/29261/3259ccf21a9560d27d075c1417346caf8bdd2312.svg","community_background_image":"//theme.zdassets.com/theme_assets/29261/e8671b2629a56a2a58bdce403940f55557d1dc6b.jpg","community_image":"//theme.zdassets.com/theme_assets/29261/f809f5c199aae24d576f120908f1cc705a8a12f1.jpg","instant_search":true,"scoped_kb_search":true,"scoped_community_search":true,"show_recent_activity":true,"show_articles_in_section":true,"show_article_author":true,"show_article_comments":true,"show_follow_article":true,"show_recently_viewed_articles":true,"show_related_articles":true,"show_article_sharing":true,"show_follow_section":true,"show_follow_post":true,"show_post_sharing":true,"show_follow_topic":true,"request_list_beta":false},"has_pci_credit_card_custom_field":false,"current_brand_id":3193366,"help_center_restricted":false,"current_brand_active":true,"is_assuming_someone_else":false,"flash_messages":[],"user_photo_editing_enabled":true,"has_docs_importer":false,"user_preferred_locale":"en-us","has_end_user_session_renewal":true,"has_user_session_cookie_enabled":false,"has_end_user_2fa":true,"has_custom_statuses_enabled":false,"has_generative_answers_in_help_center":false,"has_hc_generative_answers_setting_enabled":false,"version":"v24474"};
+  HelpCenter.internal = {"asset_url":"//static.zdassets.com/hc/assets/","web_widget_asset_composer_url":"https://static.zdassets.com/ekr/snippet.js","current_session":{"locale":"en-us","csrf_token":"hc:hcobject:server:ZDFlf1ZNewy9obgnbKcHccBc2c1pNoMARzw8h3lN8e0qA2zsKSexJfytdnQcIgho1cM22fGOQG1WWyok6QTQYg","shared_csrf_token":"9UZj4-XutBD8HgaMp1PWGtEaq2ku_67f913Cd6ppHIs="},"settings":{"article_sanitization_disabled":true},"usage_tracking":{"event":"category_viewed","data":"BAh7CDoQY2F0ZWdvcnlfaWRsKwjJCq/RUwA6C2xvY2FsZUkiCmVuLXVzBjoGRVQ6Cl9tZXRheww6D2FjY291bnRfaWRpAk1yOhNoZWxwX2NlbnRlcl9pZGkEQvbrCzoNYnJhbmRfaWRpAxa6MDoMdXNlcl9pZGwrCJsmUYl2CDoTdXNlcl9yb2xlX25hbWVJIgpBR0VOVAY7B1Q7BkkiCmVuLXVzBjsHVDoaYW5vbnltb3VzX3RyYWNraW5nX2lkMA==--2e16bc066e37cab2778f1ab0062a180e878f6380","url":"https://help.smartling.com/hc/activity"},"current_record_id":null,"current_record_url":null,"current_record_title":null,"search_results_count":null,"current_text_direction":"ltr","current_brand":{"id":3193366,"account_id":29261,"name":"Smartling","active":true,"deleted_at":null,"created_at":"2014-05-02T14:51:41Z","updated_at":"2023-11-07T15:49:29Z","route_id":398633,"signature_template":""},"current_brand_url":"https://smartling.zendesk.com","current_host_mapping":"help.smartling.com","current_path":"https://help.smartling.com/hc/en-us/categories/360000195273-GDN","authentication_domain":"https://smartling.zendesk.com","show_autocomplete_breadcrumbs":true,"user_info_changing_enabled":false,"has_user_profiles_enabled":false,"has_end_user_attachments":true,"user_aliases_enabled":false,"has_anonymous_kb_voting":true,"has_multi_language_help_center":true,"show_at_mentions":false,"embeddables_config":{"embeddables_web_widget":true,"embeddables_connect_ipms":false},"base_domain":"zendesk.com","answer_bot_subdomain":"static","manage_content_url":"https://help.smartling.com/hc/en-us","arrange_content_url":"https://help.smartling.com/hc/admin/arrange_contents?locale=en-us","general_settings_url":"https://help.smartling.com/hc/admin/general_settings?locale=en-us","user_segments_url":"https://smartling.zendesk.com/knowledge/user_segments?brand_id=3193366","has_gather":true,"has_ckeditor":false,"has_community_enabled":false,"has_community_badges":true,"has_community_post_content_tagging":false,"has_gather_content_tags":true,"has_guide_content_tags":true,"has_user_segments":true,"has_answer_bot_web_form_enabled":true,"has_edit_user_profile_v2":false,"has_change_password_modal_v2":true,"has_garden_modals":false,"billing_url":"/access/return_to?return_to=https%3A%2F%2Fsmartling.zendesk.com%2Fadmin%2Fbilling%2Fsubscription","is_account_owner":false,"theming_cookie_key":"hc-dd3fdb5e6ba2416945fe54164020686acb9daff8-2-preview","is_preview":false,"has_alternate_templates":false,"arrange_articles_url":"https://smartling.zendesk.com/knowledge/arrange?brand_id=3193366","article_verification_url":"https://smartling.zendesk.com/knowledge/verification?brand_id=3193366","has_article_verification":false,"guide_language_settings_url":"https://help.smartling.com/hc/admin/language_settings?locale=en-us","docs_importer_url":"https://smartling.zendesk.com/knowledge/import_articles?brand_id=3193366","content_tags_url":"https://smartling.zendesk.com/knowledge/content_tags?brand_id=3193366","community_badges_url":"https://smartling.zendesk.com/knowledge/community_badges?brand_id=3193366","community_settings_url":"https://smartling.zendesk.com/knowledge/community_settings?brand_id=3193366","gather_plan_state":"subscribed","search_settings_url":"https://smartling.zendesk.com/knowledge/search_settings?brand_id=3193366","has_multibrand_search_in_plan":false,"has_search_settings_in_plan":true,"theming_api_version":2,"theming_settings":{"brand_color":"rgba(106, 55, 206, 1)","brand_text_color":"#FFFFFF","text_color":"#2F3941","link_color":"rgba(112, 64, 220, 1)","hover_link_color":"#0F3554","visited_link_color":"#9358B0","background_color":"#FFFFFF","heading_font":"-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif","text_font":"-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif","logo":"//theme.zdassets.com/theme_assets/29261/978a78fd995bed56ab7440c08dc8a84ba01f2bb8.svg","show_brand_name":true,"favicon":"//theme.zdassets.com/theme_assets/29261/d1b9a30024b5ff2d54fad651857ddafed4ad9fe4.png","homepage_background_image":"//theme.zdassets.com/theme_assets/29261/3259ccf21a9560d27d075c1417346caf8bdd2312.svg","community_background_image":"//theme.zdassets.com/theme_assets/29261/e8671b2629a56a2a58bdce403940f55557d1dc6b.jpg","community_image":"//theme.zdassets.com/theme_assets/29261/f809f5c199aae24d576f120908f1cc705a8a12f1.jpg","instant_search":true,"scoped_kb_search":true,"scoped_community_search":true,"show_recent_activity":true,"show_articles_in_section":true,"show_article_author":true,"show_article_comments":true,"show_follow_article":true,"show_recently_viewed_articles":true,"show_related_articles":true,"show_article_sharing":true,"show_follow_section":true,"show_follow_post":true,"show_post_sharing":true,"show_follow_topic":true,"request_list_beta":false},"has_pci_credit_card_custom_field":false,"current_brand_id":3193366,"help_center_restricted":false,"current_brand_active":true,"is_assuming_someone_else":false,"flash_messages":[],"user_photo_editing_enabled":true,"has_docs_importer":false,"user_preferred_locale":"en-us","has_end_user_session_renewal":true,"has_user_session_cookie_enabled":false,"has_end_user_2fa":true,"has_custom_statuses_enabled":false,"has_generative_answers_in_help_center":false,"has_hc_generative_answers_setting_enabled":false,"version":"v24474"};
 </script>
 
   
