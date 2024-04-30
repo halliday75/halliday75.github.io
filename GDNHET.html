@@ -563,7 +563,7 @@
 document.getElementById('submitUrlBtn').addEventListener('click', () => {
     let url = document.getElementById('urlInput').value;
     if (url.startsWith('http')){
-        return
+        url = url;
     } else {
         url = 'https://' + url;
     }
