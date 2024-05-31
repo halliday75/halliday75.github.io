@@ -109,7 +109,7 @@ document.getElementById('linkGeneratorForm').addEventListener('submit', function
         const link4 = `${baseUrl}${projectId}/entries/${spaceId}-${entryId}/file/details`;
         const link5 = `${baseUrl}${projectId}/entries/${spaceId}-${entryId}/instrumented-json`;
         //document.getElementById('generatedLink').innerHTML = `<a href="${link}" target="_blank">Get complete entry content</a><br/><a href="${link2}" target="_blank">Get content type definition (schema)</a><br/>`;
-        document.getElementById('itemList').innerHTML = `<li onclick="window.open('${link}', '_blank');">Get complete entry content</li><li onclick="window.open('${link2}', '_blank');">Get content type definition (schema)</li><li onclick="window.open('${link3}', '_blank');">Get rendered Smartling JSON (according to current property mappings by the entry Id)</li><li onclick="window.open('${link4}', '_blank');">Get file details (includes actual contentHash and directives)</li><li onclick="window.open('${link5}', '_blank');">Get Entry Instrumented JSON</li>`;
+        document.getElementById('itemList').innerHTML = `<li onclick="delete window.document.referrer;window.open('${link}', '_blank');">Get complete entry content</li><li onclick="window.open('${link2}', '_blank');">Get content type definition (schema)</li><li onclick="window.open('${link3}', '_blank');">Get rendered Smartling JSON (according to current property mappings by the entry Id)</li><li onclick="window.open('${link4}', '_blank');">Get file details (includes actual contentHash and directives)</li><li onclick="window.open('${link5}', '_blank');">Get Entry Instrumented JSON</li>`;
 
     } else {
         alert("Please fill in all fields.");
