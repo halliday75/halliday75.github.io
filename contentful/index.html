@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contentful Debugging Link Generator</title>
+    <style>
+        /* Reset some default styles */
+        body, ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Set the background color and text color */
+        body {
+            background-color: #000; /* Black background */
+            color: #fff; /* White text */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+            text-align: center;
+        }
+
+        /* Style the search input */
+        #searchInput {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Style the list container */
+        #itemList {
+            display: grid; /* Use CSS Grid for layout */
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Responsive grid */
+            gap: 20px; /* Space between grid items */
+            padding: 20px;
+        }
+        
+        /* Hide bullet points */
+        ul {
+            list-style-type: none;
+        }
+       
+        a {
+            color:white;
+        }
+
+        /* Style the list items */
+        #itemList li {
+            background-color: rgba(255, 255, 255, 0.1); /* Light background for items */
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+        }
+
+        /* Hover effect for list items */
+        #itemList li:hover {
+            background-color: rgba(255, 255, 255, 0.2); /* Darker background on hover */
+            cursor: pointer;
+        }
+        
+        /* Style the search input */
+input,button,a {
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    background-color: #000; /* Black background */
+    color: #fff; /* White text */
+    border: 1px solid #fff; /* White border */
+    border-radius: 5px; /* Rounded corners */
+    outline: none; /* Remove default focus outline */
+    display: inline-block;
+}
+
+/* Remove the outline when the search bar is focused */
+input:focus {
+    outline: none;
+}
+    </style>
+</head>
+<body>
+
+<h2>Contentful Debugging Link Generator</h2>
+<hr><br/>
+<form id="linkGeneratorForm">
+    <input type="text" id="projectId" placeholder="Project UID" name="projectId"><br>
+    <input type="text" id="spaceId" placeholder="Space ID" name="spaceId"><br>
+    <input type="text" id="entryId" placeholder="Entry ID" name="entryId"><br>
+    <button type="submit">Generate Links</button>
+    <button onclick="location.reload();">Clear Search</button>
+</form>
+<hr><br/>
+<!--<div id="generatedLink"></div>-->
+<ul id="itemList"></ul>
+<script>
+document.getElementById('linkGeneratorForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent form from submitting normally
+
+    const projectId = document.getElementById('projectId').value;
+    const spaceId = document.getElementById('spaceId').value;
+    const entryId = document.getElementById('entryId').value;
+
+    if (projectId && spaceId && entryId) {
+        const baseUrl = "https://dashboard.smartling.com/p/contentful-connector-api/v2/debug/projects/";
+        const link = `${baseUrl}${projectId}/entries/${spaceId}-${entryId}`;
+        const link2 = `${baseUrl}${projectId}/entries/${spaceId}-${entryId}/content-type`;
+        const link3 = `${baseUrl}${projectId}/entries/${spaceId}-${entryId}/file`;
+        const link4 = `${baseUrl}${projectId}/entries/${spaceId}-${entryId}/file/details`;
+        const link5 = `${baseUrl}${projectId}/entries/${spaceId}-${entryId}/instrumented-json`;
+        //document.getElementById('generatedLink').innerHTML = `<a href="${link}" target="_blank">Get complete entry content</a><br/><a href="${link2}" target="_blank">Get content type definition (schema)</a><br/>`;
+        document.getElementById('itemList').innerHTML = `<li onclick="window.open('${link}', '_blank');">Get complete entry content</li><li onclick="window.open('${link2}', '_blank');">Get content type definition (schema)</li><li onclick="window.open('${link3}', '_blank');">Get rendered Smartling JSON (according to current property mappings by the entry Id)</li><li onclick="window.open('${link4}', '_blank');">Get file details (includes actual contentHash and directives)</li><li onclick="window.open('${link5}', '_blank');">Get Entry Instrumented JSON</li>`;
+
+    } else {
+        alert("Please fill in all fields.");
+    }
+});
+</script>
+</body>
+</html>
