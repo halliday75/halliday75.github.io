@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +9,10 @@
         body, ul {
             margin: 0;
             padding: 0;
+        }
+        
+        #link {
+            display:inline;
         }
 
         /* Set the background color and text color */
@@ -73,6 +78,11 @@ input,button,a {
     display: inline-block;
 }
 
+button:hover, #contentful {
+    color: black;
+    background-color: white;
+}
+
 /* Remove the outline when the search bar is focused */
 input:focus {
     outline: none;
@@ -80,7 +90,10 @@ input:focus {
     </style>
 </head>
 <body>
-
+    <br />
+    <button id="splunk" onclick="window.open('https:\/\/halliday75.github.io/splunk/', '_blank', 'noreferrer');">Splunk Search Query Finder</button> <button id="contentful">Contentful Debugging Link Generator
+    </button>
+    <hr>
 <h2>Contentful Debugging Link Generator</h2>
 <hr><br/>
 <form id="linkGeneratorForm">
