@@ -95,16 +95,6 @@
             display: inline-block;
         }
 
-        .form_group {
-            display: flex;
-        }
-
-        form input {
-            flex: 1;
-            margin-left: 0.5em;
-            margin-right: 0.5em;
-        }
-
         button:hover,
         #contentful {
             color: black;
@@ -127,15 +117,13 @@
     <h1>Contentful Debugging Link Generator</h1>
     <hr><br />
     <form id="linkGeneratorForm">
-        <div class="form_group">
-            <input type="text" id="projectId" placeholder="Project UID" name="projectId"><br>
-            <input type="text" id="spaceId" placeholder="Space ID" name="spaceId"><br>
-            <input type="text" id="entryId" placeholder="Entry ID" name="entryId"><br>
-        </div>
+        <input type="text" id="projectId" placeholder="Project UID" name="projectId"><br>
+        <input type="text" id="spaceId" placeholder="Space ID" name="spaceId"><br>
+        <input type="text" id="entryId" placeholder="Entry ID" name="entryId"><br>
         <button type="submit">Generate Links</button>
     </form>
-    <button onclick="navigator.clipboard.writeText(window.location.href);">Copy Link to Current Search</button><br />
-    <button onclick="window.open('https:\/\/halliday75.github.io/contentful/', '_self', 'noreferrer');">Clear Search</button>
+    <button onclick="window.open('https:\/\/halliday75.github.io/contentful/', '_self', 'noreferrer');">Clear
+        Search</button>
     <hr><br />
     <!--<div id="generatedLink"></div>-->
     <ul id="itemList"></ul>
