@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -78,9 +79,19 @@
 #searchInput:focus {
     outline: none;
 }
+
+button:hover, #splunk {
+    color: black;
+    background-color: white;
+}
+
     </style>
 </head>
 <body>
+    <br />
+    <button id="splunk">Splunk Search Query Finder</button> <button id="contentful" onclick="window.open('https:\/\/halliday75.github.io/contentful/', '_blank', 'noreferrer');">Contentful Debugging Link Generator
+    </button>
+    <hr>
     <h1>Splunk Search Query Finder</h1>
     <input type="text" id="searchInput" placeholder="Search...">
     <ul id="itemList">
