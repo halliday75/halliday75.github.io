@@ -95,6 +95,16 @@
             display: inline-block;
         }
 
+        .form_group {
+            display: flex;
+        }
+
+        form input {
+            flex: 1;
+            margin-left: 0.5em;
+            margin-right: 0.5em;
+        }
+
         button:hover,
         #contentful {
             color: black;
@@ -117,26 +127,21 @@
     <h1>Contentful Debugging Link Generator</h1>
     <hr><br />
     <form id="linkGeneratorForm">
-        <input type="text" id="projectId" placeholder="Project UID" name="projectId"><br>
-        <input type="text" id="spaceId" placeholder="Space ID" name="spaceId"><br>
-        <input type="text" id="entryId" placeholder="Entry ID" name="entryId"><br>
+        <div class="form_group">
+            <input type="text" id="projectId" placeholder="Project UID" name="projectId"><br>
+            <input type="text" id="spaceId" placeholder="Space ID" name="spaceId"><br>
+            <input type="text" id="entryId" placeholder="Entry ID" name="entryId"><br>
+        </div>
         <button type="submit">Generate Links</button>
     </form>
-    <button onclick="window.open('https:\/\/halliday75.github.io/contentful/', '_self', 'noreferrer');">Clear
-        Search</button>
+    <button onclick="navigator.clipboard.writeText(window.location.href);">Copy Link to Current Search</button><br />
+    <button onclick="window.open('https:\/\/halliday75.github.io/contentful/', '_self', 'noreferrer');">Clear Search</button>
     <hr><br />
     <!--<div id="generatedLink"></div>-->
     <ul id="itemList"></ul>
     <script>
         function generateLinks() {
-            const baseUrl = "https://dashboard.smartling.com/p/contentful-connector-api/v2/debug/projects/";
-            const link = `${baseUrl}${projectId}/entries/${spaceId}-${entryId}`;
-            const link2 = `${baseUrl}${projectId}/entries/${spaceId}-${entryId}/content-type`;
-            const link3 = `${baseUrl}${projectId}/entries/${spaceId}-${entryId}/file`;
-            const link4 = `${baseUrl}${projectId}/entries/${spaceId}-${entryId}/file/details`;
-            const link5 = `${baseUrl}${projectId}/entries/${spaceId}-${entryId}/instrumented-json`;
-            //document.getElementById('generatedLink').innerHTML = `<a href="${link}" target="_blank">Get complete entry content</a><br/><a href="${link2}" target="_blank">Get content type definition (schema)</a><br/>`;
-            document.getElementById('itemList').innerHTML = `<li onclick="window.open('${link}', '_blank', 'noreferrer');">Get complete entry content</li><li onclick="window.open('${link2}', '_blank', 'noreferrer');">Get content type definition (schema)</li><li onclick="window.open('${link3}', '_blank', 'noreferrer');">Get rendered Smartling JSON (according to current property mappings by the entry Id)</li><li onclick="window.open('${link4}', '_blank', 'noreferrer');">Get file details (includes actual contentHash and directives)</li><li onclick="window.open('${link5}', '_blank', 'noreferrer');">Get Entry Instrumented JSON</li>`;
+           
         }
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -170,7 +175,7 @@
                 history.replaceState(null, null, "?" + queryParams);
 
                 if (projectId && spaceId && entryId) {
-                    generateLinks()
+                    generateLinks();
 
                 } else {
                     alert("Please fill in all fields.");
