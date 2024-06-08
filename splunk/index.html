@@ -106,6 +106,8 @@ button:hover, #splunk {
     </button>
     <hr>
     <h1>Splunk Search Query Finder</h1>
+    <hr>
+    <br />
     <input type="text" id="searchInput" placeholder="Search...">
     <ul id="itemList">
         <li onclick="window.open('https://slc.smartling.net/en-US/app/search/search?q=search%20env%3Dprod%20AND%20index%3D%22smartmatch_audit%22%20AND%20hashcode%3D*%20%7Ctable%20_time%2Cmatched%2CsegmentMatch%2ClocaleId%2CmLocaleId%2Chashcode%2CmHashcode%2CmSourceUid%2CmPrecendence%2Cpriority%2CmMatchType%2Creason%20%7C%20rename%20matched%20AS%20%22Smartmatched%22&display.page.search.mode=smart&dispatch.sample_ratio=1&earliest=-15m&latest=now&display.page.search.tab=statistics&display.general.type=statistics&sid=1714579055.295843522', '_blank');">Smartmatch Logs</li>
