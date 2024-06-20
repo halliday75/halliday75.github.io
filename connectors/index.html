@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smartling Connector Demo Instances</title>
+    <style>
+        /* Reset some default styles */
+        body, ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Set the background color and text color */
+        body {
+            background-color: #000; /* Black background */
+            color: #fff; /* White text */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+            text-align: center;
+        }
+
+        /* Style the search input */
+        #searchInput {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Style the list container */
+        #itemList, #links {
+            display: grid; /* Use CSS Grid for layout */
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Responsive grid */
+            gap: 20px; /* Space between grid items */
+            padding: 20px;
+        }
+        
+        /* Hide bullet points */
+        ul {
+            list-style-type: none;
+        }
+       
+        a {
+            color:white;
+        }
+
+        /* Style the list items */
+        #itemList li, #links li {
+            background-color: rgba(255, 255, 255, 0.1); /* Light background for items */
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+        }
+
+        /* Hover effect for list items */
+        #itemList li:hover, #links li:hover  {
+            background-color: rgba(255, 255, 255, 0.2); /* Darker background on hover */
+            cursor: pointer;
+        }
+        
+        /* Style the search input */
+#searchInput {
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    background-color: #000; /* Black background */
+    color: #fff; /* White text */
+    border: 1px solid #fff; /* White border */
+    border-radius: 5px; /* Rounded corners */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Remove the outline when the search bar is focused */
+#searchInput:focus {
+    outline: none;
+}
+
+button,a {
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    background-color: #000; /* Black background */
+    color: #fff; /* White text */
+    border: 1px solid #fff; /* White border */
+    border-radius: 5px; /* Rounded corners */
+    outline: none; /* Remove default focus outline */
+    display: inline-block;
+}
+        
+button:hover, #connectors {
+    color: black;
+    background-color: white;
+}
+
+    </style>
+</head>
+<body>
+    <br />
+    <button id="splunk" onclick="window.open('https:\/\/halliday75.github.io/splunk/', '_self', 'noreferrer');">Splunk Search Query Finder</button> <button id="contentful" onclick="window.open('https:\/\/halliday75.github.io/contentful/', '_self', 'noreferrer');">Contentful Debugging Link Generator</button> <button id="connectors" onclick="window.open('https:\/\/halliday75.github.io/connectors/', '_self', 'noreferrer');">Smartling Connector Demo Instances</button>
+    <hr>
+    <h1>Smartling Connector Demo Instances</h1>
+    <hr>
+    <h2>Select Connector</h2>
+    <ul id="itemList">
+        <li onclick="generateLinks('zendeskTickets');">Zendesk Support(Tickets)</li>
+        <li onclick="generateLinks('zendeskGuide');">Zendesk Connector(Guide)</li>
+        <li onclick="generateLinks('hubspot');">Hubspot</li>
+        <li onclick="generateLinks('drupal');">Drupal</li>
+        <li onclick="generateLinks('wordpress');">Wordpress</li>
+    </ul>
+    <hr>
+    <h2 id="name"></h2>
+    <ul id="links"></ul>
+    <script>
+        function generateLinks(integration) {
+            // Corrected the variable declaration and comparison
+            if (integration === 'zendeskTickets') {
+                // Assuming link and link2 are defined somewhere or placeholders for actual URLs
+                const link = "https://smartling-dev.zendesk.com/agent/dashboard";
+                const link2 = "https://dashboard.smartling.com/app/projects/1295c174d";
+                const link3 = "https://smartling.atlassian.net/wiki/spaces/product/pages/3910897/Zendesk+integration";
+                document.getElementById('name').innerHTML = `Zendesk Support(Tickets)`;
+                document.getElementById('links').innerHTML = `
+                    <li onclick="window.open('${link}', '_blank', 'noreferrer');">Demo Instance</li>
+                    <li onclick="window.open('${link2}', '_blank', 'noreferrer');">Smartling Project</li>
+                    <li onclick="window.open('${link3}', '_blank', 'noreferrer');">Wiki</li>
+                `;
+            }
+            if (integration === 'zendeskGuide') {
+                // Assuming link and link2 are defined somewhere or placeholders for actual URLs
+                const link = "https://smartling-dev.zendesk.com/";
+                const link2 = "https://dashboard.smartling.com/app/projects/d45873ed1";
+                const link3 = "https://smartling.atlassian.net/wiki/spaces/product/pages/3911086/Zendesk+Support+integration";
+                document.getElementById('name').innerHTML = `Zendesk Connector(Guide)`;
+                document.getElementById('links').innerHTML = `
+                    <li onclick="window.open('${link}', '_blank', 'noreferrer');">Demo Instance</li>
+                    <li onclick="window.open('${link2}', '_blank', 'noreferrer');">Smartling Project</li>
+                    <li onclick="window.open('${link3}', '_blank', 'noreferrer');">Wiki</li>
+                `;
+            }
+            if (integration === 'hubspot') {
+                // Assuming link and link2 are defined somewhere or placeholders for actual URLs
+                const link = "https://app.hubspot.com/developers/3016662";
+                const link2 = "https://dashboard.smartling.com/app/projects/349e18162";
+                const link3 = "https://smartling.atlassian.net/wiki/spaces/product/pages/3909910/HubSpot+Integration";
+                document.getElementById('name').innerHTML = `Hubspot`;
+                document.getElementById('links').innerHTML = `
+                    <li onclick="window.open('${link}', '_blank', 'noreferrer');">Demo Instance</li>
+                    <li onclick="window.open('${link2}', '_blank', 'noreferrer');">Smartling Project</li>
+                    <li onclick="window.open('${link3}', '_blank', 'noreferrer');">Wiki</li>
+                `;
+            }
+            if (integration === 'drupal') {
+                // Assuming link and link2 are defined somewhere or placeholders for actual URLs
+                const link = "https://dev-sl-demo.pantheonsite.io/en/user/login";
+                const link2 = "https://dashboard.smartling.com/app/projects/8559dd3a7";
+                const link3 = "https://smartling.atlassian.net/wiki/spaces/product/pages/3911106/Drupal+CMS+Integration";
+                document.getElementById('name').innerHTML = `Drupal`;
+                document.getElementById('links').innerHTML = `
+                    <li onclick="window.open('${link}', '_blank', 'noreferrer');">Demo Instance</li>
+                    <li onclick="window.open('${link2}', '_blank', 'noreferrer');">Smartling Project</li>
+                    <li onclick="window.open('${link3}', '_blank', 'noreferrer');">Wiki</li>
+                `;
+            }
+            if (integration === 'wordpress') {
+                // Assuming link and link2 are defined somewhere or placeholders for actual URLs
+                const link = "https://wp-1.demo.connectors.stg.smartling.net/wp-login.php";
+                const link2 = "https://dashboard.smartling.com/app/projects/13f3a47e0/";
+                const link3 = "https://smartling.atlassian.net/wiki/spaces/product/pages/3910984/Wordpress+CMS+Integration";
+                document.getElementById('name').innerHTML = `Wordpress`;
+                document.getElementById('links').innerHTML = `
+                    <li onclick="window.open('${link}', '_blank', 'noreferrer');">Demo Instance</li>
+                    <li onclick="window.open('${link2}', '_blank', 'noreferrer');">Smartling Project</li>
+                    <li onclick="window.open('${link3}', '_blank', 'noreferrer');">Wiki</li>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
