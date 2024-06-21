@@ -98,7 +98,16 @@ button:hover, #splunk {
     color: black;
     background-color: white;
 }
-
+#top {
+    display:inline
+}
+#top button{
+    float:right;
+    margin-right:1em;
+}
+#top h1 {
+    margin-left:5em;
+}
     </style>
 </head>
 <body>
@@ -106,7 +115,10 @@ button:hover, #splunk {
     <button id="splunk">Splunk Search Query Finder</button> <button id="contentful" onclick="window.open('https:\/\/halliday75.github.io/contentful/', '_self', 'noreferrer');">Contentful Debugging Link Generator
     </button>  <button id="connectors" onclick="window.open('https:\/\/halliday75.github.io/connectors/', '_self', 'noreferrer');">Smartling Connector Demo Instances</button>
     <hr>
-    <h1>Splunk Search Query Finder</h1>
+    <div id="top">
+        <button onclick="hideNav()" id="hide">Hide/Show Menu</button>
+         <h1>Splunk Search Query Finder</h1>
+    </div>
     <hr>
     <br />
     <input type="text" id="searchInput" placeholder="Search...">
@@ -126,5 +138,15 @@ button:hover, #splunk {
         <li onclick="window.open('https://slc.smartling.net/en-US/app/search/search?q=search%20%2Fvendors-api%2Fv2%2Faccounts%2F(accountUID%20OR%20*)%2Fworkflow-steps%2F(WorflowStepUID%20OR%20*)%2Fauto-assignment%20AND%20method%3DPOST%20%7C%20table%20_time%2Cuser%2Cservice_uri%2Cmethod%2Cstatus_code%20%7C%20sort%20_time%20desc&display.page.search.mode=smart&dispatch.sample_ratio=1&earliest=-24h%40h&latest=now&display.page.search.tab=statistics&display.general.type=statistics&sid=1712528906.287651652', '_blank');">Workflows: Content Assignment Enabled/Disabled</li>
     </ul>
     <script src="script.js"></script>
+    <script>
+        function hideNav() {
+            var x = document.getElementById("menu");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            } else {
+                x.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>
