@@ -107,11 +107,15 @@ button:hover, #connectors {
     <hr>
     <h2>Select Connector</h2>
     <ul id="itemList">
+        <li onclick="generateLinks('aem65');">AEM 6.5</li>
+        <li onclick="generateLinks('akeneo');">Akeneo</li>
+        <li onclick="generateLinks('contentstack');">Contentstack</li>
+        <li onclick="generateLinks('drupal');">Drupal</li>
+        <li onclick="generateLinks('hubspot');">Hubspot</li>
+        <li onclick="generateLinks('iterable');">Iterable</li>
+        <li onclick="generateLinks('wordpress');">Wordpress</li>
         <li onclick="generateLinks('zendeskTickets');">Zendesk Support(Tickets)</li>
         <li onclick="generateLinks('zendeskGuide');">Zendesk Connector(Guide)</li>
-        <li onclick="generateLinks('hubspot');">Hubspot</li>
-        <li onclick="generateLinks('drupal');">Drupal</li>
-        <li onclick="generateLinks('wordpress');">Wordpress</li>
     </ul>
     <hr>
     <h2 id="name"></h2>
@@ -173,6 +177,54 @@ button:hover, #connectors {
                 const link2 = "https://dashboard.smartling.com/app/projects/13f3a47e0/";
                 const link3 = "https://smartling.atlassian.net/wiki/spaces/product/pages/3910984/Wordpress+CMS+Integration";
                 document.getElementById('name').innerHTML = `Wordpress`;
+                document.getElementById('links').innerHTML = `
+                    <li onclick="window.open('${link}', '_blank', 'noreferrer');">Demo Instance</li>
+                    <li onclick="window.open('${link2}', '_blank', 'noreferrer');">Smartling Project</li>
+                    <li onclick="window.open('${link3}', '_blank', 'noreferrer');">Wiki</li>
+                `;
+            }
+            if (integration === 'contentstack') {
+                // Assuming link and link2 are defined somewhere or placeholders for actual URLs
+                const link = "https://app.contentstack.com/#!/stack/blt65c4cf4eaa9017a0/dashboard?view_by=Alphabetical";
+                const link2 = "https://dashboard.smartling.com/app/projects/33088d460/";
+                const link3 = "https://smartling.atlassian.net/wiki/spaces/product/pages/3910039/Contentstack+integration";
+                document.getElementById('name').innerHTML = `Contentstack`;
+                document.getElementById('links').innerHTML = `
+                    <li onclick="window.open('${link}', '_blank', 'noreferrer');">Demo Instance</li>
+                    <li onclick="window.open('${link2}', '_blank', 'noreferrer');">Smartling Project</li>
+                    <li onclick="window.open('${link3}', '_blank', 'noreferrer');">Wiki</li>
+                `;
+            }
+            if (integration === 'akeneo') {
+                // Assuming link and link2 are defined somewhere or placeholders for actual URLs
+                const link = "https://smartling.demo.cloud.akeneo.com/";
+                const link2 = "https://dashboard.smartling.com/app/projects/584454080/";
+                const link3 = "https://smartling.atlassian.net/wiki/spaces/product/pages/3911357/Akeneo+Integration";
+                document.getElementById('name').innerHTML = `Akeneo`;
+                document.getElementById('links').innerHTML = `
+                    <li onclick="window.open('${link}', '_blank', 'noreferrer');">Demo Instance</li>
+                    <li onclick="window.open('${link2}', '_blank', 'noreferrer');">Smartling Project</li>
+                    <li onclick="window.open('${link3}', '_blank', 'noreferrer');">Wiki</li>
+                `;
+            }
+            if (integration === 'iterable') {
+                // Assuming link and link2 are defined somewhere or placeholders for actual URLs
+                const link = "https://app.iterable.com/login";
+                const link2 = "https://dashboard.smartling.com/app/projects/6e01f9065/";
+                const link3 = "https://smartling.atlassian.net/wiki/spaces/product/pages/3911368/Iterable+integration";
+                document.getElementById('name').innerHTML = `Iterable`;
+                document.getElementById('links').innerHTML = `
+                    <li onclick="window.open('${link}', '_blank', 'noreferrer');">Demo Instance</li>
+                    <li onclick="window.open('${link2}', '_blank', 'noreferrer');">Smartling Project</li>
+                    <li onclick="window.open('${link3}', '_blank', 'noreferrer');">Wiki</li>
+                `;
+            }
+            if (integration === 'aem65') {
+                // Assuming link and link2 are defined somewhere or placeholders for actual URLs
+                const link = "https://aem65.demo.connectors.stg.smartling.net/";
+                const link2 = "https://dashboard.smartling.com/app/projects/2dcd121b5/";
+                const link3 = "https://smartling.atlassian.net/wiki/spaces/product/pages/3909690/Adobe+CQ+CMS+Integration";
+                document.getElementById('name').innerHTML = `AEM 6.5`;
                 document.getElementById('links').innerHTML = `
                     <li onclick="window.open('${link}', '_blank', 'noreferrer');">Demo Instance</li>
                     <li onclick="window.open('${link2}', '_blank', 'noreferrer');">Smartling Project</li>
