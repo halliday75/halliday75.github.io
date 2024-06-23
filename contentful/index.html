@@ -144,7 +144,7 @@
     </nav>
     <hr>
     <div id="top">
-        <button onclick="hideNav()" id="hide">Hide/Show Menu</button>
+        <button onclick="hideNav()" id="hide">Hide Menu</button>
         <h1>Contentful Debugging Link Generator</h1>
     </div>
     <hr><br />
@@ -166,8 +166,10 @@
             var x = document.getElementById("menu");
             if (x.style.display === "none") {
                 x.style.display = "block";
+                document.getElementById('hide').innerHTML = `Hide Menu`;
             } else {
                 x.style.display = "none";
+                document.getElementById('hide').innerHTML = `Show Menu`;
             }
         }
         function generateLinks(projectId,spaceId,entryId) {
