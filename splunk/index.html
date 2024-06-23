@@ -118,7 +118,7 @@ button:hover, #splunk {
     </nav>
     <hr>
     <div id="top">
-        <button onclick="hideNav()" id="hide">Hide/Show Menu</button>
+        <button onclick="hideNav()" id="hide">Hide Menu</button>
          <h1>Splunk Search Query Finder</h1>
     </div>
     <hr>
@@ -145,8 +145,10 @@ button:hover, #splunk {
             var x = document.getElementById("menu");
             if (x.style.display === "none") {
                 x.style.display = "block";
+                document.getElementById('hide').innerHTML = `Hide Menu`;
             } else {
                 x.style.display = "none";
+                document.getElementById('hide').innerHTML = `Show Menu`;
             }
         }
     </script>
