@@ -140,6 +140,7 @@ button:hover, #connectors {
         <li onclick="generateLinks('akeneo');">Akeneo</li>
         <li onclick="generateLinks('contentstack');">Contentstack</li>
         <li onclick="generateLinks('drupal');">Drupal</li>
+        <li onclick="generateLinks('gdn');">GDN</li>
         <li onclick="generateLinks('hubspot');">Hubspot</li>
         <li onclick="generateLinks('iterable');">Iterable</li>
         <li onclick="generateLinks('wordpress');">Wordpress</li>
@@ -268,6 +269,18 @@ button:hover, #connectors {
                     <li onclick="window.open('${link}', '_blank', 'noreferrer');">Demo Instance</li>
                     <li onclick="window.open('${link2}', '_blank', 'noreferrer');">Smartling Project</li>
                     <li onclick="window.open('${link3}', '_blank', 'noreferrer');">Wiki</li>
+                `;
+            }
+            if (integration === 'gdn') {
+                // Assuming link and link2 are defined somewhere or placeholders for actual URLs
+                const link = "";
+                const link2 = "https://dashboard.smartling.com/app/projects/e06f707e0/";
+                const link3 = "";
+                document.getElementById('name').innerHTML = `AEM 6.5`;
+                document.getElementById('links').innerHTML = `
+                    <li onclick="alert('You're Already here!');">Demo Instance</li>
+                    <li onclick="window.open('${link2}', '_blank', 'noreferrer');">Smartling Project</li>
+                    <li onclick="alert('Ask Stevie!');">Wiki</li>
                 `;
             }
         }
