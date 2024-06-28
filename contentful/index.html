@@ -132,17 +132,26 @@
         #top h1 {
             margin-left:5em;
         }
-        #lang {
+        #langselect {
             float:left;
             margin-left: 0.5em;
-        }
+            color: white;
+            background-color: black;
+            padding: 0.8em;
+            border: 1px solid white;
+            border-radius: 5px; 
+        }   
     </style>
 </head>
 
 <body>
     <br />
-    <button onclick="window.open('https:\/\/fr-36d40aa27a1f85745.getsmartling.com/contentful/', '_self', 'noreferrer');" id="lang">FR</button>
-    <nav id="menu">
+    <select id="langselect" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+        <option value="https://halliday75.github.io/splunk/">EN</option>
+        <option value="https://ga-36d40aa2767f2b96b.getsmartling.com/splunk/">GA</option>
+        <option value="https://fr-36d40aa27a1f85745.getsmartling.com/splunk/">FR</option>
+        <option value="https://zh-cn-36d40aa27a2e4146f.getsmartling.com/splunk/">ZH</option>
+    </select>    <nav id="menu">
         <button id="splunk" onclick="window.open('https:\/\/halliday75.github.io/splunk/', '_self', 'noreferrer');">Splunk
             Search Query Finder</button> <button id="contentful">Contentful Debugging Link Generator
         </button>  <button id="connectors" onclick="window.open('https:\/\/halliday75.github.io/connectors/', '_self', 'noreferrer');">Smartling Connector Demo Instances</button>
