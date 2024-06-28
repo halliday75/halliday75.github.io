@@ -276,11 +276,11 @@ button:hover, #connectors {
                 const link = "";
                 const link2 = "https://dashboard.smartling.com/app/projects/e06f707e0/";
                 const link3 = "";
-                document.getElementById('name').innerHTML = `AEM 6.5`;
+                document.getElementById('name').innerHTML = `GDN`;
                 document.getElementById('links').innerHTML = `
-                    <li onclick="alert('You're Already here!');">Demo Instance</li>
+                    <li onclick="/*<sl:translate><first-string/>*/alert('You\'re Already here!');">Demo Instance</li>
                     <li onclick="window.open('${link2}', '_blank', 'noreferrer');">Smartling Project</li>
-                    <li onclick="alert('Ask Stevie!');">Wiki</li>
+                    <li onclick="/*<sl:translate><first-string/>*/alert('Ask Stevie!');">Wiki</li>
                 `;
             }
         }
