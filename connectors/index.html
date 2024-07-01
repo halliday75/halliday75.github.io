@@ -120,13 +120,14 @@ button:hover, #connectors {
 </head>
 <body>
     <br />
-    <select id="langselect3" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-        <option value="https://halliday75.github.io/connectors/">EN</option>
-        <option value="https://ga-36d40aa2767f2b96b.getsmartling.com/connectors/">GA</option>
-        <option value="https://fr-36d40aa27a1f85745.getsmartling.com/connectors/">FR</option>
-        <option value="https://zh-cn-36d40aa27a2e4146f.getsmartling.com/connectors/">ZH</option>
-    </select>     <nav id="menu">
-    <button id="splunk" onclick="window.open('https:\/\/halliday75.github.io/splunk/', '_self', 'noreferrer');">Splunk Search Query Finder</button> <button id="contentful" onclick="window.open('https:\/\/halliday75.github.io/contentful/', '_self', 'noreferrer');">Contentful Debugging Link Generator</button> <button id="connectors" onclick="window.open('https:\/\/halliday75.github.io/connectors/', '_self', 'noreferrer');">Smartling Connector Demo Instances</button>
+    <nav id="menu">
+        <select id="langselect3" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+            <option value="https://halliday75.github.io/connectors/">EN</option>
+            <option value="https://ga-36d40aa2767f2b96b.getsmartling.com/connectors/">GA</option>
+            <option value="https://fr-36d40aa27a1f85745.getsmartling.com/connectors/">FR</option>
+            <option value="https://zh-cn-36d40aa27a2e4146f.getsmartling.com/connectors/">ZH</option>
+        </select>
+        <button id="splunk" onclick="window.open('https:\/\/halliday75.github.io/splunk/', '_self', 'noreferrer');">Splunk Search</button> <button id="contentful" onclick="window.open('https:\/\/halliday75.github.io/contentful/', '_self', 'noreferrer');">Contentful Debugging</button> <button id="contentful" onclick="window.open('https:\/\/halliday75.github.io/github/', '_self', 'noreferrer');">GitHub Debugging</button><button id="connectors" onclick="window.open('https:\/\/halliday75.github.io/connectors/', '_self', 'noreferrer');">Demo Instances</button>
     </nav>
     <hr>
     <div id="top">
