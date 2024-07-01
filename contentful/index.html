@@ -146,12 +146,13 @@
 
 <body>
     <br />
-    <select id="langselect2" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-        <option value="https://halliday75.github.io/contentful/">EN</option>
-        <option value="https://ga-36d40aa2767f2b96b.getsmartling.com/contentful/">GA</option>
-        <option value="https://fr-36d40aa27a1f85745.getsmartling.com/contentful/">FR</option>
-        <option value="https://zh-cn-36d40aa27a2e4146f.getsmartling.com/contentful/">ZH</option>
-    </select>    <nav id="menu">
+    <nav id="menu">
+        <select id="langselect2" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+            <option value="https://halliday75.github.io/contentful/">EN</option>
+            <option value="https://ga-36d40aa2767f2b96b.getsmartling.com/contentful/">GA</option>
+            <option value="https://fr-36d40aa27a1f85745.getsmartling.com/contentful/">FR</option>
+            <option value="https://zh-cn-36d40aa27a2e4146f.getsmartling.com/contentful/">ZH</option>
+        </select>
         <button id="splunk" onclick="window.open('https:\/\/halliday75.github.io/splunk/', '_self', 'noreferrer');">Splunk
             Search Query Finder</button> <button id="contentful">Contentful Debugging Link Generator
         </button>  <button id="connectors" onclick="window.open('https:\/\/halliday75.github.io/connectors/', '_self', 'noreferrer');">Smartling Connector Demo Instances</button>
