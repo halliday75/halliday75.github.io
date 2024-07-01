@@ -132,7 +132,7 @@
         #top h1 {
             margin-left:5em;
         }
-        #langselect2 {
+        #langselect4 {
             float:left;
             margin-left: 0.5em;
             color: white;
@@ -146,12 +146,13 @@
 
 <body>
     <br />
-    <select id="langselect4" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-        <option value="https://halliday75.github.io/github/">EN</option>
-        <option value="https://ga-36d40aa2767f2b96b.getsmartling.com/github/">GA</option>
-        <option value="https://fr-36d40aa27a1f85745.getsmartling.com/github/">FR</option>
-        <option value="https://zh-cn-36d40aa27a2e4146f.getsmartling.com/github/">ZH</option>
-    </select>    <nav id="menu">
+        <nav id="menu">
+        <select id="langselect4" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+            <option value="https://halliday75.github.io/github/">EN</option>
+            <option value="https://ga-36d40aa2767f2b96b.getsmartling.com/github/">GA</option>
+            <option value="https://fr-36d40aa27a1f85745.getsmartling.com/github/">FR</option>
+            <option value="https://zh-cn-36d40aa27a2e4146f.getsmartling.com/github/">ZH</option>
+        </select>
         <button id="splunk" onclick="window.open('https:\/\/halliday75.github.io/splunk/', '_self', 'noreferrer');">Splunk
             Search Query Finder</button> <button id="contentful" onclick="window.open('https:\/\/halliday75.github.io/contentful/', '_self', 'noreferrer');">Contentful Debugging Link Generator
         </button> <button id="github">Github Debugging Link Generator
