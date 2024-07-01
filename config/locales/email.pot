@@ -12,3 +12,6 @@ msgstr ""
 
 msgid "String 2"
 msgstr ""
+
+msgid "String 3"
+msgstr ""
