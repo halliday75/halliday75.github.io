@@ -12,3 +12,6 @@ msgstr "Chaîne 1"
 
 msgid "String 2"
 msgstr "Chaîne 2"
+
+msgid "String 3"
+msgstr "Chaîne 3"
