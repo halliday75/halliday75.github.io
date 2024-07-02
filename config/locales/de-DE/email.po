@@ -12,3 +12,6 @@ msgstr "Zeichenfolge 1"
 
 msgid "String 2"
 msgstr "Zeichenfolge 2"
+
+msgid "String 3"
+msgstr "Zeichenfolge 3"
