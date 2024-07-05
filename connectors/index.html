@@ -295,5 +295,14 @@ button:hover, #connectors {
             }
         }
     </script>
+    <script>
+        const width = window.innerWidth;
+        if(width <= 800){
+            var x = document.getElementById("menu");
+            x.style.display = "none";
+            document.getElementById('hide').innerHTML = `Show Menu`;
+        }
+        console.log(width);
+    </script>
 </body>
 </html>
