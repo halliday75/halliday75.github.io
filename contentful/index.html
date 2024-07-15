@@ -175,10 +175,14 @@
     <hr><br />
     <form id="linkGeneratorForm">
         <div class="form_group">
+            <input type="text" id="assetURL" placeholder="Paste Full Asset URL here" name="assetURL" />
+        </div>
+        <h3>OR</h3><br />
+        <div class="form_group">
             <input type="text" id="projectId" placeholder="Project UID" name="projectId" /><br>
             <input type="text" id="spaceId" placeholder="Space ID" name="spaceId" /><br>
             <input type="text" id="entryId" placeholder="Entry ID" name="entryId" /><br>
-        </div>
+        </div> <br />
         <button type="submit">Generate Links</button>
     </form>
     <button onclick="navigator.clipboard.writeText(window.location.href);">Copy Link to Current Search</button><br />
@@ -226,17 +230,37 @@
         } else {
             document.getElementById('linkGeneratorForm').addEventListener('submit', function (event) {
                 event.preventDefault(); // Prevent form from submitting normally
+                
+                const assetURL = document.getElementById('assetURL').value;
+                if(assetURL){
+                const url = new URL(assetURL);
+                    const projectIdPath = url.pathname.split("/")[3];
+                    let ProjectID = projectIdPath;
 
-                var projectId = document.getElementById('projectId').value;
-                var spaceId = document.getElementById('spaceId').value;
-                var entryId = document.getElementById('entryId').value;
+                    // Parsing the query string to get assetId and spaceId
+                    const queryParams = new URLSearchParams(url.search);
+                    const assetId = queryParams.get('assetId');
+                    const SpaceId = queryParams.get('spaceId');
 
-                var queryParams = `projectId=${projectId}&spaceId=${spaceId}&entryId=${entryId}`;
+                    // Splitting assetId to separate entryId
+                    const assetParts = assetId.split("-");
+                    const EntryID = assetParts[1];
+
+                    // Storing the extracted IDs in variables
+                    var projectId = ProjectID;
+                    var spaceId = SpaceId;
+                    var entryId = EntryID;
+                } else {
+                    var projectId = document.getElementById('projectId').value;
+                    var spaceId = document.getElementById('spaceId').value;
+                    var entryId = document.getElementById('entryId').value;
+                }
+                var queryParams2 = `projectId=${projectId}&spaceId=${spaceId}&entryId=${entryId}`;
                 urlParams.set('projectId', projectId);
                 urlParams.set('spaceId', spaceId);
                 urlParams.set('entryId', entryId);
 
-                history.replaceState(null, null, "?" + queryParams);
+                history.replaceState(null, null, "?" + queryParams2);
 
                 if (projectId && spaceId && entryId) {
                     generateLinks(projectId,spaceId,entryId);
