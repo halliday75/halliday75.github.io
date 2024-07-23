@@ -243,8 +243,8 @@
                     const SpaceId = queryParams.get('spaceId');
 
                     // Splitting assetId to separate entryId
-                    const assetParts = assetId.split("-");
-                    const EntryID = assetParts[1];
+                    const assetParts = assetId.indexOf('-');
+                    const EntryID = assetId.substring(assetParts + 1);
 
                     // Storing the extracted IDs in variables
                     var projectId = ProjectID;
