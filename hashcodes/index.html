@@ -217,7 +217,8 @@
         }
         // Function to extract hash values from a URL or HTML source text
         function extractHashValues(text) {
-            const pattern = /STRING TRANSLATE BEGIN HASH:([a-fA-F0-9]+)/g;
+            //const pattern = /STRING TRANSLATE BEGIN HASH:([a-fA-F0-9]+)/g;
+            const pattern = /STRING TRANSLATE BEGIN.*? HASH:([a-fA-F0-9]+)/g;
             let match;
             let hashValues = [];
             while ((match = pattern.exec(text)) !== null) {
