@@ -108,6 +108,63 @@ footer p {
     margin: 0;
 }
 
+/* Form Styling */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Add spacing between form elements */
+    max-width: 600px;
+    margin: 2rem auto; /* Center the form */
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+form label {
+    font-weight: bold;
+    color: #333;
+}
+
+form input, 
+form textarea, 
+form button {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-family: 'Inter', Arial, sans-serif;
+}
+
+form input:focus, 
+form textarea:focus {
+    border-color: #4ade80; /* Bright green accent */
+    outline: none;
+    box-shadow: 0 0 5px rgba(74, 222, 128, 0.5);
+}
+
+form textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+form button {
+    background-color: #4ade80;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+form button:hover {
+    background-color: #3ca769;
+}
+
+form button:active {
+    background-color: #318259;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     nav ul {
@@ -117,6 +174,10 @@ footer p {
     }
 
     main {
+        padding: 1rem;
+    }
+
+    form {
         padding: 1rem;
     }
 }
