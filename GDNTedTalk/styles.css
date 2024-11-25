@@ -92,7 +92,7 @@ button:hover {
 }
 
 button:active {
-    background-color: #318259;
+    background-color: #3d0ea3;
 }
 
 /* Footer */
@@ -139,7 +139,7 @@ form button {
 
 form input:focus, 
 form textarea:focus {
-    border-color: #4ade80; /* Bright green accent */
+    border-color: #520af0;
     outline: none;
     box-shadow: 0 0 5px rgba(74, 222, 128, 0.5);
 }
@@ -150,7 +150,7 @@ form textarea {
 }
 
 form button {
-    background-color: #4ade80;
+    background-color: #520af0;
     color: white;
     font-weight: bold;
     cursor: pointer;
@@ -158,11 +158,11 @@ form button {
 }
 
 form button:hover {
-    background-color: #3ca769;
+    background-color: #3d0ea3;
 }
 
 form button:active {
-    background-color: #318259;
+    background-color: #3d0ea3;
 }
 
 /* Responsive Design */
