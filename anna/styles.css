@@ -208,7 +208,6 @@ main {
     nav ul li {
         width: 100%; /* Each list item should take full width */
         text-align: center; /* Center the text in each nav item */
-        margin-bottom: 10px; /* Add space between items */
         font-size: 1.2em; /* Reduce font size for mobile */
     }
 
