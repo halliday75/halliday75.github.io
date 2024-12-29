@@ -161,6 +161,10 @@ main {
     pointer-events:none;
 }
 
+body {
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+    
 .mobileLogo {
     width: 60%;
     float: right;
