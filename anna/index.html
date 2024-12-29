@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step By Step Speech & Language Therapy - Home</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Handlee&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <button class="hamburger" aria-label="Toggle menu">&#9776; Menu</button>
+            <img src="AnnaLogoText2.png" class="mobileLogo">
+            <ul class="nav-menu">
+                <img src="AnnaLogoText2.png" class="desktopLogo"/>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About Me</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="resources.html">Resources</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main content will go here -->
+    <main>
+        <section>
+            <div id="left">
+                <br/>
+                <h3>Step by Step Speech and Language Therapy: Empowering Communication, One Step at a Time</h3><br/><br/><br/>
+                <h1>Speech & Language Services in West Cork</h1><br/>
+                <h2>Anna Gietl - MSc Speech & Language Therapy</h2>
+            </div>
+            <img id="homepage" src="AnnaLogoSmall.png"/><br/><br/>
+        </section>
+        <hr>
+    </main>
+    <footer>Copyright © 2025 Anna Gietl</footer>
+    <script src="script.js"></script>
+    <!--<script>
+        // Get the hamburger button and the nav menu
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+    
+        // Add event listener to the hamburger button
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active'); // Toggle the 'active' class to show/hide the menu
+        });
+    </script>-->
+    <!--<script>
+        document.addEventListener('DOMContentLoaded', function () {
+    const hamburger = document.querySelector('.hamburger');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    // Track if the menu is open or closed
+    let isOpen = false;
+
+    hamburger.addEventListener('click', function () {
+        if (!isOpen) {
+            // When opening the menu, we calculate its height and set max-height to this value
+            const menuHeight = navMenu.scrollHeight; // Get the actual height of the menu
+            navMenu.style.maxHeight = `${menuHeight}px`; // Set max-height to the actual height
+            navMenu.style.opacity = 1; // Ensure the opacity transition works
+            navMenu.classList.add('active');
+            isOpen = true;
+        } else {
+            // When closing, we set max-height to 0, which will trigger the closing transition
+            navMenu.style.maxHeight = '0';
+            navMenu.style.opacity = 0; // Ensure the opacity transition works
+            navMenu.classList.remove('active');
+            isOpen = false;
+        }
+    });
+});
+    </script>-->
+</body>
+</html>

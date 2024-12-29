@@ -1,0 +1,293 @@
+/* Reset default margins and paddings */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+/* Set up the container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Style the header */
+header {
+    color: white;
+    padding: 1rem;
+    border-bottom: 0.1em dashed darksalmon;
+    background-color: antiquewhite;
+}
+
+nav ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-height:500px;
+    opacity:1;
+    visibility: visible;
+}
+
+nav ul li {
+    margin-right: 20px;
+    list-style-type: none;
+    font-size:1.4em;
+    font-weight:bold;
+}
+
+nav ul a {
+    color: darkslategray;
+    text-decoration: none;
+    transition: color 0.3s ease; /* Smooth transition for transform property */
+}
+
+nav ul a:hover {
+    color:darksalmon;
+  }
+
+ul img {
+    width: 30%;
+}
+
+/* Style the main content area */
+main {
+    padding: 2rem 0;
+    margin:2.5em;
+    font-family: system-ui;
+    color: darkslategray;
+}
+
+body {
+    background-size: auto; /* Adjust image size */
+    background-blend-mode: overlay; /* Blend image with a color */
+    background-color: floralwhite; /* Add transparency with black background (50% opacity) */
+}
+
+#homepage {
+    width:30%;
+    float:right;
+    padding-bottom:2em;
+}
+
+h3{
+    font-size: 1.8em;
+}
+
+h1{
+    font-size: 2em;
+}
+
+hr {
+    clear:both;
+    border: 0.1em dashed darkslategray;
+}
+
+#left {
+    width:70%;
+    float:left;
+}
+
+#left p {
+    width:90%;
+    margin-bottom:2em;
+}
+
+/* Add some basic styling for buttons */
+button {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+nav {
+    font-family: "Handlee", system-ui, serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  nav button {
+    font-family: "Handlee", system-ui, serif;
+    font-weight: 800;
+    font-style: normal;
+  }
+
+  html, body {
+    height: 100%; /* Ensure full height of the viewport */
+    margin: 0; /* Remove default margin */
+    display: flex; /* Make the body a flex container */
+    flex-direction: column; /* Stack children (content and footer) vertically */
+  }
+  
+main {
+    flex: 1; /* This makes the content section take up all available space */
+  }
+
+  footer {
+    color: darkslategray; /* Text color */
+    width: 100%; /* Ensure it stretches across the width */
+    font-family:system-ui;
+    text-align: left;
+  }
+
+/* Hamburger button for mobile */
+.hamburger {
+    display: none; /* Hide by default */
+    font-size: 2em;
+    background: none;
+    border: none;
+    color: darkslategray;
+    cursor: pointer;
+    padding: 0;
+    float:left;
+}
+
+.mobileLogo {
+    display:none;
+}
+
+.desktopLogo {
+
+}
+
+  /* Mobile-specific styles */
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 0 10px; /* Adjust padding on smaller screens */
+    }
+
+.nav-menu{
+    pointer-events:none;
+}
+
+.mobileLogo {
+    width: 60%;
+    float: right;
+    display: inline;
+}
+
+.desktopLogo {
+    display:none;
+}
+
+    header {
+        padding: 1rem 0.5rem; /* Adjust header padding */
+        padding-bottom:0;
+    }
+
+    nav ul {
+        display: flex; /* Hidden by default */
+        flex-direction: column;
+        max-height: 0; /* No height by default */
+        width: 100%;
+        padding: 0;
+        text-align: center;
+        margin-top: 1rem;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s ease, transform 0.3s ease, max-height 0.3s ease; /* Smooth transition */
+    }
+
+   /* nav ul {
+        display: flex; /* Always use flexbox layout for navigation */
+        /*flex-direction: column; /* Stack nav items vertically */
+        /*width: 100%; /* Full width */
+        /*padding: 0;
+        text-align: center;
+        margin-top: 1rem;
+        opacity: 0; /* Start hidden */
+        /*transform: translateY(-20px); /* Start offscreen */
+        /*visibility: hidden; /* Keep it invisible initially */
+    /*}*/
+
+    .hamburger {
+        display: block; /* Show the hamburger button on small screens */
+    }
+
+    nav ul li {
+        width: 100%; /* Each list item should take full width */
+        text-align: center; /* Center the text in each nav item */
+        margin-bottom: 10px; /* Add space between items */
+        font-size: 1.2em; /* Reduce font size for mobile */
+    }
+
+    nav ul a {
+        display: block; /* Make the link a block-level element so it takes up full width */
+        padding: 1rem; /* Add some padding for easier clickability */
+        color: darkslategray;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    nav ul a:hover {
+        color: darksalmon; /* Change color on hover */
+    }
+
+    ul img {
+        width: 50%; /* Make images smaller on mobile */
+        margin: 0 auto; /* Center images */
+    }
+
+    main {
+        margin: 1.5em 0; /* Reduce margin around main content */
+        padding: 1rem; /* Adjust padding */
+    }
+
+    h1 {
+        font-size: 1.6em; /* Adjust heading size */
+    }
+
+    h3 {
+        font-size: 1.4em; /* Adjust subheading size */
+    }
+
+    #homepage {
+        width: 100%; /* Make homepage section take full width */
+        float: none; /* Remove float */
+        padding-bottom: 1.5em; /* Adjust padding */
+    }
+
+    #left {
+        width: 100%; /* Make left section take full width */
+        float: none; /* Remove float */
+        margin-bottom: 1.5em; /* Add some space below */
+    }
+
+    #left p {
+        width: 100%; /* Make paragraphs full width */
+    }
+
+    footer {
+        font-size: 0.9em; /* Reduce font size for footer */
+    }
+}
+
+/* Extra mobile-specific adjustments (for very small screens) */
+@media screen and (max-width: 480px) {
+    h1 {
+        font-size: 1.4em; /* Further reduce heading size */
+    }
+
+    h3 {
+        font-size: 1.2em; /* Further reduce subheading size */
+    }
+
+    nav ul {
+        padding-left: 0; /* Remove any unnecessary padding */
+    }
+
+    button {
+        padding: 8px 16px; /* Reduce button size */
+    }
+}
+
+/* Toggle menu visibility */
+.nav-menu.active {
+    opacity: 1; /* Make the menu fully visible */
+    transform: translateY(0); /* Slide into view */
+    visibility: visible; /* Make it visible */
+    height:auto;
+    max-height: 500px; /* Large enough value to accommodate the menu */
+    transition: opacity 0.3s ease, transform 0.3s ease, max-height 0.3s ease; /* No delay for visibility */
+}
