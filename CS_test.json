@@ -3,7 +3,7 @@
     "force_block_for_tags":"br",
     "translate_paths" : [ 
       {
-        "path" : "*"
+        "path" : "*",
         "exclude_path" : "/language"
       }
     ]
