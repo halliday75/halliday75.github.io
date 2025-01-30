@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connector Version Checker</title>
+    <link rel="icon" type="image/x-icon" href="../mind.ico">
+    <style>
+        /* Reset some default styles */
+        body, ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        #link {
+            display: inline;
+        }
+
+        /* Set the background color and text color */
+        body {
+            background-color: #000;
+            /* Black background */
+            color: #fff;
+            /* White text */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Modern font */
+            text-align: center;
+        }
+
+        /* Style the search input */
+        #searchInput {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Style the list container */
+        #itemList {
+            display: grid;
+            /* Use CSS Grid for layout */
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            /* Responsive grid */
+            gap: 20px;
+            /* Space between grid items */
+            padding: 20px;
+        }
+
+        /* Hide bullet points */
+        ul {
+            list-style-type: none;
+        }
+
+        a {
+            color: white;
+        }
+
+        /* Style the list items */
+        #itemList li {
+            background-color: rgba(255, 255, 255, 0.1);
+            /* Light background for items */
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            /* Smooth transition for hover effect */
+        }
+
+        /* Hover effect for list items */
+        #itemList li:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            /* Darker background on hover */
+            cursor: pointer;
+        }
+
+        /* Style the search input */
+        input, button, a {
+            padding: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            background-color: #000;
+            /* Black background */
+            color: #fff;
+            /* White text */
+            border: 1px solid #fff;
+            /* White border */
+            border-radius: 5px;
+            /* Rounded corners */
+            outline: none;
+            /* Remove default focus outline */
+            display: inline-block;
+        }
+
+        .form_group {
+            display: flex;
+        }
+
+        @media only screen and (max-width: 800px) {
+            .form_group {
+                display: block;
+            }
+        }
+
+        form input {
+            flex: 1;
+            margin-left: 0.5em;
+            margin-right: 0.5em;
+        }
+
+        button:hover,
+        #versions {
+            color: black;
+            background-color: white;
+        }
+
+        /* Remove the outline when the search bar is focused */
+        input:focus {
+            outline: none;
+        }
+        #top {
+            display:inline
+        }
+        #top button{
+            float:right;
+            margin-right:1em;
+        }
+        #top h1 {
+            margin-left:5em;
+        }
+        #langselect2 {
+            float:left;
+            margin-left: 0.5em;
+            color: white;
+            background-color: black;
+            padding: 0.8em;
+            border: 1px solid white;
+            border-radius: 5px; 
+        }   
+        @media only screen and (max-width: 800px) {
+            #langselect2, nav button, #top button, #top h1 {
+                display:block;
+                margin:auto;
+                margin-bottom: 0.5em;
+                float:none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <br />
+    <nav id="menu">
+        <select id="langselect2" onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
+            <option value="https://halliday75.github.io/contentful/">EN</option>
+            <option value="https://ga-36d40aa2767f2b96b.getsmartling.com/contentful/">GA</option>
+            <option value="https://fr-36d40aa27a1f85745.getsmartling.com/contentful/">FR</option>
+            <option value="https://zh-cn-36d40aa27a2e4146f.getsmartling.com/contentful/">ZH</option>
+        </select>
+        <button id="splunk" onclick="window.open('https:\/\/halliday75.github.io/splunk/', '_self', 'noreferrer');">Splunk Search</button> 
+        <button id="contentful"  onclick="window.open('https:\/\/halliday75.github.io/contentful/', '_self', 'noreferrer');">Contentful Debugging</button> 
+        <button id="github" onclick="window.open('https:\/\/halliday75.github.io/github/', '_self', 'noreferrer');">GitHub Debugging</button> 
+        <button id="connectors" onclick="window.open('https:\/\/halliday75.github.io/connectors/', '_self', 'noreferrer');">Demo Instances</button> 
+        <button id="hashcodes" onclick="window.open('https:\/\/halliday75.github.io/hashcodes/', '_self', 'noreferrer');">GDN Hashcodes</button>
+        <button id="versions" onclick="window.open('https:\/\/halliday75.github.io/versions/', '_self', 'noreferrer');">Connector Version Checker</button>
+    </nav>
+    <hr>
+    <div id="top">
+        <button onclick="hideNav()" id="hide">Hide Menu</button>
+        <h1>Connector Version Checker</h1>
+    </div>
+    <hr><br />
+    <form id="linkGeneratorForm">
+        <div class="form_group">
+            <input type="text" id="projectId" placeholder="Enter Project UID" name="projectId" required />
+        </div> <br />
+        <button type="submit">Check Connector Version</button>
+    </form>
+    <button onclick="window.open('https:\/\/halliday75.github.io/versions/', '_self', 'noreferrer');">Clear Search</button>
+    <hr><br />
+    <ul id="itemList"></ul>
+    
+    <script>
+        function hideNav() {
+            var x = document.getElementById("menu");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+                document.getElementById('hide').innerHTML = `Hide Menu`;
+            } else {
+                x.style.display = "none";
+                document.getElementById('hide').innerHTML = `Show Menu`;
+            }
+        }
+
+        function generateLinks(projectId) {
+            window.open(`https://slc.smartling.net/en-US/app/search/search?s=%2FservicesNS%2Fnobody%2Fsearch%2Fsaved%2Fsearches%2FConnector%2520versions&display.page.search.mode=smart&dispatch.sample_ratio=1&q=search%20env%3D%22apigateway%22%0AAND%20service_id%3DTMS-PUBLIC-API%0AAND%20user_agent%3D%22*connector*%22%20%20AND%20${projectId}%0A%7C%20dedup%20projectId%2C%20user_agent%0A%7C%20table%20projectId%2C%20user_agent%0A%7C%20sort%20projectId%2C%20user_agent&earliest=-4h%40m&latest=now&sid=1738226097.39439235`, '_blank', 'noreferrer');
+        }
+
+        document.getElementById('linkGeneratorForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent form from submitting normally
+            const ProjectUID = document.getElementById('projectId').value;
+                    if (ProjectUID) {
+                        generateLinks(ProjectUID);
+                    } else {
+                        alert("Error");
+                    }
+        });
+    </script>
+    <script>
+        const width = window.innerWidth;
+        if (width <= 800) {
+            var x = document.getElementById("menu");
+            x.style.display = "none";
+            document.getElementById('hide').innerHTML = `Show Menu`;
+        }
+        console.log(width);
+    </script>
+</body>
+</html>
