@@ -1,0 +1,127 @@
+<html>
+  <head>
+    
+  </head>
+  <body>
+    <script>
+async function loadTables(url, wrapper) {
+    try {
+        const response = await fetch(url);
+        const textData = await response.text();
+
+        const rows = textData.split("\n").map(row => row.match(/"[^"\n]*"|[^,]+/g)?.map(cell => cell.replace(/"/g, "")));
+        if (!rows || rows.length < 2) {
+            console.warn("Keine gültigen Daten geladen.");
+            return;
+        }
+
+        const planNames = rows[0].slice(3).map(name => name.trim());
+        let userCurrency = window.wp.geo.currency || 'USD';
+
+        let products = {};
+        let priceData = {};
+
+        rows.slice(1).forEach(row => {
+            if (!row || row.length < 3) return;
+
+            const [product, parentFeature, children, ...values] = row;
+
+            if (parentFeature === "Price") {
+                if (!priceData[product]) {
+                    priceData[product] = {};
+                }
+                priceData[product][children] = values.map(price => price.trim()).filter(price => price !== "");
+            } else {
+                if (!products[product]) {
+                    products[product] = [];
+                }
+
+                products[product].push({
+                    type: parentFeature === children ? "parent" : "child",
+                    children,
+                    values
+                });
+            }
+        });
+
+        Object.keys(products).forEach((product, index) => {
+            let availableCurrencies = Object.keys(priceData[product] || {});
+            let selectedCurrency = availableCurrencies.includes(userCurrency) ? userCurrency : 'USD';
+
+            if (!priceData[product] || !priceData[product][selectedCurrency] || priceData[product][selectedCurrency].length === 0) {
+                console.warn(`Keine Preise für ${product} gefunden. Überspringe.`);
+                return;
+            }
+
+            const [shortName, longName] = product.split(" / ").map(name => name.trim());
+
+            const container = document.createElement("div");
+            container.classList.add("pricing-grid-container");
+            container.id = `feature-grid-${product}-${index}`;
+
+            const header = document.createElement("div");
+            header.classList.add("pricing-grid-header");
+            
+            let planHtml = ""; // Initialize an empty string to hold all the plan HTML.
+            
+            priceData[product][selectedCurrency].forEach((price, idx) => {
+                const planName = planNames[idx] || '';
+                planHtml += `
+                    <div class="plan">
+                        <div class="plan-name">${planName}</div>
+                        <div class="plan-price">from ${price} <span class="billed-annually">per property / month, billed annually</span></div>
+                        <a href="/de/contact" class="btn-start">Get started</a>
+                    </div>
+                `;
+            });
+            
+            header.innerHTML = `
+                <div class="product-name">
+                    <div class="product-name-short">${shortName || product}</div>
+                    <div class="product-name-long">${longName || product}</div>
+                </div>
+                ${planHtml}
+            `;
+            
+            container.appendChild(header);
+
+            const body = document.createElement("div");
+            body.classList.add("pricing-grid-body");
+
+            products[product].forEach(item => {
+                const row = document.createElement("div");
+                row.classList.add("grid-row", item.type);
+
+                const feature = document.createElement("div");
+                feature.classList.add("grid-feature");
+                feature.textContent = item.children;
+                row.appendChild(feature);
+
+                item.values.slice(0, priceData[product][selectedCurrency].length).forEach(value => {
+                    const cell = document.createElement("div");
+                    cell.classList.add("grid-cell");
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+                body.appendChild(row);
+            });
+
+            container.appendChild(body);
+            document.getElementById(wrapper).appendChild(container);
+        });
+
+    } catch (error) {
+        console.error("Fehler beim Laden der Grids:", error);
+    }
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadTables("https://docs.google.com/spreadsheets/d/1JZYGfU3XxcaUrZ25QVNH12MSvOZyJjK-cXWtClICFpI/export?format=csv&gid=1616968871", "pricingTableCXP");
+    loadTables("https://docs.google.com/spreadsheets/d/1JZYGfU3XxcaUrZ25QVNH12MSvOZyJjK-cXWtClICFpI/export?format=csv&gid=1059578977", "pricingTableCDP");
+    loadTables("https://docs.google.com/spreadsheets/d/1JZYGfU3XxcaUrZ25QVNH12MSvOZyJjK-cXWtClICFpI/export?format=csv&gid=490460045", "pricingTableAIAgents");
+});
+</script>
+  </body>
+</html>
