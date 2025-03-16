@@ -8,6 +8,12 @@ p {
     margin: 1em;
 }
 
+.temporary {
+    font-size: 2em;
+    background-color: darkslategray;
+    color: white;
+    border-radius: inherit;
+}
 
 html, body {
     font-family: 'Inter', Arial, sans-serif; /* Modern font */
