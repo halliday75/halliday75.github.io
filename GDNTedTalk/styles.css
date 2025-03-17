@@ -8,6 +8,11 @@ p {
     margin: 1em;
 }
 
+#homepage_hero img {
+    width: 70%;
+    padding: 1em;
+}
+
 .temporary {
     font-size: 2em;
     background-color: darkslategray;
