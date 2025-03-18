@@ -89,3 +89,12 @@ function loadTeam() {
         teamList.appendChild(div);
     });
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const div = document.getElementById("locContent");
+    if (div) {
+        const p = document.createElement("p");
+        p.textContent = /*<sl:translate><first-string/>*/"Le meilleur logiciel au monde";
+        div.appendChild(p);
+    }
+});
