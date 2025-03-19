@@ -92,7 +92,7 @@ function loadTeam() {
 
 document.addEventListener("DOMContentLoaded", function () {
     const div = document.getElementById("locContent");
-    if (div) {
+    if (div && window.location.href.endsWith('fr-FR/') {
         const p = document.createElement("p");
         p.textContent = /*<sl:translate><first-string/>*/"Le meilleur logiciel au monde";
         div.appendChild(p);
