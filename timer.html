@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch & Timer</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #display {
+            font-size: 10vw;
+            margin-bottom: 20px;
+        }
+        button {
+            font-size: 2vw;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        input {
+            font-size: 2vw;
+            text-align: center;
+            width: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div id="display">00:00:00</div>
+    <div>
+        <button onclick="startStopwatch()">Start</button>
+        <button onclick="stopStopwatch()">Stop</button>
+        <button onclick="resetStopwatch()">Reset</button>
+    </div>
+    <br>
+    <input type="number" id="minutesInput" placeholder="Min" min="0">
+    <input type="number" id="secondsInput" placeholder="Sec" min="0" max="59">
+    <button onclick="startTimer()">Start Timer</button>
+    <script>
+        let stopwatchInterval, timerInterval;
+        let time = 0;
+        let running = false;
+
+        function formatTime(seconds) {
+            let hrs = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            let mins = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+            let secs = (seconds % 60).toString().padStart(2, '0');
+            return `${hrs}:${mins}:${secs}`;
+        }
+
+        function updateDisplay() {
+            document.getElementById('display').innerText = formatTime(time);
+        }
+
+        function startStopwatch() {
+            if (!running) {
+                running = true;
+                stopwatchInterval = setInterval(() => {
+                    time++;
+                    updateDisplay();
+                }, 1000);
+            }
+        }
+
+        function stopStopwatch() {
+            running = false;
+            clearInterval(stopwatchInterval);
+        }
+
+        function resetStopwatch() {
+            stopStopwatch();
+            time = 0;
+            updateDisplay();
+        }
+
+        function startTimer() {
+            let minutes = parseInt(document.getElementById('minutesInput').value, 10) || 0;
+            let seconds = parseInt(document.getElementById('secondsInput').value, 10) || 0;
+            time = minutes * 60 + seconds;
+            if (time <= 0) return;
+            updateDisplay();
+            stopStopwatch();
+            timerInterval = setInterval(() => {
+                if (time > 0) {
+                    time--;
+                    updateDisplay();
+                } else {
+                    clearInterval(timerInterval);
+                    alert("Time's up!");
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
