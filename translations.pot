@@ -1,0 +1,6 @@
+msgctxt "Home Page Menu Navigation"
+msgid "Home"
+msgstr ""
+msgctxt "Home Address Label"
+msgid "Home"
+msgstr ""
