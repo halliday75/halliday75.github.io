@@ -1,63 +1,64 @@
 {
-    "data": {
-        "items": [
-            {
-                "id": 74976,
-                "website": {
-                    "label": "4Set",
-                    "url": "https://www.4set.es/",
-                    "target": "_self"
-                },
-                "contact": "Katherine Brumer",
-                "content": "Technological solutions for people management: human resources, talent, payroll and workforce.",
-                "email": "katherine.brumer@talkdesk.com",
-                "marketplace": "",
-                "ctas": [],
-                "types": [
-                    {
-                        "icon": "none",
-                        "id": 176,
-                        "name": "Reseller - BPO",
-                        "slug": "reseller-bpo"
-                    }
-                ],
-                "type_custom": null,
-                "regions": [
-                    {
-                        "id": 116,
-                        "name": "EMEA",
-                        "slug": "emea"
-                    }
-                ]
-            },
-            {
-                "id": 59635,
-                "website": {
-                    "label": "Abelian",
-                    "url": "https://www.abelian.us/",
-                    "target": "_self"
-                },
-                "contact": "Kris Korich",
-                "content": "Finding a team you can count on with your evolving business needs can be difficult. At Abelian, we empower growing organizations through expert implementations of a wide array of solutions on the Salesforce platform; specializing in sales, customer service, IT, commerce and field-service operations to advance business processes.",
-                "email": "kris.korich@talkdesk.com",
-                "marketplace": "",
-                "ctas": [],
-                "types": [
-                    {
-                        "icon": "none",
-                        "id": 175,
-                        "name": "Strategic Alliances - Systems Integrator",
-                        "slug": "strategic-alliances-systems-integrator"
-                    }
-                ],
-                "type_custom": null,
-                "regions": [
-                    {
-                        "id": 115,
-                        "name": "North America",
-                        "slug": "north-america"
-                    }
-                ]
-            }
-        }
-    }
+  "data": {
+    "items": [
+      {
+        "id": 74976,
+        "website": {
+          "label": "4Set",
+          "url": "https://www.4set.es/",
+          "target": "_self"
+        },
+        "contact": "Katherine Brumer",
+        "content": "Technological solutions for people management: human resources, talent, payroll and workforce.",
+        "email": "katherine.brumer@talkdesk.com",
+        "marketplace": "",
+        "ctas": [],
+        "types": [
+          {
+            "icon": "none",
+            "id": 176,
+            "name": "Reseller - BPO",
+            "slug": "reseller-bpo"
+          }
+        ],
+        "type_custom": null,
+        "regions": [
+          {
+            "id": 116,
+            "name": "EMEA",
+            "slug": "emea"
+          }
+        ]
+      },
+      {
+        "id": 59635,
+        "website": {
+          "label": "Abelian",
+          "url": "https://www.abelian.us/",
+          "target": "_self"
+        },
+        "contact": "Kris Korich",
+        "content": "Finding a team you can count on with your evolving business needs can be difficult. At Abelian, we empower growing organizations through expert implementations of a wide array of solutions on the Salesforce platform; specializing in sales, customer service, IT, commerce and field-service operations to advance business processes.",
+        "email": "kris.korich@talkdesk.com",
+        "marketplace": "",
+        "ctas": [],
+        "types": [
+          {
+            "icon": "none",
+            "id": 175,
+            "name": "Strategic Alliances - Systems Integrator",
+            "slug": "strategic-alliances-systems-integrator"
+          }
+        ],
+        "type_custom": null,
+        "regions": [
+          {
+            "id": 115,
+            "name": "North America",
+            "slug": "north-america"
+          }
+        ]
+      }
+    ]
+  }
+}
