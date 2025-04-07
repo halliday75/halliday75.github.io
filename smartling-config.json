@@ -12,6 +12,20 @@
             "pathRegex"                 : "src\\/test\\/en\\.json",
             "translationPathExpression" : "src/test/${locale}.${originalFile.extension}",
             "translationCommitMessage"  : "Task TRN-18 translate ${originalFile.name} to ${locale}\n${translatedFile.fullName}"
-        }
+        },
+         {
+            "type"      				: "xml",
+			"authorizeContent"          : false,
+            "pathRegex" 				: "src\\/test/(?<path>.*)\\.rdlc",
+			"translationPathExpression" : "src/test/${locale}/${originalFile.name}",
+			"translationCommitMessage"  : "Smartling Translation $originalFile.fullName to $locale",
+			"smartlingDirectives"       : [
+				 "smartling.translate_paths = Report/Code",
+				 "smartling.variants_enabled = TRUE",
+				 "smartling.string_format_paths = txt:Report/Code",
+				 "smartling.placeholder_format_custom = [a-zA-Z _=]*(?=(?:[^\\\"]|\\\"[^\\\"]*\\\")*\\$)",
+				 "smartling.entity_escaping = false"
+            ]
+         }
      ]
 }
