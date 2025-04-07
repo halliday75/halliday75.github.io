@@ -1,0 +1,17 @@
+{
+    "locales": [
+         {
+             "smartling" : "fr-FR",
+             "application" : "fr-FR"
+         }
+     ],
+     "resourceSets": [
+         {
+            "type"                      : "JSON",
+            "authorizeContent"          : false,
+            "pathRegex"                 : "src\\/test\\/en\\.json",
+            "translationPathExpression" : "src/test/${locale}.${originalFile.extension}",
+            "translationCommitMessage"  : "Task TRN-18 translate ${originalFile.name} to ${locale}\n${translatedFile.fullName}"
+        }
+     ]
+}
