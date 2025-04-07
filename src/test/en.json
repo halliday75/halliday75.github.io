@@ -1,3 +1,4 @@
 {
-  "string1": "Hello World!"
+  "string1": "Hello World!",
+  "newContent": "Goodbye World!"
 }
