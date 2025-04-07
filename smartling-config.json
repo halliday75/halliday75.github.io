@@ -20,10 +20,10 @@
 			"translationPathExpression" : "src/test/${locale}/${originalFile.name}",
 			"translationCommitMessage"  : "Smartling Translation $originalFile.fullName to $locale",
 			"smartlingDirectives"       : [
+				"smartling.placeholder_format_custom = [a-zA-Z _=]*= \"(?=[a-zA-Z _=:]*)|\"$",
 				 "smartling.translate_paths = Report/Code",
 				 "smartling.variants_enabled = TRUE",
 				 "smartling.string_format_paths = txt:Report/Code",
-				 "smartling.placeholder_format_custom = [a-zA-Z _=]*= \"(?=[a-zA-Z _=:]*)|\"$",
 				 "smartling.entity_escaping = false"
             ]
          }
