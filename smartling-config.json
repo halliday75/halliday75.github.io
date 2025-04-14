@@ -12,6 +12,9 @@
             "pathRegex"                 : "src\\/test\\/en\\.json",
             "translationPathExpression" : "src/test/${locale}.${originalFile.extension}",
             "translationCommitMessage"  : "Task TRN-18 translate ${originalFile.name} to ${locale}\n${translatedFile.fullName}"
+	    "smartlingDirectives"       : [
+				 "smartling.placeholder_format_custom = [this]"
+            ]
         },
          {
             "type"      				: "xml",
