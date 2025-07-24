@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            display: grid;
+            gap: 1rem;
+            width: 100%;
+            padding: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            box-sizing: border-box;
+            flex: 1;
+        }
+
+        .add-btn {
+            background: #4cafef;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            font-size: 2.2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0.85;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .add-btn:hover {
+            opacity: 1;
+            background: #6fc0ff;
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .stopwatch {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.3s ease, border 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stopwatch:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Running = Green Glow */
+        .stopwatch.running {
+            border: 2px solid #00ff88;
+            box-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88 inset;
+        }
+
+        /* Paused/Stopped = Red Border */
+        .stopwatch.paused {
+            border: 2px solid #ff4b5c;
+        }
+
+        .stopwatch.dragging {
+            opacity: 0.5;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            color: #bbb;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .close-btn:hover {
+            color: #ff4b5c;
+        }
+
+        .label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            color: #ddd;
+        }
+
+        .time {
+            font-size: 2.5rem;
+            font-weight: 600;
+            font-family: monospace;
+            margin-bottom: 0.8rem;
+            color: #fff;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .buttons button {
+            padding: 0.4rem 0.7rem;
+            border: none;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            min-width: 70px;
+        }
+
+        .start {
+            background: #4caf50;
+            color: white;
+        }
+
+        .start:hover {
+            background: #5cd75e;
+        }
+
+        .reset {
+            background: #ff9800;
+            color: white;
+        }
+
+        .reset:hover {
+            background: #ffb347;
+        }
+
+        .lap {
+            background: #2196f3;
+            color: white;
+        }
+
+        .lap:hover {
+            background: #64b5f6;
+        }
+
+        .copy {
+            background: #9c27b0;
+            color: white;
+        }
+
+        .copy:hover {
+            background: #ba68c8;
+        }
+
+        .laps {
+            max-height: 110px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            text-align: left;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .laps div {
+            margin-bottom: 0.3rem;
+            padding: 0.2rem 0.4rem;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 0.3rem;
+        }
+
+        /* Scrollbar */
+        .laps::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .laps::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .modal {
+            background: #2b3a44;
+            padding: 1rem;
+            border-radius: 0.6rem;
+            text-align: center;
+            min-width: 260px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal h3 {
+            margin-top: 0;
+            color: #fff;
+        }
+
+        .modal input {
+            width: 90%;
+            padding: 0.5rem;
+            margin-bottom: 0.7rem;
+            border: none;
+            border-radius: 0.3rem;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .modal button {
+            padding: 0.4rem 0.8rem;
+            margin: 0 0.2rem;
+            border: none;
+            border-radius: 0.3rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .confirm {
+            background: #4caf50;
+            color: white;
+        }
+
+        .cancel {
+            background: #777;
+            color: white;
+        }
+
+        .confirm:hover {
+            background: #5cd75e;
+        }
+
+        .cancel:hover {
+            background: #999;
+        }
+
+        .copied-msg {
+            font-size: 0.8rem;
+            color: #9cff9c;
+            margin-top: 0.3rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .copied-msg.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <button class="add-btn" id="mainAdd">+</button>
+        <div class="container" id="container"></div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modalOverlay" style="display:none;">
+        <div class="modal">
+            <h3>New Stopwatch</h3>
+            <input type="text" id="labelInput" placeholder="Enter label...">
+            <div>
+                <button class="confirm" id="confirmAdd">Add</button>
+                <button class="cancel" id="cancelAdd">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const container = document.getElementById('container');
+        const mainAdd = document.getElementById('mainAdd');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const labelInput = document.getElementById('labelInput');
+        const confirmAdd = document.getElementById('confirmAdd');
+        const cancelAdd = document.getElementById('cancelAdd');
+
+        let stopwatches = [];
+        let dragSrcEl = null;
+
+        function formatTime(ms) {
+            const min = String(Math.floor(ms / 60000)).padStart(2, '0');
+            const sec = String(Math.floor((ms % 60000) / 1000)).padStart(2, '0');
+            const cs = String(Math.floor((ms % 1000) / 10)).padStart(2, '0');
+            return `${min}:${sec}:${cs}`;
+        }
+
+        function roundedCopyFormat(ms) {
+            let totalMinutes = Math.ceil(ms / 60000);
+            if (totalMinutes % 5 !== 0) {
+                totalMinutes = Math.ceil(totalMinutes / 5) * 5;
+            }
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            return `${hours}:${String(minutes).padStart(2, '0')}`;
+        }
+
+        function createStopwatch(label) {
+            const sw = { id: Date.now(), label, time: 0, running: false, laps: [], interval: null };
+            stopwatches.push(sw);
+            render();
+        }
+
+        function startStopwatch(sw) {
+            if (!sw.running) {
+                sw.running = true;
+                sw.interval = setInterval(() => {
+                    sw.time += 10;
+                    const timeEl = document.querySelector(`#time-${sw.id}`);
+                    if (timeEl) timeEl.textContent = formatTime(sw.time);
+                }, 10);
+            }
+        }
+
+        function pauseStopwatch(sw) {
+            sw.running = false;
+            clearInterval(sw.interval);
+        }
+
+        function resetStopwatch(sw) {
+            pauseStopwatch(sw);
+            sw.time = 0;
+            sw.laps = [];
+            render();
+        }
+
+        function addLap(sw) {
+            sw.laps.push(formatTime(sw.time));
+            render();
+        }
+
+        function copyTime(sw) {
+            const text = roundedCopyFormat(sw.time);
+            navigator.clipboard.writeText(text).then(() => {
+                const msg = document.querySelector(`#copied-${sw.id}`);
+                if (msg) {
+                    msg.classList.add("show");
+                    setTimeout(() => msg.classList.remove("show"), 1000);
+                }
+            });
+        }
+
+        function deleteStopwatch(id) {
+            stopwatches = stopwatches.filter(sw => sw.id !== id);
+            render();
+        }
+
+        function render() {
+            container.innerHTML = '';
+            stopwatches.forEach(sw => {
+                const card = document.createElement('div');
+                card.className = `stopwatch ${sw.running ? 'running' : 'paused'}`;
+                card.setAttribute('draggable', true);
+                card.dataset.id = sw.id;
+
+                card.innerHTML = `
+        <button class="close-btn" data-action="delete" data-id="${sw.id}">×</button>
+        <div class="label">${sw.label}</div>
+        <div class="time" id="time-${sw.id}">${formatTime(sw.time)}</div>
+        <div class="buttons">
+          <button class="start" data-action="start" data-id="${sw.id}">${sw.running ? 'Pause' : 'Start'}</button>
+          <button class="reset" data-action="reset" data-id="${sw.id}">Reset</button>
+          <button class="lap" data-action="lap" data-id="${sw.id}">Lap</button>
+          ${!sw.running && sw.time > 0 ? `<button class="copy" data-action="copy" data-id="${sw.id}">Copy</button>` : ''}
+        </div>
+        <div class="copied-msg" id="copied-${sw.id}">Copied!</div>
+        <div class="laps">
+          ${sw.laps.map((lap, i) => `<div>Lap ${i + 1}: ${lap}</div>`).join('')}
+        </div>
+      `;
+
+                // Drag events
+                card.addEventListener('dragstart', () => {
+                    dragSrcEl = card;
+                    card.classList.add('dragging');
+                });
+                card.addEventListener('dragend', () => {
+                    card.classList.remove('dragging');
+                    const ids = [...container.querySelectorAll('.stopwatch')].map(c => +c.dataset.id);
+                    stopwatches.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+                });
+                card.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    const dragging = document.querySelector('.dragging');
+                    if (dragging !== card) {
+                        const cards = [...container.querySelectorAll('.stopwatch')];
+                        const draggingIndex = cards.indexOf(dragging);
+                        const cardIndex = cards.indexOf(card);
+                        if (draggingIndex < cardIndex) {
+                            container.insertBefore(dragging, card.nextSibling);
+                        } else {
+                            container.insertBefore(dragging, card);
+                        }
+                    }
+                });
+
+                container.appendChild(card);
+            });
+        }
+
+        container.addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            const action = btn.dataset.action;
+            const id = +btn.dataset.id;
+            const sw = stopwatches.find(s => s.id === id);
+            if (!sw) return;
+
+            switch (action) {
+                case 'start': sw.running ? pauseStopwatch(sw) : startStopwatch(sw); render(); break;
+                case 'reset': resetStopwatch(sw); break;
+                case 'lap': addLap(sw); break;
+                case 'delete': deleteStopwatch(id); break;
+                case 'copy': copyTime(sw); break;
+            }
+        });
+
+        // Modal
+        function openModal() {
+            modalOverlay.style.display = 'flex';
+            labelInput.value = '';
+            labelInput.focus();
+        }
+        function closeModal() {
+            modalOverlay.style.display = 'none';
+        }
+
+        confirmAdd.addEventListener('click', () => {
+            const label = labelInput.value.trim() || `Stopwatch ${stopwatches.length + 1}`;
+            createStopwatch(label);
+            closeModal();
+        });
+        cancelAdd.addEventListener('click', closeModal);
+        labelInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') confirmAdd.click();
+            if (e.key === 'Escape') closeModal();
+        });
+
+        mainAdd.addEventListener('click', openModal);
+
+        render();
+    </script>
+</body>
+
+</html>
