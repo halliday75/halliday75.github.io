@@ -275,6 +275,32 @@
         .copied-msg.show {
             opacity: 1;
         }
+
+        .time {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .time::after {
+            content: "Copy time to clipboard";
+            position: absolute;
+            bottom: 2.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .time:hover::after {
+            opacity: 1;
+        }
     </style>
 </head>
 
@@ -397,18 +423,6 @@
             render();
         }
 
-        function copyTime(sw) {
-            const elapsed = sw.running ? Date.now() - sw.startTime : sw.time;
-            const text = roundedCopyFormat(elapsed);
-            navigator.clipboard.writeText(text).then(() => {
-                const msg = document.querySelector(`#copied-${sw.id}`);
-                if (msg) {
-                    msg.classList.add("show");
-                    setTimeout(() => msg.classList.remove("show"), 1000);
-                }
-            });
-        }
-
         function deleteStopwatch(id) {
             stopwatches = stopwatches.filter(sw => sw.id !== id);
             saveState();
@@ -458,7 +472,6 @@
           <button class="start" data-action="start" data-id="${sw.id}">${sw.running ? 'Pause' : 'Start'}</button>
           <button class="reset" data-action="reset" data-id="${sw.id}">Reset</button>
           <button class="lap" data-action="lap" data-id="${sw.id}">Lap</button>
-          ${!sw.running && sw.time > 0 ? `<button class="copy" data-action="copy" data-id="${sw.id}">Copy</button>` : ''}
         </div>
         <div class="copied-msg" id="copied-${sw.id}">Copied!</div>
         <div class="laps">
@@ -491,6 +504,21 @@
                 });
 
                 container.appendChild(card);
+
+                // Copy on clicking the time
+                const timeEl = card.querySelector('.time');
+                timeEl.addEventListener('click', () => {
+                    const elapsed = sw.running ? Date.now() - sw.startTime : sw.time;
+                    const text = roundedCopyFormat(elapsed);
+                    navigator.clipboard.writeText(text).then(() => {
+                        const msg = document.querySelector(`#copied-${sw.id}`);
+                        if (msg) {
+                            msg.classList.add("show");
+                            setTimeout(() => msg.classList.remove("show"), 1000);
+                        }
+                    });
+                });
+
             });
 
             updateRunningTimes();
@@ -509,7 +537,6 @@
                 case 'reset': resetStopwatch(sw); break;
                 case 'lap': addLap(sw); break;
                 case 'delete': deleteStopwatch(id); break;
-                case 'copy': copyTime(sw); break;
             }
         });
 
