@@ -2,609 +2,1034 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time Tracker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: #fff;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Time Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-        .container {
-            display: grid;
-            gap: 1rem;
-            width: 100%;
-            padding: 1rem;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            box-sizing: border-box;
-            flex: 1;
-        }
+    #totalTimeDisplay {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      background: rgba(15, 32, 39, 0.8);
+      backdrop-filter: blur(5px);
+      color: #eee;
+      text-align: center;
+      padding: 0.5rem 1rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      z-index: 15;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      transform: translateX(-50%) translateY(100%);
+      opacity: 0;
+      pointer-events: none; /* Allow clicks to pass through */
+    }
 
-        .add-btn {
-            background: #4cafef;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 70px;
-            height: 70px;
-            font-size: 2.2rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0.85;
-            z-index: 10;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            transition: all 0.2s ease;
-        }
+    #totalTimeDisplay.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
 
-        .add-btn:hover {
-            opacity: 1;
-            background: #6fc0ff;
-            transform: translateX(-50%) scale(1.05);
-        }
+    #totalTimeValue {
+      font-family: monospace;
+      color: #00ff88;
+      margin-left: 0.5rem;
+    }
 
-        .stopwatch {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(8px);
-            border-radius: 1rem;
-            padding: 1rem;
-            text-align: center;
-            position: relative;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease, box-shadow 0.3s ease, border 0.3s ease;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
+    .container {
+      display: grid;
+      gap: 1rem;
+      width: 100%;
+      padding: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      box-sizing: border-box;
+      flex: 1;
+    }
 
-        .stopwatch:hover {
-            transform: translateY(-2px);
-        }
+    /* Centered plus button bottom center */
+    .add-btn {
+      background: #4cafef;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      font-size: 2.2rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0.85;
+      z-index: 10;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+    }
 
-        /* Running = Green Glow */
-        .stopwatch.running {
-            border: 2px solid #00ff88;
-            box-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88 inset;
-        }
+    .add-btn:hover {
+      opacity: 1;
+      background: #6fc0ff;
+      transform: translateX(-50%) scale(1.05);
+    }
 
-        /* Paused/Stopped = Red Border */
-        .stopwatch.paused {
-            border: 2px solid #ff4b5c;
-        }
+    /* Bottom-right container for History and Harvest buttons */
+    .bottom-right-buttons {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 11;
+    }
 
-        .stopwatch.dragging {
-            opacity: 0.5;
-        }
+    .bottom-right-buttons button,
+    #exportButtons button,
+    .bottom-right-buttons a {
+      padding: 0.6rem 1rem;
+      font-weight: 600;
+      border-radius: 1rem;
+      border: none;
+      background: #6fc0ff;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+      font-size: 1rem;
+      user-select: none;
+    position: relative; /* For tooltip positioning */
+    }
 
-        .close-btn {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            background: none;
-            color: #bbb;
-            border: none;
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: color 0.2s ease;
-        }
+    .bottom-right-buttons button:hover,
+    .bottom-right-buttons a:hover {
+      background: #4ea1df;
+    }
 
-        .close-btn:hover {
-            color: #ff4b5c;
-        }
+    .stopwatch {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+      border-radius: 1rem;
+      padding: 1rem;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.3s ease, border 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
 
-        .label {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-            color: #ddd;
-        }
+    .stopwatch:hover {
+      transform: translateY(-2px);
+    }
 
-        .time {
-            font-size: 2.5rem;
-            font-weight: 600;
-            font-family: monospace;
-            margin-bottom: 0.8rem;
-            color: #fff;
-        }
+    /* Running = Green Glow */
+    .stopwatch.running {
+      border: 2px solid #00ff88;
+      box-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88 inset;
+    }
 
-        .buttons {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 0.4rem;
-            margin-bottom: 0.7rem;
-        }
+    /* Paused/Stopped = Red Border */
+    .stopwatch.paused {
+      border: 2px solid #ff4b5c;
+    }
 
-        .buttons button {
-            padding: 0.4rem 0.7rem;
-            border: none;
-            border-radius: 2rem;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            min-width: 70px;
-        }
+    .stopwatch.dragging {
+      opacity: 0.5;
+    }
 
-        .start {
-            background: #4caf50;
-            color: white;
-        }
+    .close-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: none;
+      color: #bbb;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
 
-        .start:hover {
-            background: #5cd75e;
-        }
+    .close-btn:hover {
+      color: #ff4b5c;
+    }
 
-        .reset {
-            background: #ff9800;
-            color: white;
-        }
+    .label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+      color: #ddd;
+      cursor: pointer;
+    }
 
-        .reset:hover {
-            background: #ffb347;
-        }
+    .time {
+      font-size: 2.5rem;
+      font-weight: 600;
+      font-family: monospace;
+      margin-bottom: 0.8rem;
+      color: #fff;
+      cursor: pointer;
+      position: relative;
+    }
 
-        .lap {
-            background: #2196f3;
-            color: white;
-        }
+    .buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.7rem;
+    }
 
-        .lap:hover {
-            background: #64b5f6;
-        }
+    .buttons button {
+      padding: 0.4rem 0.7rem;
+      border: none;
+      border-radius: 2rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      min-width: 70px;
+    }
 
-        .copy {
-            background: #9c27b0;
-            color: white;
-        }
+    .start {
+      background: #4caf50;
+      color: white;
+    }
 
-        .copy:hover {
-            background: #ba68c8;
-        }
+    .start:hover {
+      background: #5cd75e;
+    }
 
-        .laps {
-            max-height: 110px;
-            overflow-y: auto;
-            font-size: 0.8rem;
-            text-align: left;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 0.5rem;
-            margin-top: 0.5rem;
-        }
+    .reset {
+      background: #ff9800;
+      color: white;
+    }
 
-        .laps div {
-            margin-bottom: 0.3rem;
-            padding: 0.2rem 0.4rem;
-            background: rgba(255, 255, 255, 0.07);
-            border-radius: 0.3rem;
-        }
+    .reset:hover {
+      background: #ffb347;
+    }
 
-        /* Scrollbar */
-        .laps::-webkit-scrollbar {
-            width: 6px;
-        }
+    .lap {
+      background: #2196f3;
+      color: white;
+    }
 
-        .laps::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
-        }
+    .lap:hover {
+      background: #64b5f6;
+    }
 
-        /* MODAL */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-        }
+    .copied-msg {
+      font-size: 0.8rem;
+      color: #9cff9c;
+      margin-top: 0.3rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      user-select: none;
+    }
 
-        .modal {
-            background: #2b3a44;
-            padding: 1rem;
-            border-radius: 0.6rem;
-            text-align: center;
-            min-width: 260px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
+    .copied-msg.show {
+      opacity: 1;
+    }
 
-        .modal h3 {
-            margin-top: 0;
-            color: #fff;
-        }
+    .laps {
+      max-height: 110px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+      text-align: left;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 0.5rem;
+      margin-top: 0.5rem;
+    }
 
-        .modal input {
-            width: 90%;
-            padding: 0.5rem;
-            margin-bottom: 0.7rem;
-            border: none;
-            border-radius: 0.3rem;
-            font-size: 1rem;
-            outline: none;
-        }
+    .laps div {
+      margin-bottom: 0.3rem;
+      padding: 0.2rem 0.4rem;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 0.3rem;
+    }
 
-        .modal button {
-            padding: 0.4rem 0.8rem;
-            margin: 0 0.2rem;
-            border: none;
-            border-radius: 0.3rem;
-            cursor: pointer;
-            font-weight: 500;
-        }
+    /* Scrollbar */
+    .laps::-webkit-scrollbar {
+      width: 6px;
+    }
 
-        .confirm {
-            background: #4caf50;
-            color: white;
-        }
+    .laps::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
 
-        .cancel {
-            background: #777;
-            color: white;
-        }
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+    }
 
-        .confirm:hover {
-            background: #5cd75e;
-        }
+    .modal {
+      background: #2b3a44;
+      padding: 1rem;
+      border-radius: 0.6rem;
+      text-align: center;
+      min-width: 260px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
 
-        .cancel:hover {
-            background: #999;
-        }
+    .modal h3 {
+      margin-top: 0;
+      color: #fff;
+    }
 
-        .copied-msg {
-            font-size: 0.8rem;
-            color: #9cff9c;
-            margin-top: 0.3rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
+    .modal input {
+      width: 90%;
+      padding: 0.5rem;
+      margin-bottom: 0.7rem;
+      border: none;
+      border-radius: 0.3rem;
+      font-size: 1rem;
+      outline: none;
+    }
 
-        .copied-msg.show {
-            opacity: 1;
-        }
+    .modal button {
+      padding: 0.4rem 0.8rem;
+      margin: 0 0.2rem;
+      border: none;
+      border-radius: 0.3rem;
+      cursor: pointer;
+      font-weight: 500;
+    }
 
-        .time {
-            position: relative;
-            cursor: pointer;
-        }
+    .confirm {
+      background: #4caf50;
+      color: white;
+    }
 
-        .time::after {
-            content: "Copy time to clipboard";
-            position: absolute;
-            bottom: 2.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
-        }
+    .cancel {
+      background: #777;
+      color: white;
+    }
 
-        .time:hover::after {
-            opacity: 1;
-        }
+    .confirm:hover {
+      background: #5cd75e;
+    }
 
-        .harvest-btn {
-            background: #ff9800;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 0.6rem 1rem;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            position: fixed;
-            bottom: 110px;
-            /* sits above the + button */
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0.9;
-            z-index: 10;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            transition: all 0.2s ease;
-        }
+    .cancel:hover {
+      background: #999;
+    }
 
-        .harvest-btn:hover {
-            opacity: 1;
-            background: #ffad33;
-            transform: translateX(-50%) scale(1.05);
-        }
-    </style>
+    /* History Styles */
+    #historyContainer {
+      padding: 1rem;
+      color: #fff;
+    }
+
+    #historyContainer h2 {
+      margin-top: 0;
+    }
+
+    #exportButtons {
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 10px;
+    }
+
+    #historyTable {
+      width: 100%;
+      border-collapse: collapse;
+      max-width: 100%;
+    }
+
+    #historyTable th,
+    #historyTable td {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.5rem 0.8rem;
+      text-align: left;
+    }
+
+    #historyTable th {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .history-delete-btn {
+      background: #ff4b5c;
+      color: white;
+      border: none;
+      border-radius: 0.3rem;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: background 0.2s ease;
+      position: relative;
+    }
+    .history-delete-btn:hover {
+      background: #e53e4f;
+    }
+
+    /* Custom Tooltip Styles */
+    [data-tooltip]::before,
+    [data-tooltip]::after {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 100;
+    }
+
+    [data-tooltip]::after {
+      content: attr(data-tooltip);
+      bottom: calc(100% + 5px);
+      transform: translateX(-50%) translateY(-5px);
+      background-color: #2c3e50;
+      color: #fff;
+      padding: 0.4em 0.8em;
+      border-radius: 0.3rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      white-space: nowrap;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    /* Tooltip Arrow */
+    [data-tooltip]::before {
+      content: '';
+      bottom: 100%;
+      border: 5px solid transparent;
+      border-top-color: #2c3e50;
+      transform: translateX(-50%) translateY(-5px);
+    }
+
+    [data-tooltip]:hover::before,
+    [data-tooltip]:hover::after {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
 </head>
 
 <body>
-    <div id="app">
-        <button class="add-btn" id="mainAdd">+</button>
-        <div class="container" id="container"></div>
-    </div>
-    <button class="harvest-btn" onclick="window.open('https://smartling.harvestapp.com/time','_blank')">
-        Open Harvest Timer
-    </button>
-    <!-- MODAL -->
-    <div class="modal-overlay" id="modalOverlay" style="display:none;">
-        <div class="modal">
-            <h3>New Stopwatch</h3>
-            <input type="text" id="labelInput" placeholder="Enter label...">
-            <div>
-                <button class="confirm" id="confirmAdd">Add</button>
-                <button class="cancel" id="cancelAdd">Cancel</button>
-            </div>
-        </div>
+  <div id="app">
+    <div id="totalTimeDisplay">
+      Total Time: <span id="totalTimeValue"></span>
     </div>
 
-    <script>
-        const container = document.getElementById('container');
-        const mainAdd = document.getElementById('mainAdd');
-        const modalOverlay = document.getElementById('modalOverlay');
-        const labelInput = document.getElementById('labelInput');
-        const confirmAdd = document.getElementById('confirmAdd');
-        const cancelAdd = document.getElementById('cancelAdd');
+    <button class="add-btn" id="mainAdd" data-tooltip="Add new stopwatch">+</button>
 
-        let stopwatches = [];
-        let animationFrameId = null;
+    <div class="bottom-right-buttons">
+      <button id="toggleViewBtn" data-tooltip="Toggle History View">History</button>
+      <a href="https://smartling.harvestapp.com/time" target="_blank" rel="noopener" data-tooltip="Open Harvest Timer" id="openHarvestBtn">Harvest</a>
+    </div>
 
-        // ✅ Utility: Save to localStorage + cookie
-        function saveState() {
-            const json = JSON.stringify(stopwatches);
-            localStorage.setItem("timeTrackerState", json);
+    <div class="container" id="container"></div>
 
-            // Mirror to cookie (expires in 7 days)
-            document.cookie = `timeTrackerState=${encodeURIComponent(json)}; path=/; max-age=${7 * 24 * 60 * 60}`;
+    <div id="historyContainer" style="display:none;">
+      <h2>Finished Timers History</h2>
+      <div id="exportButtons">
+        <button id="exportCsvBtn" data-tooltip="Export to CSV">Export to CSV</button>
+        <button id="copyAllBtn" data-tooltip="Copy all to clipboard">Copy All</button>
+      </div>
+      <table id="historyTable" aria-label="Finished timers history">
+        <thead>
+          <tr>
+            <th>Label</th>
+            <th>Total Time</th>
+            <th>Date Finished</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CREATE / DELETE Confirmation Modal -->
+  <div class="modal-overlay" id="modalOverlay" style="display: none;">
+    <div class="modal" id="createModal">
+      <h3>New Stopwatch</h3>
+      <input type="text" id="labelInput" placeholder="Enter label..." />
+      <div>
+        <button class="confirm" id="confirmAdd">Add</button>
+        <button class="cancel" id="cancelAdd">Cancel</button>
+      </div>
+    </div>
+    <div class="modal" id="deleteModal" style="display:none;">
+      <h3>Delete Stopwatch?</h3>
+      <p>Are you sure you want to delete this stopwatch?</p>
+      <div>
+        <button class="confirm" id="confirmDelete">Delete</button>
+        <button class="cancel" id="cancelDelete">Cancel</button>
+      </div>
+    </div>
+    <div class="modal" id="deleteHistoryModal" style="display:none;">
+      <h3>Delete History Entry?</h3>
+      <p>Are you sure you want to delete this entry from your history?</p>
+      <div>
+        <button class="confirm" id="confirmHistoryDelete">Delete</button>
+        <button class="cancel" id="cancelHistoryDelete">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const container = document.getElementById('container');
+    const mainAdd = document.getElementById('mainAdd');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const createModal = document.getElementById('createModal');
+    const deleteModal = document.getElementById('deleteModal');
+    const labelInput = document.getElementById('labelInput');
+    const confirmAdd = document.getElementById('confirmAdd');
+    const cancelAdd = document.getElementById('cancelAdd');
+    const confirmDelete = document.getElementById('confirmDelete');
+    const cancelDelete = document.getElementById('cancelDelete');
+    const deleteHistoryModal = document.getElementById('deleteHistoryModal');
+    const confirmHistoryDelete = document.getElementById('confirmHistoryDelete');
+    const cancelHistoryDelete = document.getElementById('cancelHistoryDelete');
+
+    const totalTimeDisplay = document.getElementById('totalTimeDisplay');
+    const totalTimeValue = document.getElementById('totalTimeValue');
+
+    const toggleViewBtn = document.getElementById('toggleViewBtn');
+    const historyContainer = document.getElementById('historyContainer');
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const copyAllBtn = document.getElementById('copyAllBtn');
+
+    let stopwatches = [];
+    let animationFrameId = null;
+    let showingHistory = false;
+    let history = [];
+    let deleteId = null;
+    let deleteHistoryIndex = null;
+    let draggedId = null;
+
+    // Save stopwatches state
+    function saveState() {
+      const json = JSON.stringify(stopwatches);
+      localStorage.setItem("timeTrackerState", json);
+      document.cookie = `timeTrackerState=${encodeURIComponent(json)}; path=/; max-age=${7 * 24 * 60 * 60}`;
+    }
+
+    // Load stopwatches state
+    function loadState() {
+      let json = localStorage.getItem("timeTrackerState");
+      if (!json) {
+        const match = document.cookie.match(/(^| )timeTrackerState=([^;]+)/);
+        json = match ? decodeURIComponent(match[2]) : null;
+      }
+      if (json) {
+        try {
+          stopwatches = JSON.parse(json);
+        } catch (e) {
+          console.error("Failed to parse saved state:", e);
+          stopwatches = [];
         }
+      }
+    }
 
-        // ✅ Utility: Load state from localStorage or cookie
-        function loadState() {
-            let json = localStorage.getItem("timeTrackerState");
-            if (!json) {
-                const match = document.cookie.match(/(^| )timeTrackerState=([^;]+)/);
-                json = match ? decodeURIComponent(match[2]) : null;
-            }
-            if (json) {
-                try {
-                    stopwatches = JSON.parse(json);
-                } catch (e) {
-                    console.error("Failed to parse saved state:", e);
-                    stopwatches = [];
-                }
-            }
+    // Save history
+    function saveHistory() {
+      const json = JSON.stringify(history);
+      localStorage.setItem("timeTrackerHistory", json);
+    }
+
+    // Load history
+    function loadHistory() {
+      const json = localStorage.getItem("timeTrackerHistory");
+      if (json) {
+        try {
+          history = JSON.parse(json);
+        } catch {
+          history = [];
         }
+      }
+    }
 
-        function formatTime(ms) {
-            const min = String(Math.floor(ms / 60000)).padStart(2, '0');
-            const sec = String(Math.floor((ms % 60000) / 1000)).padStart(2, '0');
-            const cs = String(Math.floor((ms % 1000) / 10)).padStart(2, '0');
-            return `${min}:${sec}:${cs}`;
+    // Format time mm:ss:cs
+    function formatTime(ms) {
+      const min = String(Math.floor(ms / 60000)).padStart(2, '0');
+      const sec = String(Math.floor((ms % 60000) / 1000)).padStart(2, '0');
+      const cs = String(Math.floor((ms % 1000) / 10)).padStart(2, '0');
+      return `${min}:${sec}:${cs}`;
+    }
+
+    // Format time as HH:MM:SS
+    function formatTotalTime(ms) {
+      if (ms < 0) ms = 0;
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      return `${hours}:${minutes}:${seconds}`;
+    }
+
+    // Format time rounded up to nearest 5 min for copying
+    function roundedCopyFormat(ms) {
+      let totalMinutes = Math.ceil(ms / 60000);
+      if (totalMinutes % 5 !== 0) {
+        totalMinutes = Math.ceil(totalMinutes / 5) * 5;
+      }
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      return `${hours}:${String(minutes).padStart(2, '0')}`;
+    }
+
+    // Format full time for history
+    function formatTimeFull(ms) {
+      const hours = Math.floor(ms / 3600000);
+      const minutes = Math.floor((ms % 3600000) / 60000);
+      const seconds = Math.floor((ms % 60000) / 1000);
+      const parts = [];
+      if (hours) parts.push(hours + 'h');
+      if (minutes || hours) parts.push(minutes + 'm');
+      parts.push(seconds + 's');
+      return parts.join(' ');
+    }
+
+    function createStopwatch(label) {
+      const sw = {
+        id: Date.now(),
+        label,
+        time: 0,
+        running: false,
+        laps: [],
+        startTime: null
+      };
+      stopwatches.push(sw);
+      saveState();
+      render();
+    }
+
+    function startStopwatch(sw) {
+      if (!sw.running) {
+        sw.running = true;
+        sw.startTime = Date.now() - sw.time;
+        saveState();
+        updateRunningTimes();
+      }
+    }
+
+    function pauseStopwatch(sw) {
+      sw.running = false;
+      sw.time = Date.now() - sw.startTime;
+      sw.startTime = null;
+      saveState();
+      render();
+    }
+
+    function resetStopwatch(sw) {
+      sw.running = false;
+      sw.time = 0;
+      sw.laps = [];
+      sw.startTime = null;
+      saveState();
+      render();
+    }
+
+    function addLap(sw) {
+      const elapsed = sw.running ? Date.now() - sw.startTime : sw.time;
+      sw.laps.push(formatTime(elapsed));
+      saveState();
+      render();
+    }
+
+    function copyTime(sw) {
+      const elapsed = sw.running ? Date.now() - sw.startTime : sw.time;
+      const text = roundedCopyFormat(elapsed);
+      navigator.clipboard.writeText(text).then(() => {
+        const msg = document.querySelector(`#copied-${sw.id}`);
+        if (msg) {
+          msg.classList.add("show");
+          setTimeout(() => msg.classList.remove("show"), 1000);
         }
+      });
+    }
 
-        function roundedCopyFormat(ms) {
-            let totalMinutes = Math.ceil(ms / 60000);
-            if (totalMinutes % 5 !== 0) {
-                totalMinutes = Math.ceil(totalMinutes / 5) * 5;
-            }
-            const hours = Math.floor(totalMinutes / 60);
-            const minutes = totalMinutes % 60;
-            return `${hours}:${String(minutes).padStart(2, '0')}`;
+    function addToHistory(sw) {
+      history.push({
+        label: sw.label,
+        time: sw.time,
+        finishedAt: new Date().toISOString()
+      });
+      saveHistory();
+    }
+
+    function deleteStopwatch(id) {
+      // Show delete modal instead of immediate delete
+      deleteId = id;
+      modalOverlay.style.display = 'flex';
+      createModal.style.display = 'none';
+      deleteModal.style.display = 'block';
+    }
+
+    function showHistoryDeleteModal(index) {
+      deleteHistoryIndex = index;
+      modalOverlay.style.display = 'flex';
+      createModal.style.display = 'none';
+      deleteModal.style.display = 'none';
+      deleteHistoryModal.style.display = 'block';
+    }
+
+    function confirmDeleteStopwatch() {
+      if (deleteId !== null) {
+        const sw = stopwatches.find(s => s.id === deleteId);
+        if (sw) {
+          // If running, add to history before deleting
+          if (!sw.running && sw.time > 0) {
+            addToHistory(sw);
+          }
         }
-
-        function createStopwatch(label) {
-            const sw = {
-                id: Date.now(),
-                label,
-                time: 0,
-                running: false,
-                laps: [],
-                startTime: null
-            };
-            stopwatches.push(sw);
-            saveState();
-            render();
-        }
-
-        function startStopwatch(sw) {
-            if (!sw.running) {
-                sw.running = true;
-                sw.startTime = Date.now() - sw.time;
-                saveState();
-                updateRunningTimes();
-            }
-        }
-
-        function pauseStopwatch(sw) {
-            sw.running = false;
-            sw.time = Date.now() - sw.startTime;
-            sw.startTime = null;
-            saveState();
-            render();
-        }
-
-        function resetStopwatch(sw) {
-            sw.running = false;
-            sw.time = 0;
-            sw.laps = [];
-            sw.startTime = null;
-            saveState();
-            render();
-        }
-
-        function addLap(sw) {
-            const elapsed = sw.running ? Date.now() - sw.startTime : sw.time;
-            sw.laps.push(formatTime(elapsed));
-            saveState();
-            render();
-        }
-
-        function deleteStopwatch(id) {
-            stopwatches = stopwatches.filter(sw => sw.id !== id);
-            saveState();
-            render();
-        }
-
-        function updateRunningTimes() {
-            let anyRunning = false;
-            stopwatches.forEach(sw => {
-                if (sw.running) {
-                    anyRunning = true;
-                    sw.time = Date.now() - sw.startTime;
-
-                    const timeEl = document.querySelector(`#time-${sw.id}`);
-                    if (timeEl) timeEl.textContent = formatTime(sw.time);
-
-                    const card = document.querySelector(`.stopwatch[data-id="${sw.id}"]`);
-                    if (card) {
-                        card.classList.add("running");
-                        card.classList.remove("paused");
-
-                        // ✅ Update the button text live
-                        const startBtn = card.querySelector(`[data-action="start"]`);
-                        if (startBtn) startBtn.textContent = "Pause";
-                    }
-                }
-            });
-            if (anyRunning) {
-                animationFrameId = requestAnimationFrame(updateRunningTimes);
-            }
-        }
-
-        function render() {
-            container.innerHTML = '';
-            stopwatches.forEach(sw => {
-                const elapsed = sw.running ? Date.now() - sw.startTime : sw.time;
-                const card = document.createElement('div');
-                card.className = `stopwatch ${sw.running ? 'running' : 'paused'}`;
-                card.setAttribute('draggable', true);
-                card.dataset.id = sw.id;
-
-                card.innerHTML = `
-        <button class="close-btn" data-action="delete" data-id="${sw.id}">×</button>
-        <div class="label">${sw.label}</div>
-        <div class="time" id="time-${sw.id}">${formatTime(elapsed)}</div>
-        <div class="buttons">
-          <button class="start" data-action="start" data-id="${sw.id}">${sw.running ? 'Pause' : 'Start'}</button>
-          <button class="reset" data-action="reset" data-id="${sw.id}">Reset</button>
-          <button class="lap" data-action="lap" data-id="${sw.id}">Lap</button>
-        </div>
-        <div class="copied-msg" id="copied-${sw.id}">Copied!</div>
-        <div class="laps">
-          ${sw.laps.map((lap, i) => `<div>Lap ${i + 1}: ${lap}</div>`).join('')}
-        </div>
-      `;
-
-                card.addEventListener('dragstart', () => {
-                    card.classList.add('dragging');
-                });
-                card.addEventListener('dragend', () => {
-                    card.classList.remove('dragging');
-                    const ids = [...container.querySelectorAll('.stopwatch')].map(c => +c.dataset.id);
-                    stopwatches.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
-                    saveState();
-                });
-                card.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    const dragging = document.querySelector('.dragging');
-                    if (dragging !== card) {
-                        const cards = [...container.querySelectorAll('.stopwatch')];
-                        const draggingIndex = cards.indexOf(dragging);
-                        const cardIndex = cards.indexOf(card);
-                        if (draggingIndex < cardIndex) {
-                            container.insertBefore(dragging, card.nextSibling);
-                        } else {
-                            container.insertBefore(dragging, card);
-                        }
-                    }
-                });
-
-                container.appendChild(card);
-
-                // Copy on clicking the time
-                const timeEl = card.querySelector('.time');
-                timeEl.addEventListener('click', () => {
-                    const elapsed = sw.running ? Date.now() - sw.startTime : sw.time;
-                    const text = roundedCopyFormat(elapsed);
-                    navigator.clipboard.writeText(text).then(() => {
-                        const msg = document.querySelector(`#copied-${sw.id}`);
-                        if (msg) {
-                            msg.classList.add("show");
-                            setTimeout(() => msg.classList.remove("show"), 1000);
-                        }
-                    });
-                });
-
-            });
-
-            updateRunningTimes();
-        }
-
-        container.addEventListener('click', (e) => {
-            const btn = e.target.closest('button');
-            if (!btn) return;
-            const action = btn.dataset.action;
-            const id = +btn.dataset.id;
-            const sw = stopwatches.find(s => s.id === id);
-            if (!sw) return;
-
-            switch (action) {
-                case 'start': sw.running ? pauseStopwatch(sw) : startStopwatch(sw); break;
-                case 'reset': resetStopwatch(sw); break;
-                case 'lap': addLap(sw); break;
-                case 'delete': deleteStopwatch(id); break;
-            }
-        });
-
-        // Modal
-        function openModal() {
-            modalOverlay.style.display = 'flex';
-            labelInput.value = '';
-            labelInput.focus();
-        }
-        function closeModal() {
-            modalOverlay.style.display = 'none';
-        }
-
-        confirmAdd.addEventListener('click', () => {
-            const label = labelInput.value.trim() || `Stopwatch ${stopwatches.length + 1}`;
-            createStopwatch(label);
-            closeModal();
-        });
-        cancelAdd.addEventListener('click', closeModal);
-        labelInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') confirmAdd.click();
-            if (e.key === 'Escape') closeModal();
-        });
-
-        mainAdd.addEventListener('click', openModal);
-
-        // ✅ Sync across tabs
-        window.addEventListener("storage", (e) => {
-            if (e.key === "timeTrackerState") {
-                loadState();
-                render();
-            }
-        });
-
-        // ✅ Init
-        loadState();
+        stopwatches = stopwatches.filter(sw => sw.id !== deleteId);
+        deleteId = null;
+        saveState();
         render();
-    </script>
+        closeModal();
+      }
+    }
 
+    function closeModal() {
+      modalOverlay.style.display = 'none';
+      createModal.style.display = 'block';
+      deleteModal.style.display = 'none';
+      deleteHistoryModal.style.display = 'none';
+      labelInput.value = '';
+    }
 
+    function updateRunningTimes() {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      animationFrameId = requestAnimationFrame(function update() {
+        let needsUpdate = false;
+        let totalActiveTime = 0;
+        let activeCount = 0;
+        for (const sw of stopwatches) {
+          if (sw.running) {
+            needsUpdate = true;
+            activeCount++;
+            const el = document.getElementById(`time-${sw.id}`);
+            const elapsed = Date.now() - sw.startTime;
+            totalActiveTime += elapsed;
+            if (el) {
+              el.textContent = formatTime(elapsed);
+            }
+          } else if (sw.time > 0) { // Paused timers
+            activeCount++;
+            totalActiveTime += sw.time;
+          }
+        }
+        if (activeCount > 0) {
+          totalTimeDisplay.classList.add('show');
+          totalTimeValue.textContent = formatTotalTime(totalActiveTime);
+        } else {
+          totalTimeDisplay.classList.remove('show');
+        }
+        if (needsUpdate) {
+          animationFrameId = requestAnimationFrame(update);
+        } else {
+          animationFrameId = null;
+        }
+      });
+    }
+
+    function render() {
+      container.innerHTML = "";
+      for (const sw of stopwatches) {
+        const card = document.createElement("div");
+        card.className = "stopwatch " + (sw.running ? "running" : (sw.time > 0 ? "paused" : ""));
+        card.setAttribute("draggable", "true");
+        card.dataset.id = sw.id;
+
+        card.innerHTML = `
+          <button class="close-btn" data-tooltip="Delete Stopwatch" aria-label="Delete stopwatch">&times;</button>
+          <div class="label" data-id="${sw.id}">${sw.label}</div>
+          <div class="time" id="time-${sw.id}" data-tooltip="Copy rounded time to clipboard">${formatTime(sw.running ? Date.now() - sw.startTime : sw.time)}</div>
+          <div class="buttons">
+            <button class="start">${sw.running ? "Pause" : "Start"}</button>
+            <button class="reset">Reset</button>
+            <button class="lap" ${sw.running ? "" : "disabled"}>Lap</button>
+          </div>
+          <div class="copied-msg" id="copied-${sw.id}">Copied!</div>
+          <div class="laps">${sw.laps.map(lap => `<div>${lap}</div>`).join('')}</div>
+        `;
+
+        // Button listeners
+        const startBtn = card.querySelector(".start");
+        const resetBtn = card.querySelector(".reset");
+        const lapBtn = card.querySelector(".lap");
+        const timeEl = card.querySelector(".time");
+        const closeBtn = card.querySelector(".close-btn");
+
+        startBtn.onclick = () => {
+          if (sw.running) pauseStopwatch(sw);
+          else startStopwatch(sw);
+          render();
+        };
+        resetBtn.onclick = () => {
+          resetStopwatch(sw);
+          render();
+        };
+        lapBtn.onclick = () => {
+          addLap(sw);
+        };
+        timeEl.onclick = () => {
+          copyTime(sw);
+        };
+        closeBtn.onclick = () => {
+          deleteStopwatch(sw.id);
+        };
+
+        container.appendChild(card);
+      }
+      updateRunningTimes();
+    }
+
+    function editLabel(e) {
+      const labelEl = e.target;
+      const swId = parseInt(labelEl.dataset.id, 10);
+      const sw = stopwatches.find(s => s.id === swId);
+      if (!sw) return;
+
+      const currentLabel = sw.label;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = currentLabel;
+      input.className = 'label-edit-input'; // For potential styling
+      
+      labelEl.replaceWith(input);
+      input.focus();
+      input.select();
+
+      const save = () => {
+        const newLabel = input.value.trim();
+        if (newLabel && newLabel !== currentLabel) {
+          sw.label = newLabel;
+          saveState();
+        }
+        render(); // Re-render to show the updated label div
+      };
+
+      input.addEventListener('blur', save);
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          save();
+        } else if (e.key === 'Escape') {
+          render(); // Cancel edit
+        }
+      });
+    }
+
+    function deleteHistoryEntry(index) {
+      history.splice(index, 1);
+      saveHistory();
+      renderHistory();
+    }
+
+    // History rendering
+    function renderHistory() {
+      const tbody = document.querySelector("#historyTable tbody");
+      tbody.innerHTML = history.map((entry, index) => {
+        const date = new Date(entry.finishedAt);
+        return `
+          <tr>
+            <td>${entry.label}</td>
+            <td>${formatTimeFull(entry.time)}</td>
+            <td>${date.toLocaleString()}</td>
+            <td><button class="history-delete-btn" data-index="${index}" data-tooltip="Delete this entry">Delete</button></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Export history to CSV
+    function exportHistoryToCsv() {
+      if (history.length === 0) return alert("No history to export.");
+
+      const header = ["Label", "Total Time", "Date Finished"];
+      const rows = history.map(entry => [
+        `"${entry.label.replace(/"/g, '""')}"`,
+        `"${formatTimeFull(entry.time)}"`,
+        `"${new Date(entry.finishedAt).toLocaleString()}"`
+      ]);
+      const csvContent = [header.join(","), ...rows.map(r => r.join(","))].join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "stopwatch_history.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Copy all history to clipboard
+    function copyHistoryToClipboard() {
+      if (history.length === 0) return alert("No history to copy.");
+
+      const lines = history.map(entry =>
+        `${entry.label}\t${formatTimeFull(entry.time)}\t${new Date(entry.finishedAt).toLocaleString()}`
+      );
+      const text = "Label\tTotal Time\tDate Finished\n" + lines.join("\n");
+
+      navigator.clipboard.writeText(text).then(() => {
+        alert("History copied to clipboard");
+      });
+    }
+
+    // Event listeners for modal buttons
+    mainAdd.addEventListener('click', () => {
+      labelInput.value = '';
+      modalOverlay.style.display = 'flex';
+      createModal.style.display = 'block';
+      deleteModal.style.display = 'none';
+      labelInput.focus();
+    });
+
+    cancelAdd.addEventListener('click', closeModal);
+
+    confirmAdd.addEventListener('click', () => {
+      const label = labelInput.value.trim() || `Stopwatch ${stopwatches.length + 1}`;
+      createStopwatch(label);
+      closeModal();
+    });
+
+    labelInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') confirmAdd.click();
+      if (e.key === 'Escape') cancelAdd.click();
+    });
+
+    toggleViewBtn.addEventListener('click', () => {
+      showingHistory = !showingHistory;
+      if (showingHistory) {
+        container.style.display = 'none';
+        historyContainer.style.display = 'block';
+        toggleViewBtn.textContent = 'Timers';
+        renderHistory();
+      } else {
+        historyContainer.style.display = 'none';
+        container.style.display = 'grid';
+        toggleViewBtn.textContent = 'History';
+      }
+    });
+
+    exportCsvBtn.addEventListener('click', exportHistoryToCsv);
+    copyAllBtn.addEventListener('click', copyHistoryToClipboard);
+
+    cancelDelete.addEventListener('click', () => {
+      deleteId = null;
+      closeModal();
+    });
+
+    confirmDelete.addEventListener('click', confirmDeleteStopwatch);
+
+    document.querySelector("#historyTable tbody").addEventListener('click', (e) => {
+      if (e.target.classList.contains('history-delete-btn')) {
+        const index = parseInt(e.target.dataset.index, 10);
+        showHistoryDeleteModal(index);
+      }
+    });
+
+    // Event delegation for editing labels
+    container.addEventListener('click', (e) => {
+      if (e.target.classList.contains('label')) {
+        editLabel(e);
+      }
+    });
+
+    confirmHistoryDelete.addEventListener('click', () => {
+      if (deleteHistoryIndex !== null) {
+        deleteHistoryEntry(deleteHistoryIndex);
+        deleteHistoryIndex = null;
+        closeModal();
+      }
+    });
+
+    cancelHistoryDelete.addEventListener('click', () => {
+      deleteHistoryIndex = null;
+      closeModal();
+    });
+
+    // Drag and drop reordering
+    container.addEventListener('dragstart', e => {
+      if (e.target.classList.contains('stopwatch')) {
+        draggedId = parseInt(e.target.dataset.id, 10);
+        // Use a timeout to ensure the browser has created the drag image correctly
+        setTimeout(() => {
+          if (e.target.classList.contains('stopwatch')) {
+            e.target.classList.add('dragging');
+          }
+        }, 0);
+      }
+    });
+
+    container.addEventListener('dragend', e => {
+      // Fallback to remove dragging class if drop doesn't happen on a valid target
+      const draggedEl = document.querySelector('.stopwatch.dragging');
+      if (draggedEl) {
+        draggedEl.classList.remove('dragging');
+      }
+      draggedId = null;
+    });
+
+    container.addEventListener('dragover', e => {
+      e.preventDefault(); // This is necessary to allow a drop
+    });
+
+    container.addEventListener('drop', e => {
+      e.preventDefault();
+      if (draggedId === null) return;
+
+      const dropTarget = e.target.closest('.stopwatch');
+      const draggedIndex = stopwatches.findIndex(sw => sw.id === draggedId);
+
+      // If dropped on itself or invalid state, do nothing
+      if (draggedIndex === -1 || (dropTarget && parseInt(dropTarget.dataset.id, 10) === draggedId)) {
+        return;
+      }
+
+      // Remove item from its original position
+      const [draggedItem] = stopwatches.splice(draggedIndex, 1);
+
+      if (dropTarget) {
+        const dropTargetIndex = stopwatches.findIndex(sw => sw.id === parseInt(dropTarget.dataset.id, 10));
+        stopwatches.splice(dropTargetIndex, 0, draggedItem);
+      } else {
+        stopwatches.push(draggedItem); // Add to end if dropped in a gap
+      }
+
+      saveState();
+      render();
+    });
+
+    // Load data on start
+    loadState();
+    loadHistory();
+    render();
+
+  </script>
 </body>
 
 </html>
