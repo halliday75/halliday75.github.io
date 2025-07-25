@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -296,114 +297,160 @@
     </div>
 
     <script>
-  const container = document.getElementById('container');
-  const mainAdd = document.getElementById('mainAdd');
-  const modalOverlay = document.getElementById('modalOverlay');
-  const labelInput = document.getElementById('labelInput');
-  const confirmAdd = document.getElementById('confirmAdd');
-  const cancelAdd = document.getElementById('cancelAdd');
+        const container = document.getElementById('container');
+        const mainAdd = document.getElementById('mainAdd');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const labelInput = document.getElementById('labelInput');
+        const confirmAdd = document.getElementById('confirmAdd');
+        const cancelAdd = document.getElementById('cancelAdd');
 
-  let stopwatches = [];
-  let dragSrcEl = null;
-  let animationFrameId = null;
+        let stopwatches = [];
+        let animationFrameId = null;
 
-  function formatTime(ms) {
-    const min = String(Math.floor(ms / 60000)).padStart(2, '0');
-    const sec = String(Math.floor((ms % 60000) / 1000)).padStart(2, '0');
-    const cs = String(Math.floor((ms % 1000) / 10)).padStart(2, '0');
-    return `${min}:${sec}:${cs}`;
-  }
+        // ✅ Utility: Save to localStorage + cookie
+        function saveState() {
+            const json = JSON.stringify(stopwatches);
+            localStorage.setItem("timeTrackerState", json);
 
-  function roundedCopyFormat(ms) {
-    let totalMinutes = Math.ceil(ms / 60000);
-    if (totalMinutes % 5 !== 0) {
-      totalMinutes = Math.ceil(totalMinutes / 5) * 5;
-    }
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    return `${hours}:${String(minutes).padStart(2, '0')}`;
-  }
+            // Mirror to cookie (expires in 7 days)
+            document.cookie = `timeTrackerState=${encodeURIComponent(json)}; path=/; max-age=${7 * 24 * 60 * 60}`;
+        }
 
-  function createStopwatch(label) {
-    const sw = { 
-      id: Date.now(), 
-      label, 
-      time: 0, 
-      running: false, 
-      laps: [], 
-      startTime: null 
-    };
-    stopwatches.push(sw);
-    render();
-  }
+        // ✅ Utility: Load state from localStorage or cookie
+        function loadState() {
+            let json = localStorage.getItem("timeTrackerState");
+            if (!json) {
+                const match = document.cookie.match(/(^| )timeTrackerState=([^;]+)/);
+                json = match ? decodeURIComponent(match[2]) : null;
+            }
+            if (json) {
+                try {
+                    stopwatches = JSON.parse(json);
+                } catch (e) {
+                    console.error("Failed to parse saved state:", e);
+                    stopwatches = [];
+                }
+            }
+        }
 
-  function startStopwatch(sw) {
-    if (!sw.running) {
-      sw.running = true;
-      sw.startTime = Date.now() - sw.time;
-      updateRunningTimes();
-    }
-  }
+        function formatTime(ms) {
+            const min = String(Math.floor(ms / 60000)).padStart(2, '0');
+            const sec = String(Math.floor((ms % 60000) / 1000)).padStart(2, '0');
+            const cs = String(Math.floor((ms % 1000) / 10)).padStart(2, '0');
+            return `${min}:${sec}:${cs}`;
+        }
 
-  function pauseStopwatch(sw) {
-    sw.running = false;
-    sw.time = Date.now() - sw.startTime;
-    sw.startTime = null;
-    render();
-  }
+        function roundedCopyFormat(ms) {
+            let totalMinutes = Math.ceil(ms / 60000);
+            if (totalMinutes % 5 !== 0) {
+                totalMinutes = Math.ceil(totalMinutes / 5) * 5;
+            }
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            return `${hours}:${String(minutes).padStart(2, '0')}`;
+        }
 
-  function resetStopwatch(sw) {
-    sw.running = false;
-    sw.time = 0;
-    sw.laps = [];
-    sw.startTime = null;
-    render();
-  }
+        function createStopwatch(label) {
+            const sw = {
+                id: Date.now(),
+                label,
+                time: 0,
+                running: false,
+                laps: [],
+                startTime: null
+            };
+            stopwatches.push(sw);
+            saveState();
+            render();
+        }
 
-  function addLap(sw) {
-    const elapsed = sw.running ? Date.now() - sw.startTime : sw.time;
-    sw.laps.push(formatTime(elapsed));
-    render();
-  }
+        function startStopwatch(sw) {
+            if (!sw.running) {
+                sw.running = true;
+                sw.startTime = Date.now() - sw.time;
+                saveState();
+                updateRunningTimes();
+            }
+        }
 
-  function copyTime(sw) {
-    const elapsed = sw.running ? Date.now() - sw.startTime : sw.time;
-    const text = roundedCopyFormat(elapsed);
-    navigator.clipboard.writeText(text).then(() => {
-      const msg = document.querySelector(`#copied-${sw.id}`);
-      if (msg) {
-        msg.classList.add("show");
-        setTimeout(() => msg.classList.remove("show"), 1000);
-      }
-    });
-  }
+        function pauseStopwatch(sw) {
+            sw.running = false;
+            sw.time = Date.now() - sw.startTime;
+            sw.startTime = null;
+            saveState();
+            render();
+        }
 
-  function deleteStopwatch(id) {
-    stopwatches = stopwatches.filter(sw => sw.id !== id);
-    render();
-  }
+        function resetStopwatch(sw) {
+            sw.running = false;
+            sw.time = 0;
+            sw.laps = [];
+            sw.startTime = null;
+            saveState();
+            render();
+        }
 
-  function updateRunningTimes() {
-    stopwatches.forEach(sw => {
-      if (sw.running) {
-        sw.time = Date.now() - sw.startTime;
-        const timeEl = document.querySelector(`#time-${sw.id}`);
-        if (timeEl) timeEl.textContent = formatTime(sw.time);
-      }
-    });
-    animationFrameId = requestAnimationFrame(updateRunningTimes);
-  }
+        function addLap(sw) {
+            const elapsed = sw.running ? Date.now() - sw.startTime : sw.time;
+            sw.laps.push(formatTime(elapsed));
+            saveState();
+            render();
+        }
 
-  function render() {
-    container.innerHTML = '';
-    stopwatches.forEach(sw => {
-      const elapsed = sw.running ? Date.now() - sw.startTime : sw.time;
-      const card = document.createElement('div');
-      card.className = `stopwatch ${sw.running ? 'running' : 'paused'}`;
-      card.setAttribute('draggable', true);
-      card.dataset.id = sw.id;
+        function copyTime(sw) {
+            const elapsed = sw.running ? Date.now() - sw.startTime : sw.time;
+            const text = roundedCopyFormat(elapsed);
+            navigator.clipboard.writeText(text).then(() => {
+                const msg = document.querySelector(`#copied-${sw.id}`);
+                if (msg) {
+                    msg.classList.add("show");
+                    setTimeout(() => msg.classList.remove("show"), 1000);
+                }
+            });
+        }
 
-      card.innerHTML = `
+        function deleteStopwatch(id) {
+            stopwatches = stopwatches.filter(sw => sw.id !== id);
+            saveState();
+            render();
+        }
+
+        function updateRunningTimes() {
+            let anyRunning = false;
+            stopwatches.forEach(sw => {
+                if (sw.running) {
+                    anyRunning = true;
+                    sw.time = Date.now() - sw.startTime;
+
+                    const timeEl = document.querySelector(`#time-${sw.id}`);
+                    if (timeEl) timeEl.textContent = formatTime(sw.time);
+
+                    const card = document.querySelector(`.stopwatch[data-id="${sw.id}"]`);
+                    if (card) {
+                        card.classList.add("running");
+                        card.classList.remove("paused");
+
+                        // ✅ Update the button text live
+                        const startBtn = card.querySelector(`[data-action="start"]`);
+                        if (startBtn) startBtn.textContent = "Pause";
+                    }
+                }
+            });
+            if (anyRunning) {
+                animationFrameId = requestAnimationFrame(updateRunningTimes);
+            }
+        }
+
+        function render() {
+            container.innerHTML = '';
+            stopwatches.forEach(sw => {
+                const elapsed = sw.running ? Date.now() - sw.startTime : sw.time;
+                const card = document.createElement('div');
+                card.className = `stopwatch ${sw.running ? 'running' : 'paused'}`;
+                card.setAttribute('draggable', true);
+                card.dataset.id = sw.id;
+
+                card.innerHTML = `
         <button class="close-btn" data-action="delete" data-id="${sw.id}">×</button>
         <div class="label">${sw.label}</div>
         <div class="time" id="time-${sw.id}">${formatTime(elapsed)}</div>
@@ -411,85 +458,97 @@
           <button class="start" data-action="start" data-id="${sw.id}">${sw.running ? 'Pause' : 'Start'}</button>
           <button class="reset" data-action="reset" data-id="${sw.id}">Reset</button>
           <button class="lap" data-action="lap" data-id="${sw.id}">Lap</button>
-          ${!sw.running && sw.time>0 ? `<button class="copy" data-action="copy" data-id="${sw.id}">Copy</button>` : ''}
+          ${!sw.running && sw.time > 0 ? `<button class="copy" data-action="copy" data-id="${sw.id}">Copy</button>` : ''}
         </div>
         <div class="copied-msg" id="copied-${sw.id}">Copied!</div>
         <div class="laps">
-          ${sw.laps.map((lap, i) => `<div>Lap ${i+1}: ${lap}</div>`).join('')}
+          ${sw.laps.map((lap, i) => `<div>Lap ${i + 1}: ${lap}</div>`).join('')}
         </div>
       `;
 
-      // Drag events
-      card.addEventListener('dragstart', () => {
-        dragSrcEl = card;
-        card.classList.add('dragging');
-      });
-      card.addEventListener('dragend', () => {
-        card.classList.remove('dragging');
-        const ids = [...container.querySelectorAll('.stopwatch')].map(c => +c.dataset.id);
-        stopwatches.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
-      });
-      card.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        const dragging = document.querySelector('.dragging');
-        if (dragging !== card) {
-          const cards = [...container.querySelectorAll('.stopwatch')];
-          const draggingIndex = cards.indexOf(dragging);
-          const cardIndex = cards.indexOf(card);
-          if (draggingIndex < cardIndex) {
-            container.insertBefore(dragging, card.nextSibling);
-          } else {
-            container.insertBefore(dragging, card);
-          }
+                card.addEventListener('dragstart', () => {
+                    card.classList.add('dragging');
+                });
+                card.addEventListener('dragend', () => {
+                    card.classList.remove('dragging');
+                    const ids = [...container.querySelectorAll('.stopwatch')].map(c => +c.dataset.id);
+                    stopwatches.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+                    saveState();
+                });
+                card.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    const dragging = document.querySelector('.dragging');
+                    if (dragging !== card) {
+                        const cards = [...container.querySelectorAll('.stopwatch')];
+                        const draggingIndex = cards.indexOf(dragging);
+                        const cardIndex = cards.indexOf(card);
+                        if (draggingIndex < cardIndex) {
+                            container.insertBefore(dragging, card.nextSibling);
+                        } else {
+                            container.insertBefore(dragging, card);
+                        }
+                    }
+                });
+
+                container.appendChild(card);
+            });
+
+            updateRunningTimes();
         }
-      });
 
-      container.appendChild(card);
-    });
-  }
+        container.addEventListener('click', (e) => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            const action = btn.dataset.action;
+            const id = +btn.dataset.id;
+            const sw = stopwatches.find(s => s.id === id);
+            if (!sw) return;
 
-  container.addEventListener('click', (e) => {
-    const btn = e.target.closest('button');
-    if (!btn) return;
-    const action = btn.dataset.action;
-    const id = +btn.dataset.id;
-    const sw = stopwatches.find(s => s.id === id);
-    if (!sw) return;
+            switch (action) {
+                case 'start': sw.running ? pauseStopwatch(sw) : startStopwatch(sw); break;
+                case 'reset': resetStopwatch(sw); break;
+                case 'lap': addLap(sw); break;
+                case 'delete': deleteStopwatch(id); break;
+                case 'copy': copyTime(sw); break;
+            }
+        });
 
-    switch(action) {
-      case 'start': sw.running ? pauseStopwatch(sw) : startStopwatch(sw); render(); break;
-      case 'reset': resetStopwatch(sw); break;
-      case 'lap': addLap(sw); break;
-      case 'delete': deleteStopwatch(id); break;
-      case 'copy': copyTime(sw); break;
-    }
-  });
+        // Modal
+        function openModal() {
+            modalOverlay.style.display = 'flex';
+            labelInput.value = '';
+            labelInput.focus();
+        }
+        function closeModal() {
+            modalOverlay.style.display = 'none';
+        }
 
-  // Modal
-  function openModal() {
-    modalOverlay.style.display = 'flex';
-    labelInput.value = '';
-    labelInput.focus();
-  }
-  function closeModal() {
-    modalOverlay.style.display = 'none';
-  }
+        confirmAdd.addEventListener('click', () => {
+            const label = labelInput.value.trim() || `Stopwatch ${stopwatches.length + 1}`;
+            createStopwatch(label);
+            closeModal();
+        });
+        cancelAdd.addEventListener('click', closeModal);
+        labelInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') confirmAdd.click();
+            if (e.key === 'Escape') closeModal();
+        });
 
-  confirmAdd.addEventListener('click', () => {
-    const label = labelInput.value.trim() || `Stopwatch ${stopwatches.length+1}`;
-    createStopwatch(label);
-    closeModal();
-  });
-  cancelAdd.addEventListener('click', closeModal);
-  labelInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') confirmAdd.click();
-    if (e.key === 'Escape') closeModal();
-  });
+        mainAdd.addEventListener('click', openModal);
 
-  mainAdd.addEventListener('click', openModal);
+        // ✅ Sync across tabs
+        window.addEventListener("storage", (e) => {
+            if (e.key === "timeTrackerState") {
+                loadState();
+                render();
+            }
+        });
 
-  render();
-</script>
+        // ✅ Init
+        loadState();
+        render();
+    </script>
+
 
 </body>
 
