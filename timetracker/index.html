@@ -301,6 +301,32 @@
         .time:hover::after {
             opacity: 1;
         }
+
+        .harvest-btn {
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0.6rem 1rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            position: fixed;
+            bottom: 110px;
+            /* sits above the + button */
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0.9;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .harvest-btn:hover {
+            opacity: 1;
+            background: #ffad33;
+            transform: translateX(-50%) scale(1.05);
+        }
     </style>
 </head>
 
@@ -309,7 +335,9 @@
         <button class="add-btn" id="mainAdd">+</button>
         <div class="container" id="container"></div>
     </div>
-
+    <button class="harvest-btn" onclick="window.open('https://smartling.harvestapp.com/time','_blank')">
+        Open Harvest Timer
+    </button>
     <!-- MODAL -->
     <div class="modal-overlay" id="modalOverlay" style="display:none;">
         <div class="modal">
