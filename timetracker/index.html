@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     html {
-      overflow-x: hidden;
+      /* Fix is applied to the body for better containment */
     }
 
     body {
@@ -20,6 +20,8 @@
       display: flex;
       flex-direction: column;
       width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
     }
 
     #app {
