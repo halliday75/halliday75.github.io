@@ -3,29 +3,30 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Time Tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    html {
-      /* Fix is applied to the body for better containment */
-    }
-
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
       color: #fff;
-      min-height: 100vh;
+      /* Lock body to the JS-calculated viewport height and prevent it from scrolling */
+      height: calc(var(--vh, 1vh) * 100);
       display: flex;
       flex-direction: column;
       width: 100%;
       max-width: 100%;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
     #app {
       padding-top: 55px; /* Space for the fixed header */
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      box-sizing: border-box;
     }
 
     #totalTimeDisplay {
@@ -63,10 +64,11 @@
       display: grid;
       gap: 1rem;
       width: 100%;
-      padding: 1rem;
+      padding: 1rem 1rem 150px 1rem; /* Added bottom padding for fixed elements */
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       box-sizing: border-box;
       flex: 1;
+      overflow-y: auto; /* Make this the primary scrollable area */
     }
 
     /* Centered plus button bottom center */
@@ -82,8 +84,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      position: fixed;
-      bottom: 20px;
+      position: fixed;      
+      bottom: calc(20px + env(safe-area-inset-bottom));
       left: 50%;
       transform: translateX(-50%);
       opacity: 0.85;
@@ -160,6 +162,7 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       transition: transform 0.2s ease, box-shadow 0.3s ease, border 0.3s ease;
       border: 2px solid rgba(255, 255, 255, 0.1);
+      max-height: 300px;
     }
 
     .stopwatch:hover {
@@ -281,7 +284,7 @@
     }
 
     .laps {
-      max-height: 110px;
+      max-height: 150px;
       overflow-y: auto;
       font-size: 0.8rem;
       text-align: left;
@@ -379,8 +382,11 @@
 
     /* History Styles */
     #historyContainer {
-      padding: 1rem;
+      padding: 1rem 1rem 150px 1rem; /* Added bottom padding */
       color: #fff;
+      /* Make this scrollable as well */
+      flex: 1;
+      overflow-y: auto;
     }
 
     #historyContainer h2 {
@@ -599,6 +605,17 @@
   </div>
 
   <script>
+    // --- Mobile Viewport Height Fix ---
+    // Sets a CSS variable --vh to the actual inner height of the window.
+    // This avoids layout shifts on mobile when browser UI (like the address bar) appears/disappears.
+    function setViewportHeight() {
+      let vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+    // --- End Fix ---
+
     const container = document.getElementById('container');
     const mainAdd = document.getElementById('mainAdd');
     const modalOverlay = document.getElementById('modalOverlay');
