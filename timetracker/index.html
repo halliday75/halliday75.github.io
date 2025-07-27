@@ -69,7 +69,7 @@
       box-sizing: border-box;
       flex: 1;
       overflow-y: auto; /* Make this the primary scrollable area */
-      overflow-x: clip;;
+      overflow-x: clip;
     }
 
     /* Centered plus button bottom center */
@@ -191,6 +191,59 @@
       opacity: 0.5;
     }
 
+    /* List View Styles */
+    .container.list-view {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .container.list-view .stopwatch {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      gap: 1rem;
+      max-height: none;
+    }
+
+    .container.list-view .stopwatch .label {
+      flex-grow: 1;
+      margin: 0;
+      min-width: 0; /* Allow label to shrink and not cause overflow */
+      overflow-wrap: break-word; /* Prevent long labels from overlapping */
+    }
+
+    .container.list-view .stopwatch .label-edit-input {
+      flex-grow: 1;
+      margin: 0;
+      text-align: left;
+      width: auto;
+    }
+
+    .container.list-view .stopwatch .time {
+      font-size: 1.5rem;
+      margin: 0;
+      flex-shrink: 0;
+    }
+
+    .container.list-view .stopwatch .buttons {
+      margin: 0;
+      /* flex-shrink: 0; // Removed to allow buttons to wrap on small screens */
+    }
+
+    .container.list-view .stopwatch .close-btn {
+      position: static;
+      order: 5;
+      padding: 0.5rem;
+    }
+
+    .container.list-view .stopwatch .laps,
+    .container.list-view .stopwatch .copied-msg {
+      display: none;
+    }
+
     .close-btn {
       position: absolute;
       top: 0.5rem;
@@ -213,6 +266,20 @@
       font-size: 1.1rem;
       color: #ddd;
       cursor: pointer;
+    }
+
+    .label-edit-input {
+      width: 90%;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid #fff;
+      color: #fff;
+      border-radius: 0.3rem;
+      padding: 0.2rem;
+      outline: none;
+      box-sizing: border-box;
     }
 
     .time {
@@ -515,6 +582,20 @@
         font-size: 2.2rem;
       }
 
+      /* On mobile, stack list view items vertically for better readability */
+      .container.list-view .stopwatch {
+        flex-direction: column;
+        align-items: flex-start;
+        position: relative; /* Ensure close button is positioned correctly */
+      }
+
+      /* Put close button back in the top right for mobile list view */
+      .container.list-view .stopwatch .close-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+      }
+
       /* Make history table responsive */
       #historyTable { border: none; }
       #historyTable thead { display: none; }
@@ -545,6 +626,7 @@
     <header class="main-header">
       <div class="header-title">Time Tracker</div>
       <div class="header-actions">
+        <button id="toggleLayoutBtn" data-tooltip="Switch to List View">List</button>
         <button id="toggleViewBtn" data-tooltip="Toggle History View">History</button>
         <a href="https://smartling.harvestapp.com/time" target="_blank" rel="noopener" data-tooltip="Open Harvest Timer" id="openHarvestBtn">Harvest</a>
       </div>
@@ -634,6 +716,7 @@
     const totalTimeDisplay = document.getElementById('totalTimeDisplay');
     const totalTimeValue = document.getElementById('totalTimeValue');
 
+    const toggleLayoutBtn = document.getElementById('toggleLayoutBtn');
     const toggleViewBtn = document.getElementById('toggleViewBtn');
     const historyContainer = document.getElementById('historyContainer');
     const exportCsvBtn = document.getElementById('exportCsvBtn');
@@ -648,6 +731,7 @@
     let draggedId = null;
     let selectedStopwatchId = null;
     let selectedModalButtonIndex = 0;
+    let isListView = false;
 
     // Save stopwatches state
     function saveState() {
@@ -688,6 +772,22 @@
         } catch {
           history = [];
         }
+      }
+    }
+
+    function loadLayout() {
+      const savedLayout = localStorage.getItem('timeTrackerLayout');
+      if (savedLayout === 'list') {
+        isListView = true;
+        container.classList.add('list-view');
+        toggleLayoutBtn.textContent = 'Grid';
+        toggleLayoutBtn.setAttribute('data-tooltip', 'Switch to Grid View');
+      } else {
+        // Default is grid
+        isListView = false;
+        container.classList.remove('list-view');
+        toggleLayoutBtn.textContent = 'List';
+        toggleLayoutBtn.setAttribute('data-tooltip', 'Switch to List View');
       }
     }
 
@@ -1085,6 +1185,21 @@
       if (e.key === 'Escape') cancelAdd.click();
     });
 
+    toggleLayoutBtn.addEventListener('click', () => {
+      isListView = !isListView;
+      container.classList.toggle('list-view', isListView);
+      if (isListView) {
+        localStorage.setItem('timeTrackerLayout', 'list');
+        toggleLayoutBtn.textContent = 'Grid';
+        toggleLayoutBtn.setAttribute('data-tooltip', 'Switch to Grid View');
+      } else {
+        localStorage.setItem('timeTrackerLayout', 'grid');
+        toggleLayoutBtn.textContent = 'List';
+        toggleLayoutBtn.setAttribute('data-tooltip', 'Switch to List View');
+      }
+      render(); // Re-render to recalculate grid nav if needed
+    });
+
     toggleViewBtn.addEventListener('click', () => {
       showingHistory = !showingHistory;
       if (showingHistory) {
@@ -1094,7 +1209,7 @@
         renderHistory();
       } else {
         historyContainer.style.display = 'none';
-        container.style.display = 'grid';
+        container.style.display = '';
         toggleViewBtn.textContent = 'History';
       }
     });
@@ -1373,6 +1488,7 @@
     // Load data on start
     loadState();
     loadHistory();
+    loadLayout();
     render();
 
   </script>
