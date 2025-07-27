@@ -1,0 +1,602 @@
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      /* Lock body to the JS-calculated viewport height and prevent it from scrolling */
+      height: calc(var(--vh, 1vh) * 100);
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    #app {
+      padding-top: 55px; /* Space for the fixed header */
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      box-sizing: border-box;
+    }
+
+    #totalTimeDisplay {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      background: rgba(15, 32, 39, 0.8);
+      backdrop-filter: blur(5px);
+      color: #eee;
+      text-align: center;
+      padding: 0.5rem 1rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      z-index: 15;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      transform: translateX(-50%) translateY(100%);
+      opacity: 0;
+      pointer-events: none; /* Allow clicks to pass through */
+    }
+
+    #totalTimeDisplay.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    #totalTimeValue {
+      font-family: monospace;
+      color: #00ff88;
+      margin-left: 0.5rem;
+    }
+
+    .container {
+      display: grid;
+      gap: 1rem;
+      width: 100%;
+      padding: 1rem 1rem 150px 1rem; /* Added bottom padding for fixed elements */
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      box-sizing: border-box;
+      flex: 1;
+      overflow-y: auto; /* Make this the primary scrollable area */
+      overflow-x: clip;
+    }
+
+    /* Centered plus button bottom center */
+    .add-btn {
+      background: #4cafef;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      font-size: 2.2rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: fixed;      
+      bottom: calc(20px + env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0.85;
+      z-index: 10;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .add-btn:hover {
+      opacity: 1;
+      background: #6fc0ff;
+      transform: translateX(-50%) scale(1.05);
+    }
+
+    .main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      background: rgba(15, 32, 39, 0.9);
+      backdrop-filter: blur(8px);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 15;
+      box-sizing: border-box;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .header-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .header-actions button,
+    #exportButtons button,
+    .header-actions a {
+      padding: 0.6rem 1rem;
+      font-weight: 600;
+      border-radius: 2rem;
+      border: none;
+      background: #6fc0ff;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+      font-size: 1rem;
+      user-select: none;
+    position: relative; /* For tooltip positioning */
+    }
+
+    .header-actions button:hover,
+    .header-actions a:hover {
+      background: #4ea1df;
+    }
+
+    .stopwatch {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+      border-radius: 1rem;
+      padding: 1rem;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.3s ease, border 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      max-height: 300px;
+    }
+
+    .stopwatch:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Running = Green Glow */
+    .stopwatch.running {
+      border: 2px solid #00ff88;
+      box-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88 inset;
+    }
+
+    /* Paused/Stopped = Red Border */
+    .stopwatch.paused {
+      border: 2px solid #ff4b5c;
+    }
+
+    /* Selected with Keyboard */
+    .stopwatch.selected {
+      outline: 3px solid #4cafef;
+      box-shadow: 0 0 15px #4cafef, 0 0 25px #4cafef inset;
+    }
+
+    .stopwatch.dragging {
+      opacity: 0.5;
+    }
+
+    /* List View Styles */
+    .container.list-view {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .container.list-view .stopwatch {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      gap: 1rem;
+      max-height: none;
+    }
+
+    .container.list-view .stopwatch .label {
+      flex-grow: 1;
+      margin: 0;
+      min-width: 0; /* Allow label to shrink and not cause overflow */
+      overflow-wrap: break-word; /* Prevent long labels from overlapping */
+    }
+
+    .container.list-view .stopwatch .label-edit-input {
+      flex-grow: 1;
+      margin: 0;
+      text-align: left;
+      width: auto;
+    }
+
+    .container.list-view .stopwatch .time {
+      font-size: 1.5rem;
+      margin: 0;
+      flex-shrink: 0;
+    }
+
+    .container.list-view .stopwatch .buttons {
+      margin: 0;
+      /* flex-shrink: 0; // Removed to allow buttons to wrap on small screens */
+    }
+
+    .container.list-view .stopwatch .close-btn {
+      position: static;
+      order: 5;
+      padding: 0.5rem;
+    }
+
+    .container.list-view .stopwatch .laps,
+    .container.list-view .stopwatch .copied-msg {
+      display: none;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: none;
+      color: #bbb;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .close-btn:hover {
+      color: #ff4b5c;
+    }
+
+    .label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+      color: #ddd;
+      cursor: pointer;
+    }
+
+    .label-edit-input {
+      width: 90%;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid #fff;
+      color: #fff;
+      border-radius: 0.3rem;
+      padding: 0.2rem;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .time {
+      font-size: 2.5rem;
+      font-weight: 600;
+      font-family: monospace;
+      margin-bottom: 0.8rem;
+      color: #fff;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .buttons button {
+      padding: 0.4rem 0.7rem;
+      border: none;
+      border-radius: 2rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      min-width: 70px;
+    }
+
+    .start {
+      background: #4caf50;
+      color: white;
+    }
+
+    .start:hover {
+      background: #5cd75e;
+    }
+
+    .reset {
+      background: #ff9800;
+      color: white;
+    }
+
+    .reset:hover {
+      background: #ffb347;
+    }
+
+    .lap {
+      background: #2196f3;
+      color: white;
+    }
+
+    .lap:hover {
+      background: #64b5f6;
+    }
+
+    .copied-msg {
+      font-size: 0.8rem;
+      color: #9cff9c;
+      margin-top: 0.3rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      user-select: none;
+    }
+
+    .copied-msg.show {
+      opacity: 1;
+    }
+
+    .laps {
+      max-height: 150px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+      text-align: left;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .laps div {
+      margin-bottom: 0.3rem;
+      padding: 0.2rem 0.4rem;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 0.3rem;
+    }
+
+    /* Scrollbar */
+    .laps::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .laps::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+    }
+
+    .modal {
+      background: #2b3a44;
+      padding: 1rem;
+      border-radius: 0.6rem;
+      text-align: center;
+      min-width: 260px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal h3 {
+      margin-top: 0;
+      color: #fff;
+    }
+
+    .modal input {
+      width: 90%;
+      padding: 0.5rem;
+      margin-bottom: 0.7rem;
+      border: none;
+      border-radius: 0.3rem;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .modal button {
+      padding: 0.4rem 0.8rem;
+      margin: 0 0.2rem;
+      border: none;
+      border-radius: 2rem;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .modal button.selected-btn {
+      outline: 2px solid #6fc0ff;
+      box-shadow: 0 0 8px #6fc0ff;
+    }
+
+    .confirm {
+      background: #4caf50;
+      color: white;
+    }
+
+    .cancel {
+      background: #777;
+      color: white;
+    }
+
+    .confirm:hover {
+      background: #5cd75e;
+    }
+
+    .cancel:hover {
+      background: #999;
+    }
+
+    /* History Styles */
+    #historyContainer {
+      padding: 1rem 1rem 150px 1rem; /* Added bottom padding */
+      color: #fff;
+      /* Make this scrollable as well */
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    #historyContainer h2 {
+      margin-top: 0;
+    }
+
+    #exportButtons {
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 10px;
+    }
+
+    #historyTable {
+      border: none;
+      width: 100%;
+    }
+
+    #historyTable thead {
+      display: none;
+    }
+
+    #historyTable tr {
+      display: block;
+      margin-bottom: 1rem;
+      border-radius: 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.5rem;
+    }
+
+    #historyTable td {
+      display: block; text-align: right; border: none;
+      padding: 0.5rem; position: relative;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #historyTable td:last-child { border-bottom: none; }
+    #historyTable td::before { content: attr(data-label); position: absolute; left: 0.5rem; font-weight: 600; color: #bbb; }
+
+    #historyTable .history-actions {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .history-restore-btn {
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 2rem;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: background 0.2s ease;
+      position: relative;
+    }
+
+    .history-restore-btn:hover { background: #5cd75e; }
+
+    .history-copy-btn {
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 2rem;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: background 0.2s ease;
+      position: relative;
+    }
+    .history-copy-btn:hover { background: #64b5f6; }
+
+    .history-delete-btn {
+      background: #ff4b5c;
+      color: white;
+      border: none;
+      border-radius: 2rem;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: background 0.2s ease;
+      position: relative;
+    }
+    .history-delete-btn:hover {
+      background: #e53e4f;
+    }
+
+    /* Custom Tooltip Styles */
+    [data-tooltip]::before,
+    [data-tooltip]::after {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 100;
+    }
+
+    [data-tooltip]::after {
+      content: attr(data-tooltip);
+      bottom: calc(100% + 5px);
+      transform: translateX(-50%) translateY(-5px);
+      background-color: #2c3e50;
+      color: #fff;
+      padding: 0.4em 0.8em;
+      border-radius: 0.3rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      white-space: nowrap;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    /* Tooltip Arrow */
+    [data-tooltip]::before {
+      content: '';
+      bottom: 100%;
+      border: 5px solid transparent;
+      border-top-color: #2c3e50;
+      transform: translateX(-50%) translateY(-5px);
+    }
+
+    [data-tooltip]:hover::before,
+    [data-tooltip]:hover::after {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 680px) {
+      /* Adjust main timer font size to prevent overflow */
+      .time {
+        font-size: 2.2rem;
+      }
+
+      /* On mobile, stack list view items vertically for better readability */
+      .container.list-view .stopwatch {
+        flex-direction: column;
+        align-items: flex-start;
+        position: relative; /* Ensure close button is positioned correctly */
+      }
+
+      /* Put close button back in the top right for mobile list view */
+      .container.list-view .stopwatch .close-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+      }
+
+      /* History table is now always in card view, so no specific mobile styles are needed here. */
+    }
