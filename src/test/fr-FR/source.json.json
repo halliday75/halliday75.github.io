@@ -1,0 +1,118 @@
+{
+  "smartling" : {
+    "translate_paths" : [
+    {
+      "path" : "*",
+      "exclude_path" : "*/category"
+    },
+
+    {
+      "path" : "*",
+      "exclude_path" : "*/created"
+    },
+
+    {
+      "path" : "*",
+      "exclude_path" : "*/version"
+    }]
+  },
+  "samplePrompts" : [
+  {
+    "category" : "EvaluateRequirementQuality",
+    "title" : "Audit multidimensionnel",
+    "description" : "Directives pour analyser les exigences sous de nombreux angles différents.",
+    "instructions" : ["Donne les 10 meilleures suggestions d'améliorations à partir de différents points de vue :", "", "-Flux utilisateur : recherchez des informations détaillées sur le flux utilisateur et la logique de l'application", "-Cohérence : vérifie la cohérence logique et l'absence de contradictions", "-Pertinence : vérifie si l'exigence met clairement en évidence les besoins de l'utilisateur", "-Justification : vérifie si cela explique pourquoi c'est nécessaire et quel problème cela permet de résoudre", "-Clarté : Vérifiez la précision et la clarté de la Déscription des exigences", "-Critères : Vérifiez s'il existe des critères d'acceptation mesurables et réalisables", "-Exhaustivité : vérifier l'inclusion de toutes les fonctionnalités critiques", "-Prérequis : remarque l'absence de prérequis ou de conditions nécessaires avant la mise en œuvre", "-Sécurité : vérifie si cette exigence répond de manière adéquate aux problèmes de sécurité et de confidentialité", "-Conformité : vérifiez tout problème de conformité légale et réglementaire potentiel", "-Éthique : vérifie si les exigences favorisent un comportement juste et responsable", "-Terminologie : vérifier l'utilisation d'un langage clair, inclusif et compris par tous", "-Performances : vérifiez les indicateurs de performance et les points de référence clairs"],
+    "created" : "2024-05-30",
+    "version" : "1.0.0"
+  },
+
+  {
+    "category" : "EvaluateRequirementQuality",
+    "title" : "Évaluation des performances",
+    "description" : "Directives pour analyser les exigences relatives aux aspects liés aux performances.",
+    "instructions" : ["Dégage les 10 meilleures suggestions d'amélioration en te concentrant uniquement sur les aspects liés aux performances :", "", "-Heure : vérifie si les temps de réponse spécifiques sont détaillés dans les différentes conditions de charge", "-Débit : vérifie si les débits attendus sont clairement spécifiés", "-Évolutivité : vérifie si l'exigence concerne l'évolutivité face à des charges croissantes", "-Utilisation des ressources : vérifie si les limites d'utilisation du processeur, de la mémoire et du stockage sont définies", "-Efficacité : vérifie si cette exigence favorise une utilisation efficace des ressources", "-Gestion de la charge : vérifie si des stratégies pour gérer les pics de charge sont incluses", "-Simultanéité : vérifie si les comportements sont spécifiés dans le cadre de scénarios utilisateur simultanés", "-Latence : vérifie si les valeurs de latence maximales acceptables sont clairement indiquées", "-Stabilité : vérifie si la stabilité en cas de stress est prise en compte", "-Capacité : vérifie si les limites de capacité maximale du système sont spécifiées"],
+    "created" : "2024-05-30",
+    "version" : "1.0.0"
+  },
+
+  {
+    "category" : "EvaluateRequirementQuality",
+    "title" : "Évaluation de la sécurité",
+    "description" : "Directives pour l'analyse des exigences relatives aux aspects liés à la sécurité.",
+    "instructions" : ["Dégage les 10 meilleures suggestions d'améliorations en se concentrant uniquement sur les aspects de sécurité :", "", "-Accès : vérifie si les personnes qui peuvent accéder à l'application et dans quelles conditions sont claires", "-Protection : vérifie si les mesures de stockage sécurisé de cryptage et d'anonymisation & sont définies", "-Authentification : vérifie si la vérification d'identité et les contrôles des autorisations sont inclus", "-Vulnérabilité : vérifie si les mesures prises pour remédier aux vulnérabilités connues sont prises", "-Transmission : vérifie si les transmissions de données cryptées sont obligatoires", "-Enregistrement : vérifie si des dispositions détaillées en matière de journalisation et de surveillance sont incluses", "-Conformité : vérifie si le respect des normes de sécurité pertinentes est garanti", "-Erreurs : vérifie si des pratiques de gestion sécurisée des erreurs sont spécifiées", "-Réponse : vérifie s'il existe des protocoles pour répondre aux incidents de sécurité"],
+    "created" : "2024-05-30",
+    "version" : "1.0.0"
+  },
+
+  {
+    "category" : "GenerateTestsFromRequirement",
+    "title" : "Tests de valeurs limites",
+    "description" : "Les directives pour la génération de tests se sont concentrées sur les tests de valeurs limites.",
+    "instructions" : ["Définis des plages valides et identifie les valeurs minimale, maximale et limite pour chaque entrée.", "Concentrez les cas de teste sur ces valeurs limites, y compris juste à l’intérieur et à l’extérieur des plages valides.", "Couvrez les limites de plage les plus basses, les plus élevées et les subdivisées dans vos cas de teste.", "Veille à ce que toutes les limites des champs de saisie de l'application soient testées."],
+    "created" : "2024-05-30",
+    "version" : "1.0.0"
+  },
+
+  {
+    "category" : "GenerateTestsFromRequirement",
+    "title" : "Détection de problèmes insaisissable",
+    "description" : "Instructions pour générer des testes afin de trouver des problèmes insaisissables.",
+    "instructions" : ["Ne générez que des scénarios de teste non conventionnels mais plausibles pour révéler les problèmes cachés.", "Concentrez-vous sur des scénarios de test souvent manqués dans les tests standard, ce qui nécessite des informations plus approfondies.", "Remettez en question la conception du système et les hypothèses relatives au comportement des utilisateurs pour identifier les points faibles.", "Utiliser un large éventail de comportements des utilisateurs, y compris des comportements atypiques, pour détecter les problèmes."],
+    "created" : "2024-05-30",
+    "version" : "1.0.0"
+  },
+
+  {
+    "category" : "GenerateTestsFromRequirement",
+    "title" : "Vérification du flux de bout en bout",
+    "description" : "Directives pour la génération de testes de bout en bout à partir de diagrammes de flux.",
+    "instructions" : ["Vérifiez chaque chemin d’accès unique dans le diagramme de flux en tant que teste distinct.", "Concentrez-vous exclusivement sur le test des chemins de bout en bout dans le schéma.", "Assurez-vous que chaque cas de teste représente un parcours complet, du début à la fin.", "Obtenez une couverture complète en testant chaque trajet complet figurant sur le schéma."],
+    "created" : "2024-05-30",
+    "version" : "1.0.0"
+  },
+
+  {
+    "category" : "GenerateTestsFromRequirement",
+    "title" : "Génération d’idées de Test rapide",
+    "description" : "Directives pour générer de nombreuses idées à tester rapidement.",
+    "instructions" : ["Ne créez pas d’étapes de teste, mais uniquement des titres de cas de teste.", "Limitez les titres des cas de teste à un maximum de 12 mots.", "Créez un minimum de 50 cas de teste créatifs."],
+    "created" : "2024-05-30",
+    "version" : "1.0.0"
+  },
+
+  {
+    "category" : "GenerateTestsFromRequirement",
+    "title" : "Tests de scénarios E2E valides",
+    "description" : "Instructions pour la génération de testes pour des scénarios de bout en bout valides uniquement.",
+    "instructions" : ["Créez des cas de teste exclusivement pour des parcours utilisateur valides et complets.", "Évitez les cas de teste pour les validations d’entrée ou de champ non valides.", "Créez les résultats attendus pour chaque étape de teste dans chaque cas de teste.", "Gardez les titres des cas de teste en moins de 6 mots, en vous assurant qu’ils sont clairs et informatifs."],
+    "created" : "2024-05-30",
+    "version" : "1.0.0"
+  },
+
+  {
+    "category" : "GenerateTestsFromSapTransaction",
+    "title" : "Tests des processus métier SAP",
+    "description" : "Instructions pour la génération de cas de teste SAP Business.",
+    "instructions" : ["Concentrez-vous sur des scénarios commerciaux SAP valides et réalistes.", "Fournis des exemples de valeurs pour tous les champs obligatoires. Utilise des valeurs réalistes dérivées des données de base ou des tableaux de configuration.", "Pour les champs facultatifs, ajoute une note indiquant qu'ils peuvent être ignorés sauf indication contraire.", "Évitez les cas de teste en bord et les entrées non valides.", "Créez les 5 meilleurs cas de teste avec les résultats attendus."],
+    "created" : "2024-05-30",
+    "version" : "1.0.0"
+  },
+
+  {
+    "category" : "ImportTestCases",
+    "title" : "Importation de Tests de premier coup d’œil",
+    "description" : "Instructions pour l’importation d’un certain nombre de cas de teste manuel à partir d’Excel.",
+    "instructions" : ["Importez uniquement les cas de teste à partir de la première feuille.", "Étiquetez tous les testes importés avec autopilot-imported."],
+    "created" : "2024-11-05",
+    "version" : "1.0.0"
+  },
+
+  {
+    "category" : "FindObsoleteTests",
+    "title" : "Détection des teste obsolètes",
+    "description" : "Lignes directrices pour identifier les tests obsolètes ou non pertinents dans une exigence de teste d’application.",
+    "instructions" : ["Identifiez et marquez les testes qui valident les fonctionnalités, les fonctionnalités ou les API qui ont été dépréciées ou supprimées du système.", "Identifiez les tests qui dupliquent la couverture de la même fonctionnalité sans ajouter de validation ou de valeur unique. Référence croisée avec les exigences mises à jour pour confirmer la pertinence.", "Signalez les testes ciblant des plates-formes, des configurations ou des environnements non pris en charge (par exemple, des navigateurs, des systèmes d’exploitation obsolètes ou du matériel qui n’est plus utilisé).", "Marquez les teste qui sont incompatibles avec l’environnement système actuel ou qui reposent sur des dépendances obsolètes (par exemple, des bibliothèques ou des outils qui ne sont plus pris en charge).", "Vérifiez que chaque cas de teste renvoie aux critères d’acceptation clés actuels de l’exigence. Signalez les teste qui manquent de traçabilité claire ou qui ne reflètent plus les exigences mises à jour.", "Examinez les cas de teste pour vous assurer que leurs étapes s’alignent sur le comportement actuel du système, tel que défini dans les exigences mises à jour. Signale ceux dont les étapes sont dépassées ou mal alignées."],
+    "created" : "2025-05-19",
+    "version" : "1.0.0"
+  }]
+}
