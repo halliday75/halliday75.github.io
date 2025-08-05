@@ -10,7 +10,7 @@
             "type"                      : "JSON",
             "authorizeContent"          : true,
             "pathRegex"                 : "src\\/test\\/source\\.json",
-            "translationPathExpression" : "src/test/${locale}.${originalFile.extension}",
+            "translationPathExpression" : "src/test/${locale}/${originalFile.name}.${originalFile.extension}",
             "translationCommitMessage"  : "Task TRN-18 translate ${originalFile.name} to ${locale}\n${translatedFile.fullName}"
 	    "smartlingDirectives"       : [
 				 "smartling.placeholder_format_custom = ([a-zA-Z _=]*= \"(?=[a-zA-Z _=:]*\"))|(\"$)"
