@@ -9,7 +9,7 @@
          {
             "type"                      : "JSON",
             "authorizeContent"          : true,
-            "pathRegex"                 : "src\\/test\\/en\\.json",
+            "pathRegex"                 : "src\\/test\\/source\\.json",
             "translationPathExpression" : "src/test/${locale}.${originalFile.extension}",
             "translationCommitMessage"  : "Task TRN-18 translate ${originalFile.name} to ${locale}\n${translatedFile.fullName}"
 	    "smartlingDirectives"       : [
