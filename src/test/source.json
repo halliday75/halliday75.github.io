@@ -2,16 +2,16 @@
   "smartling" : {
     "translate_paths" : [
       {
-        "path" : "$.*",
-        "exclude_path" : "$.category"
+        "path" : "*",
+        "exclude_path" : "*/category"
       },    
       {
-        "path" : "$.*",
-        "exclude_path" : "$.created"
+        "path" : "*",
+        "exclude_path" : "*/created"
       },
-    {
-        "path" : "$.*",
-        "exclude_path" : "$.version"
+{
+        "path" : "*",
+        "exclude_path" : "*/version"
       }
     ]
   },
