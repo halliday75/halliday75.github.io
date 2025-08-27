@@ -1,0 +1,40 @@
+<html>
+  <head>
+    
+  </head>
+  <body>
+     <script type="text/javascript">
+            (function () {
+                function characterDecode(html) {
+                    var textstring = document.createElement('textarea');
+                    textstring.innerHTML = html;
+                    return textstring.value;
+                }
+
+                try {
+
+                    var aemBehaviorConfig = JSON.parse("{\x22search\x22:{\x22chainCode\x22:\x22hi\x22,\x22localeCode\x22:\x22pt\u002DPT\x22,\x22behavior\x22:\x22OPEN\x22,\x22brands\x22:[],\x22amenities\x22:[],\x22authorList\x22:[],\x22hotelCode\x22:\x22faoab\x22,\x22buttonText\x22:\x22View prices\x22,\x22manageReservationsLink\x22:true,\x22campaign\x22:{\x22bookingWindow\x22:0,\x22highlightPreferredRateResults\x22:false,\x22additionalRates\x22:[]},\x22filterResults\x22:{\x22by\x22:\x22NONE\x22,\x22includeBrands\x22:[],\x22includeLocations\x22:[],\x22includeHotels\x22:[]},\x22advanced\x22:{\x22isCollapsed\x22:true},\x22destination\x22:{\x22hotelCode\x22:\x22faoab\x22,\x22isHidden\x22:true},\x22dates\x22:{\x22disabledWeekdays\x22:[],\x22maxStay\x22:99,\x22isHidden\x22:false,\x22checkIn\x22:{},\x22checkOut\x22:{}},\x22adults\x22:{\x22default\x22:1,\x22min\x22:1,\x22max\x22:20,\x22isReadOnly\x22:false},\x22children\x22:{\x22default\x22:0,\x22min\x22:0,\x22max\x22:20,\x22isReadOnly\x22:false},\x22rooms\x22:{\x22Rooms\x22:\x22Rooms\x22,\x22default\x22:1,\x22min\x22:1,\x22max\x22:9,\x22isReadOnly\x22:false},\x22rates\x22:{\x22isHidden\x22:false,\x22hideDefaultRates\x22:true,\x22selectedRate\x22:\x22\x22,\x22additionalRates\x22:[],\x22displayPriceInPointsAndCash\x22:false},\x22corporateId\x22:{\x22isHidden\x22:false,\x22default\x22:\x22\x22},\x22iata\x22:{\x22isHidden\x22:false,\x22default\x22:\x22\x22},\x22groupCode\x22:{\x22isHidden\x22:false,\x22default\x22:\x22\x22}},\x22marketingContent\x22:{\x22innerHtml\x22:\x22\x22,\x22isHidden\x22:false}}") || undefined,
+                        // the need to keep the hotelname is priority when dealing with Hotel Detail pages
+                        // removal of this code should be avoided unless app is handling appropriately
+                        hotelname = document.querySelector('#hotelName') || document.querySelector('#hotelname'),
+                        hotelNameFallback = hotelname ? hotelname.value : '';
+
+                    if (aemBehaviorConfig.search.destination.title != "" && aemBehaviorConfig.search.destination.title != undefined) {
+                        aemBehaviorConfig.search.destination.title = characterDecode(aemBehaviorConfig.search.destination.title);
+                    } else {
+                        aemBehaviorConfig.search.destination.title = characterDecode(hotelNameFallback);
+                    }
+
+                    window["BehaviorConfig"] = {behaviorConfig: aemBehaviorConfig};
+
+                    window.getBehaviorConfig = function () {
+                        return aemBehaviorConfig
+                    };
+
+                } catch (errormsg) {
+                    console.error('error loading aem-booking-kernal: ', errormsg);
+                }
+            })();
+        </script>
+  </body>
+</html>
