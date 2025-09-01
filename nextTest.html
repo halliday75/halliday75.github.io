@@ -1,0 +1,74 @@
+<html>
+  <head></head>
+  <body>
+    <script>
+        window.wp$.getScript('https://paymentgateway.next.co.uk/WorldPayGatewayMVC/js/payment-view.min.js?v=202508261152', function () {
+            var model = {"TransactionGuid":"b4fa50fd-1846-4b89-81f4-abbfebb93e46","TokenGuid":null,"LanguageCode":"zh","ParentElementId":"3d843734-0281-404f-bb1b-aa2c1e23e1d6","FrameId":"b42159ed-2692-4513-8efd-e33cd623fd9a","IsRedirectRequired":false,"PaymentMethodType":0,"Mac":"5f4f6b3aeb34472b8a26e1cf1e1f2a742547067bbc7f239bbe25abeb6638094b","GenericUrl":"https://paymentgateway.next.co.uk/WorldPayGatewayMVC","DdcSessionId":null,"SystemType":null,"StyleName":"Default","SaveCardText":"I would like to securely save my card for next time","IsRightToLeft":false,"RequestBrowser":{"BrowserHeight":null,"BrowserWidth":null},"ParentScriptPath":null,"ParentScriptUrl":null,"ShowPaymentValueBox":false,"IsInternational":false,"EnvironmentUrl":null,"FrameUrl":null,"AntiForgeryToken":null,"PaymentsCdn":"https://xcdn.next.co.uk/content/Payments","RetryLimit":3,"CachingDurationSeconds":3600};
+            model.RequestBrowser.BrowserHeight = window.screen.height;
+            model.RequestBrowser.BrowserWidth = window.screen.width;
+            window.wp$.ajax({
+                url: "https://paymentgateway.next.co.uk/WorldPayGatewayMVC/Payments/BuildSession",
+                type: "POST",
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                tryCount: 1,
+                success: function (result) {
+
+                    // Verify if there has been a handshake error. If there has, redirect the customer to the error page.
+                    if (IsNullOrWhiteSpace(result.paymentUrl) && !IsNullOrWhiteSpace(result.handshakeErrorCode)) {
+                        transactionLogging.logEvent(
+                            "https://paymentgateway.next.co.uk/WorldPayGatewayMVC",
+                            "b4fa50fd-1846-4b89-81f4-abbfebb93e46",
+                            transactionLogging.transactionEventType.Error,
+                            result.paymentRef,
+                            getErrorObject("CreateSessionView.BuildSession.HandshakeError", result),
+                            transactionLogging.payloadType.Exception);
+
+                        ReplaceContent("https://paymentgateway.next.co.uk/WorldPayGatewayMVC/Error/Error?isRedirectRequired=False&amp;systemType=", "3d843734-0281-404f-bb1b-aa2c1e23e1d6", false);
+
+                    } else {
+                        if (result.integrationType === 1 && result.worldPayDirectIntegrationValues != null && result.worldPayDirectIntegrationValues.isChallengeRequired) {
+                            directChallenge(result, {"TransactionGuid":"b4fa50fd-1846-4b89-81f4-abbfebb93e46","TokenGuid":null,"LanguageCode":"zh","ParentElementId":"3d843734-0281-404f-bb1b-aa2c1e23e1d6","FrameId":"b42159ed-2692-4513-8efd-e33cd623fd9a","IsRedirectRequired":false,"PaymentMethodType":0,"Mac":"5f4f6b3aeb34472b8a26e1cf1e1f2a742547067bbc7f239bbe25abeb6638094b","GenericUrl":"https://paymentgateway.next.co.uk/WorldPayGatewayMVC","DdcSessionId":null,"SystemType":null,"StyleName":"Default","SaveCardText":"I would like to securely save my card for next time","IsRightToLeft":false,"RequestBrowser":{"BrowserHeight":null,"BrowserWidth":null},"ParentScriptPath":null,"ParentScriptUrl":null,"ShowPaymentValueBox":false,"IsInternational":false,"EnvironmentUrl":null,"FrameUrl":null,"AntiForgeryToken":null,"PaymentsCdn":"https://xcdn.next.co.uk/content/Payments","RetryLimit":3,"CachingDurationSeconds":3600});
+                        }
+                        else if (result.integrationType === 1) {
+                            directPayment(result, {"TransactionGuid":"b4fa50fd-1846-4b89-81f4-abbfebb93e46","TokenGuid":null,"LanguageCode":"zh","ParentElementId":"3d843734-0281-404f-bb1b-aa2c1e23e1d6","FrameId":"b42159ed-2692-4513-8efd-e33cd623fd9a","IsRedirectRequired":false,"PaymentMethodType":0,"Mac":"5f4f6b3aeb34472b8a26e1cf1e1f2a742547067bbc7f239bbe25abeb6638094b","GenericUrl":"https://paymentgateway.next.co.uk/WorldPayGatewayMVC","DdcSessionId":null,"SystemType":null,"StyleName":"Default","SaveCardText":"I would like to securely save my card for next time","IsRightToLeft":false,"RequestBrowser":{"BrowserHeight":null,"BrowserWidth":null},"ParentScriptPath":null,"ParentScriptUrl":null,"ShowPaymentValueBox":false,"IsInternational":false,"EnvironmentUrl":null,"FrameUrl":null,"AntiForgeryToken":null,"PaymentsCdn":"https://xcdn.next.co.uk/content/Payments","RetryLimit":3,"CachingDurationSeconds":3600});
+                        }
+                        else {
+                            hppPayment(result, {"TransactionGuid":"b4fa50fd-1846-4b89-81f4-abbfebb93e46","TokenGuid":null,"LanguageCode":"zh","ParentElementId":"3d843734-0281-404f-bb1b-aa2c1e23e1d6","FrameId":"b42159ed-2692-4513-8efd-e33cd623fd9a","IsRedirectRequired":false,"PaymentMethodType":0,"Mac":"5f4f6b3aeb34472b8a26e1cf1e1f2a742547067bbc7f239bbe25abeb6638094b","GenericUrl":"https://paymentgateway.next.co.uk/WorldPayGatewayMVC","DdcSessionId":null,"SystemType":null,"StyleName":"Default","SaveCardText":"I would like to securely save my card for next time","IsRightToLeft":false,"RequestBrowser":{"BrowserHeight":null,"BrowserWidth":null},"ParentScriptPath":null,"ParentScriptUrl":null,"ShowPaymentValueBox":false,"IsInternational":false,"EnvironmentUrl":null,"FrameUrl":null,"AntiForgeryToken":null,"PaymentsCdn":"https://xcdn.next.co.uk/content/Payments","RetryLimit":3,"CachingDurationSeconds":3600});
+                        }
+                    }
+                },
+                error: function (e) {
+                    this.tryCount++;
+
+                    if (this.tryCount <= this.retryLimit) {
+                        // Retry
+                        window.wp$.ajax(this);
+                    } else {
+                        transactionLogging.logEvent(
+                            "https://paymentgateway.next.co.uk/WorldPayGatewayMVC",
+                            "b4fa50fd-1846-4b89-81f4-abbfebb93e46",
+                            transactionLogging.transactionEventType.Error,
+                            "",
+                            getErrorObject("CreateSessionView.BuildSession", e),
+                            transactionLogging.payloadType.Exception);
+                        ReplaceContent("https://paymentgateway.next.co.uk/WorldPayGatewayMVC/Error/Error?isRedirectRequired=False&amp;systemType=", "3d843734-0281-404f-bb1b-aa2c1e23e1d6", false);
+                    }
+                }
+            });
+        });
+
+        window.wp$('#loaderView').ready(function () {
+            typeof (transactionLogging) !== 'undefined'
+                && transactionLogging
+                && transactionLogging.logEvent(
+                    "https://paymentgateway.next.co.uk/WorldPayGatewayMVC",
+                    "b4fa50fd-1846-4b89-81f4-abbfebb93e46",
+                    transactionLogging.transactionEventType.PrePaymentLoader,
+                    null,
+        {"transactionGuid":"b4fa50fd-1846-4b89-81f4-abbfebb93e46","tokenGuid":null,"languageCode":"zh","parentElementId":"3d843734-0281-404f-bb1b-aa2c1e23e1d6","frameId":"b42159ed-2692-4513-8efd-e33cd623fd9a","isRedirectRequired":false,"paymentMethodType":0,"mac":"5f4f6b3aeb34472b8a26e1cf1e1f2a742547067bbc7f239bbe25abeb6638094b","genericUrl":"https://paymentgateway.next.co.uk/WorldPayGatewayMVC","ddcSessionId":null,"systemType":null,"styleName":"Default","saveCardText":"I would like to securely save my card for next time","isRightToLeft":false,"requestBrowser":{"browserHeight":null,"browserWidth":null},"parentScriptPath":null,"parentScriptUrl":null,"showPaymentValueBox":false,"isInternational":false,"environmentUrl":null,"frameUrl":null,"antiForgeryToken":null,"paymentsCdn":"https://xcdn.next.co.uk/content/Payments","retryLimit":3,"cachingDurationSeconds":3600},
+                    transactionLogging.payloadType.Request);
+        });
+    </script>
+  </body>
+</html>
