@@ -1,25 +1,40 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AAC Web App with Persistent Settings</title>
+<title>AAC Web App - Friendly Layout</title>
 <style>
-body { font-family: Arial,sans-serif; background:#f4f9ff; display:flex; flex-direction:column; align-items:center; margin:0; padding:15px; }
-#sentence-bar { display:flex; flex-wrap:wrap; align-items:center; background:white; border-radius:16px; padding:15px; margin-bottom:15px; max-width:1000px; width:100%; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
-#sentence-text { flex:1; font-size:22px; font-weight:bold; margin-right:10px; min-height:28px; }
-#sentence-bar button { margin:5px; padding:10px 14px; font-weight:bold; border:none; border-radius:10px; color:white; cursor:pointer; }
-#speak-btn { background:#2a9d8f; } #clear-btn { background:#f4a261; } #stop-btn { background:#e63946; } #settings-btn { background:#457b9d; }
-#edit-btn { background:#6a4c93; } #mode-btn { background:#1d3557; }
-#settings-panel, #edit-panel { display:none; background:white; border-radius:16px; padding:15px; max-width:1000px; width:100%; margin-bottom:15px; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
-.container { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:20px; max-width:1000px; width:100%; }
-.aac-btn { display:flex; flex-direction:column; align-items:center; padding:15px; background:white; border-radius:16px; box-shadow:0 4px 8px rgba(0,0,0,0.15); cursor:pointer; text-align:center; position:relative; transition:transform 0.2s; }
-.aac-btn:hover { transform:scale(1.05); background:#eaf4ff; }
-.aac-btn img { width:90px; height:90px; object-fit:contain; margin-bottom:10px; }
-.aac-btn span { font-size:18px; font-weight:bold; }
-.delete-btn { display:none; position:absolute; top:6px; right:6px; background:red; color:white; border:none; border-radius:50%; width:26px; height:26px; cursor:pointer; }
-.edit-mode .delete-btn { display:block; }
-@media(max-width:600px){ .container{grid-template-columns:1fr 1fr;} .aac-btn img{width:70px;height:70px;} }
+  body { font-family: Arial,sans-serif; background:#f4f9ff; margin:0; padding:15px; display:flex; flex-direction:column; align-items:center; }
+  
+  /* Sentence bar at top */
+  #sentence-bar { display:flex; align-items:center; background:white; border-radius:16px; padding:15px; width:95%; max-width:1000px; box-shadow:0 4px 8px rgba(0,0,0,0.1); margin-bottom:15px; flex-wrap:wrap; }
+  #sentence-text { flex:1; font-size:24px; font-weight:bold; min-height:32px; margin-right:10px; }
+  #sentence-bar button { font-size:18px; margin:5px; padding:12px 18px; border:none; border-radius:12px; cursor:pointer; color:white; }
+
+  #speak-btn { background:#2a9d8f; }
+  #clear-btn { background:#f4a261; }
+  #stop-btn { background:#e63946; }
+  #mode-btn { background:#1d3557; }
+
+  /* Settings panel floating at bottom */
+  #settings-panel { display:none; position:fixed; bottom:15px; left:50%; transform:translateX(-50%); background:white; border-radius:16px; padding:20px; width:90%; max-width:400px; box-shadow:0 4px 12px rgba(0,0,0,0.2); z-index:10; }
+  #settings-panel h2 { margin-top:0; font-size:20px; text-align:center; }
+
+  /* AAC buttons grid */
+  .container { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:20px; width:95%; max-width:1000px; }
+  .aac-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:15px; background:white; border-radius:16px; box-shadow:0 4px 8px rgba(0,0,0,0.15); cursor:pointer; transition:transform 0.2s; position:relative; text-align:center; min-height:130px; }
+  .aac-btn:hover { transform:scale(1.05); background:#eaf4ff; }
+  .aac-btn img { width:90px; height:90px; object-fit:contain; margin-bottom:10px; }
+  .aac-btn span { font-size:18px; font-weight:bold; text-align:center; }
+
+  .delete-btn { display:none; position:absolute; top:6px; right:6px; background:red; color:white; border:none; border-radius:50%; width:26px; height:26px; cursor:pointer; }
+  .edit-mode .delete-btn { display:block; }
+
+  @media(max-width:600px){ 
+    .container { grid-template-columns:1fr 1fr; }
+    .aac-btn img { width:70px; height:70px; }
+  }
 </style>
 </head>
 <body>
@@ -30,26 +45,16 @@ body { font-family: Arial,sans-serif; background:#f4f9ff; display:flex; flex-dir
   <button id="speak-btn" onclick="speakSentence()">🔊 Speak</button>
   <button id="clear-btn" onclick="clearSentence()">❌ Clear</button>
   <button id="stop-btn" onclick="stopSpeech()">🛑 Stop</button>
-  <button id="settings-btn" onclick="togglePanel('settings-panel')">⚙️ Settings</button>
-  <button id="edit-btn" onclick="togglePanel('edit-panel')">✏️ Edit</button>
   <button id="mode-btn" onclick="toggleMode()">📝 Mode: Sentence</button>
+  <button id="settings-toggle" onclick="togglePanel('settings-panel')">⚙️</button>
 </div>
 
 <!-- Settings Panel -->
 <div id="settings-panel">
   <h2>Speech Settings</h2>
-  <label>Voice: <select id="voiceSelect" onchange="saveSettings()"></select></label><br>
-  <label>Rate: <input id="rateRange" type="range" min="0.5" max="2" step="0.1" value="1" onchange="saveSettings()"></label><br>
+  <label>Voice: <select id="voiceSelect" onchange="saveSettings()"></select></label><br><br>
+  <label>Rate: <input id="rateRange" type="range" min="0.5" max="2" step="0.1" value="1" onchange="saveSettings()"></label><br><br>
   <label>Pitch: <input id="pitchRange" type="range" min="0.5" max="2" step="0.1" value="1" onchange="saveSettings()"></label>
-</div>
-
-<!-- Edit Panel -->
-<div id="edit-panel">
-  <h2>Edit AAC Buttons</h2>
-  <input id="newWord" type="text" placeholder="Word or phrase"><br><br>
-  <input id="newImg" type="url" placeholder="Image URL (optional)"><br><br>
-  <input id="newFile" type="file" accept="image/*"><br><br>
-  <button onclick="addNewButton()" style="background:#2a9d8f;color:white;padding:10px 15px;border:none;border-radius:8px;cursor:pointer;">➕ Add Button</button>
 </div>
 
 <!-- Buttons Grid -->
@@ -64,7 +69,7 @@ const pitchRange = document.getElementById("pitchRange");
 
 let voices = [], sentence = [];
 
-// Load saved buttons or default
+// Load buttons/settings from localStorage
 let aacButtons = JSON.parse(localStorage.getItem("aac_buttons")) || [
   {text:"Hello", img:"https://img.icons8.com/color/96/hello.png"},
   {text:"I want", img:"https://img.icons8.com/color/96/hand.png"},
@@ -74,7 +79,6 @@ let aacButtons = JSON.parse(localStorage.getItem("aac_buttons")) || [
   {text:"help", img:"https://img.icons8.com/color/96/helping-hand.png"}
 ];
 
-// Load saved settings
 let settings = JSON.parse(localStorage.getItem("aac_settings")) || {
   mode: "sentence",
   voiceIndex: 0,
@@ -83,18 +87,14 @@ let settings = JSON.parse(localStorage.getItem("aac_settings")) || {
 };
 let mode = settings.mode;
 
-// Render buttons
-function renderButtons() {
+// Render AAC buttons
+function renderButtons(){
   container.innerHTML="";
   aacButtons.forEach((btn, i)=>{
     const div=document.createElement("div");
     div.className="aac-btn";
     div.innerHTML=`<img src="${btn.img}" alt=""><span>${btn.text}</span>`;
     div.onclick=()=>{ if(mode==="sentence") addToSentence(btn.text); else speakWord(btn.text); };
-    const del=document.createElement("button");
-    del.textContent="✖"; del.className="delete-btn";
-    del.onclick=(e)=>{ e.stopPropagation(); deleteButton(i); };
-    div.appendChild(del);
     container.appendChild(div);
   });
 }
@@ -105,52 +105,28 @@ function clearSentence(){ sentence=[]; sentenceText.textContent = ""; }
 function speakSentence(){
   if(!sentence.length) return;
   stopSpeech();
-  const u = new SpeechSynthesisUtterance(sentence.join(" "));
-  u.voice = voices[voiceSelect.selectedIndex] || null;
-  u.rate = parseFloat(rateRange.value); u.pitch = parseFloat(pitchRange.value);
+  const u=new SpeechSynthesisUtterance(sentence.join(" "));
+  u.voice=voices[voiceSelect.selectedIndex] || null;
+  u.rate=parseFloat(rateRange.value); u.pitch=parseFloat(pitchRange.value);
   window.speechSynthesis.speak(u);
 }
 function speakWord(word){
   stopSpeech();
-  const u = new SpeechSynthesisUtterance(word);
-  u.voice = voices[voiceSelect.selectedIndex] || null;
-  u.rate = parseFloat(rateRange.value); u.pitch = parseFloat(pitchRange.value);
+  const u=new SpeechSynthesisUtterance(word);
+  u.voice=voices[voiceSelect.selectedIndex] || null;
+  u.rate=parseFloat(rateRange.value); u.pitch=parseFloat(pitchRange.value);
   window.speechSynthesis.speak(u);
 }
 function stopSpeech(){ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }
 
-// Edit Mode
-function addNewButton() {
-  const word=document.getElementById("newWord").value.trim();
-  const url=document.getElementById("newImg").value.trim();
-  const file=document.getElementById("newFile").files[0];
-  if(!word) return alert("Enter a word/phrase");
-  if(file){
-    const reader=new FileReader();
-    reader.onload=e=>{
-      aacButtons.push({text:word,img:e.target.result});
-      saveButtons(); renderButtons();
-    };
-    reader.readAsDataURL(file);
-  } else if(url){
-    aacButtons.push({text:word,img:url});
-    saveButtons(); renderButtons();
-  } else { alert("Please select an image file or enter a URL"); }
-  document.getElementById("newWord").value="";
-  document.getElementById("newImg").value="";
-  document.getElementById("newFile").value="";
-}
-function deleteButton(i){ if(confirm("Delete this button?")){ aacButtons.splice(i,1); saveButtons(); renderButtons(); } }
-function saveButtons(){ localStorage.setItem("aac_buttons", JSON.stringify(aacButtons)); }
-
 // Mode toggle
-function toggleMode(){
-  mode = (mode==="sentence")?"on-demand":"sentence";
-  document.getElementById("mode-btn").textContent = `📝 Mode: ${mode==="sentence"?"Sentence":"On-Demand"}`;
-  settings.mode = mode; saveSettings();
+function toggleMode(){ 
+  mode=(mode==="sentence")?"on-demand":"sentence";
+  document.getElementById("mode-btn").textContent=`📝 Mode: ${mode==="sentence"?"Sentence":"On-Demand"}`;
+  settings.mode=mode; saveSettings();
 }
 
-// Settings Panel
+// Settings
 function togglePanel(id){ const el=document.getElementById(id); el.style.display=(el.style.display==="block")?"none":"block"; }
 function saveSettings(){
   settings.voiceIndex = voiceSelect.selectedIndex;
@@ -163,20 +139,19 @@ function saveSettings(){
 // Voices
 function loadVoices(){
   if(!('speechSynthesis' in window)) return;
-  voices = window.speechSynthesis.getVoices() || [];
+  voices=window.speechSynthesis.getVoices()||[];
   voiceSelect.innerHTML="";
-  voices.forEach((v,i)=>{ 
-    const o=document.createElement("option"); 
-    o.textContent=`${v.name} (${v.lang})`; 
-    voiceSelect.appendChild(o); 
+  voices.forEach((v,i)=>{
+    const o=document.createElement("option");
+    o.textContent=`${v.name} (${v.lang})`;
+    voiceSelect.appendChild(o);
   });
-  // Restore saved voice
-  if(settings.voiceIndex<voices.length) voiceSelect.selectedIndex = settings.voiceIndex;
-  rateRange.value = settings.rate;
-  pitchRange.value = settings.pitch;
-  toggleMode(); // apply saved mode text
+  if(settings.voiceIndex<voices.length) voiceSelect.selectedIndex=settings.voiceIndex;
+  rateRange.value=settings.rate;
+  pitchRange.value=settings.pitch;
+  toggleMode(); // apply saved mode
 }
-speechSynthesis.onvoiceschanged = loadVoices;
+speechSynthesis.onvoiceschanged=loadVoices;
 
 // Init
 renderButtons();
