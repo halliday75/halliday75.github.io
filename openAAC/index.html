@@ -5,36 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AAC Web App - Friendly Layout</title>
 <style>
-  body { font-family: Arial,sans-serif; background:#f4f9ff; margin:0; padding:15px; display:flex; flex-direction:column; align-items:center; }
-  
-  /* Sentence bar at top */
-  #sentence-bar { display:flex; align-items:center; background:white; border-radius:16px; padding:15px; width:95%; max-width:1000px; box-shadow:0 4px 8px rgba(0,0,0,0.1); margin-bottom:15px; flex-wrap:wrap; }
-  #sentence-text { flex:1; font-size:24px; font-weight:bold; min-height:32px; margin-right:10px; }
-  #sentence-bar button { font-size:18px; margin:5px; padding:12px 18px; border:none; border-radius:12px; cursor:pointer; color:white; }
+body { font-family: Arial,sans-serif; background:#f4f9ff; margin:0; padding:15px; display:flex; flex-direction:column; align-items:center; }
 
-  #speak-btn { background:#2a9d8f; }
-  #clear-btn { background:#f4a261; }
-  #stop-btn { background:#e63946; }
-  #mode-btn { background:#1d3557; }
+#sentence-bar { display:flex; align-items:center; background:white; border-radius:16px; padding:15px; width:95%; max-width:1000px; box-shadow:0 4px 8px rgba(0,0,0,0.1); margin-bottom:15px; flex-wrap:wrap; }
+#sentence-text { flex:1; font-size:24px; font-weight:bold; min-height:32px; margin-right:10px; }
+#sentence-bar button { font-size:18px; margin:5px; padding:12px 18px; border:none; border-radius:12px; cursor:pointer; color:white; }
+#speak-btn { background:#2a9d8f; }
+#clear-btn { background:#f4a261; }
+#stop-btn { background:#e63946; }
+#mode-btn { background:#1d3557; }
+#settings-toggle { background:#457b9d; }
+#edit-toggle { background:#6a4c93; }
 
-  /* Settings panel floating at bottom */
-  #settings-panel { display:none; position:fixed; bottom:15px; left:50%; transform:translateX(-50%); background:white; border-radius:16px; padding:20px; width:90%; max-width:400px; box-shadow:0 4px 12px rgba(0,0,0,0.2); z-index:10; }
-  #settings-panel h2 { margin-top:0; font-size:20px; text-align:center; }
+#settings-panel, #edit-panel { display:none; position:fixed; bottom:15px; left:50%; transform:translateX(-50%); background:white; border-radius:16px; padding:20px; width:90%; max-width:400px; box-shadow:0 4px 12px rgba(0,0,0,0.2); z-index:10; }
+#settings-panel h2, #edit-panel h2 { margin-top:0; font-size:20px; text-align:center; }
 
-  /* AAC buttons grid */
-  .container { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:20px; width:95%; max-width:1000px; }
-  .aac-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:15px; background:white; border-radius:16px; box-shadow:0 4px 8px rgba(0,0,0,0.15); cursor:pointer; transition:transform 0.2s; position:relative; text-align:center; min-height:130px; }
-  .aac-btn:hover { transform:scale(1.05); background:#eaf4ff; }
-  .aac-btn img { width:90px; height:90px; object-fit:contain; margin-bottom:10px; }
-  .aac-btn span { font-size:18px; font-weight:bold; text-align:center; }
+.container { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:20px; width:95%; max-width:1000px; }
+.aac-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:15px; background:white; border-radius:16px; box-shadow:0 4px 8px rgba(0,0,0,0.15); cursor:pointer; transition:transform 0.2s; position:relative; text-align:center; min-height:130px; font-size:20px; }
+.aac-btn:hover { transform:scale(1.05); background:#eaf4ff; }
+.aac-btn img { width:90px; height:90px; object-fit:contain; margin-bottom:10px; }
+.aac-btn span { font-size:18px; font-weight:bold; text-align:center; }
 
-  .delete-btn { display:none; position:absolute; top:6px; right:6px; background:red; color:white; border:none; border-radius:50%; width:26px; height:26px; cursor:pointer; }
-  .edit-mode .delete-btn { display:block; }
+.delete-btn { display:none; position:absolute; top:6px; right:6px; background:red; color:white; border:none; border-radius:50%; width:26px; height:26px; cursor:pointer; }
+.edit-mode .delete-btn { display:block; }
 
-  @media(max-width:600px){ 
-    .container { grid-template-columns:1fr 1fr; }
-    .aac-btn img { width:70px; height:70px; }
-  }
+@media(max-width:600px){ 
+  .container { grid-template-columns:1fr 1fr; }
+  .aac-btn img { width:70px; height:70px; }
+}
 </style>
 </head>
 <body>
@@ -47,6 +45,7 @@
   <button id="stop-btn" onclick="stopSpeech()">🛑 Stop</button>
   <button id="mode-btn" onclick="toggleMode()">📝 Mode: Sentence</button>
   <button id="settings-toggle" onclick="togglePanel('settings-panel')">⚙️</button>
+  <button id="edit-toggle" onclick="togglePanel('edit-panel')">✏️</button>
 </div>
 
 <!-- Settings Panel -->
@@ -55,6 +54,15 @@
   <label>Voice: <select id="voiceSelect" onchange="saveSettings()"></select></label><br><br>
   <label>Rate: <input id="rateRange" type="range" min="0.5" max="2" step="0.1" value="1" onchange="saveSettings()"></label><br><br>
   <label>Pitch: <input id="pitchRange" type="range" min="0.5" max="2" step="0.1" value="1" onchange="saveSettings()"></label>
+</div>
+
+<!-- Edit Panel -->
+<div id="edit-panel">
+  <h2>Add New Button</h2>
+  <input id="newWord" type="text" placeholder="Word, phrase, or emoji"><br><br>
+  <input id="newImg" type="url" placeholder="Image URL (optional)"><br><br>
+  <input id="newFile" type="file" accept="image/*"><br><br>
+  <button onclick="addNewButton()" style="background:#2a9d8f;color:white;padding:10px 15px;border:none;border-radius:8px;cursor:pointer;">➕ Add Button</button>
 </div>
 
 <!-- Buttons Grid -->
@@ -93,7 +101,7 @@ function renderButtons(){
   aacButtons.forEach((btn, i)=>{
     const div=document.createElement("div");
     div.className="aac-btn";
-    div.innerHTML=`<img src="${btn.img}" alt=""><span>${btn.text}</span>`;
+    div.innerHTML = btn.img ? `<img src="${btn.img}" alt=""><span>${btn.text}</span>` : `<span>${btn.text}</span>`;
     div.onclick=()=>{ if(mode==="sentence") addToSentence(btn.text); else speakWord(btn.text); };
     container.appendChild(div);
   });
@@ -136,6 +144,37 @@ function saveSettings(){
   localStorage.setItem("aac_settings", JSON.stringify(settings));
 }
 
+// Edit/Add Buttons
+function addNewButton() {
+  const word=document.getElementById("newWord").value.trim();
+  const url=document.getElementById("newImg").value.trim();
+  const file=document.getElementById("newFile").files[0];
+
+  if(!word) return alert("Enter a word, phrase, or emoji");
+
+  if(file){
+    const reader=new FileReader();
+    reader.onload=e=>{
+      aacButtons.push({text:word,img:e.target.result});
+      saveButtons(); renderButtons();
+    };
+    reader.readAsDataURL(file);
+  } else if(url){
+    aacButtons.push({text:word,img:url});
+    saveButtons(); renderButtons();
+  } else {
+    // No image, just text/emoji
+    aacButtons.push({text:word,img:null});
+    saveButtons(); renderButtons();
+  }
+
+  document.getElementById("newWord").value="";
+  document.getElementById("newImg").value="";
+  document.getElementById("newFile").value="";
+}
+
+function saveButtons(){ localStorage.setItem("aac_buttons", JSON.stringify(aacButtons)); }
+
 // Voices
 function loadVoices(){
   if(!('speechSynthesis' in window)) return;
@@ -151,11 +190,11 @@ function loadVoices(){
   pitchRange.value=settings.pitch;
   toggleMode(); // apply saved mode
 }
-speechSynthesis.onvoiceschanged=loadVoices;
 
-// Init
+// Initialize
 renderButtons();
 loadVoices();
+speechSynthesis.onvoiceschanged = loadVoices;
 </script>
 </body>
 </html>
