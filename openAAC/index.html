@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AAC Web App with Uploads</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f9ff; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 15px; }
+    #sentence-bar { display: flex; flex-wrap: wrap; align-items: center; background: white; border-radius: 16px; padding: 15px; margin-bottom: 15px; max-width: 1000px; width: 100%; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    #sentence-text { flex: 1; font-size: 22px; font-weight: bold; margin-right: 10px; min-height: 28px; }
+    #sentence-bar button { margin: 5px; padding: 10px 14px; font-weight: bold; border: none; border-radius: 10px; color: white; cursor: pointer; }
+    #speak-btn { background: #2a9d8f; } #clear-btn { background: #f4a261; } #stop-btn { background: #e63946; } #settings-btn { background: #457b9d; } #edit-btn { background: #6a4c93; }
+    #settings-panel, #edit-panel { display: none; background: white; border-radius: 16px; padding: 15px; max-width: 1000px; width: 100%; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 20px; max-width: 1000px; width: 100%; }
+    .aac-btn { display: flex; flex-direction: column; align-items: center; padding: 15px; background: white; border-radius: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); cursor: pointer; position: relative; }
+    .aac-btn:hover { transform: scale(1.05); background: #eaf4ff; }
+    .aac-btn img { width: 90px; height: 90px; object-fit: contain; margin-bottom: 10px; }
+    .aac-btn span { font-size: 18px; font-weight: bold; }
+    .delete-btn { display: none; position: absolute; top: 6px; right: 6px; background: red; color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; }
+    .edit-mode .delete-btn { display: block; }
+    @media (max-width:600px) { .container { grid-template-columns: 1fr 1fr; } .aac-btn img { width:70px; height:70px; } }
+  </style>
+</head>
+<body>
+  <!-- Sentence Bar -->
+  <div id="sentence-bar">
+    <div id="sentence-text"></div>
+    <button id="speak-btn" onclick="speakSentence()">🔊 Speak</button>
+    <button id="clear-btn" onclick="clearSentence()">❌ Clear</button>
+    <button id="stop-btn" onclick="stopSpeech()">🛑 Stop</button>
+    <button id="settings-btn" onclick="togglePanel('settings-panel')">⚙️ Settings</button>
+    <button id="edit-btn" onclick="togglePanel('edit-panel')">✏️ Edit</button>
+  </div>
+
+  <!-- Settings -->
+  <div id="settings-panel">
+    <h2>Speech Settings</h2>
+    <label>Voice: <select id="voiceSelect"></select></label><br>
+    <label>Rate: <input id="rateRange" type="range" min="0.5" max="2" step="0.1" value="1"></label><br>
+    <label>Pitch: <input id="pitchRange" type="range" min="0.5" max="2" step="0.1" value="1"></label>
+  </div>
+
+  <!-- Edit Mode -->
+  <div id="edit-panel">
+    <h2>Edit AAC Buttons</h2>
+    <input id="newWord" type="text" placeholder="Word or phrase"><br><br>
+    <input id="newImg" type="url" placeholder="Image URL (optional)"><br><br>
+    <input id="newFile" type="file" accept="image/*"><br><br>
+    <button onclick="addNewButton()" style="background:#2a9d8f;color:white;padding:10px 15px;border:none;border-radius:8px;cursor:pointer;">➕ Add Button</button>
+  </div>
+
+  <!-- Buttons Grid -->
+  <div class="container" id="aac-container"></div>
+
+<script>
+  const container = document.getElementById("aac-container");
+  const sentenceText = document.getElementById("sentence-text");
+  const voiceSelect = document.getElementById("voiceSelect");
+  const rateRange = document.getElementById("rateRange");
+  const pitchRange = document.getElementById("pitchRange");
+  let voices = [];
+  let sentence = [];
+  let aacButtons = [];
+
+  const defaultButtons = [
+    { text: "Hello", img: "https://img.icons8.com/color/96/hello.png" },
+    { text: "I want", img: "https://img.icons8.com/color/96/hand.png" },
+    { text: "food", img: "https://img.icons8.com/color/96/hamburger.png" },
+    { text: "water", img: "https://img.icons8.com/color/96/water.png" },
+    { text: "help", img: "https://img.icons8.com/color/96/helping-hand.png" }
+  ];
+
+  function loadButtons() {
+    const saved = localStorage.getItem("aac_buttons");
+    aacButtons = saved ? JSON.parse(saved) : defaultButtons;
+    renderButtons();
+  }
+  function saveButtons() {
+    localStorage.setItem("aac_buttons", JSON.stringify(aacButtons));
+  }
+  function renderButtons() {
+    container.innerHTML = "";
+    aacButtons.forEach((btn,i)=>{
+      const div=document.createElement("div");
+      div.className="aac-btn";
+      div.innerHTML=`<img src="${btn.img}" alt=""><span>${btn.text}</span>`;
+      div.onclick=()=>addToSentence(btn.text);
+      const del=document.createElement("button");
+      del.textContent="✖"; del.className="delete-btn";
+      del.onclick=(e)=>{e.stopPropagation();deleteButton(i);};
+      div.appendChild(del);
+      container.appendChild(div);
+    });
+  }
+  function addToSentence(word) { sentence.push(word); sentenceText.textContent=sentence.join(" "); }
+  function clearSentence() { sentence=[]; sentenceText.textContent=""; }
+  function speakSentence() {
+    if(!sentence.length) return;
+    stopSpeech();
+    const u=new SpeechSynthesisUtterance(sentence.join(" "));
+    u.voice=voices[voiceSelect.selectedIndex]||null;
+    u.rate=parseFloat(rateRange.value); u.pitch=parseFloat(pitchRange.value);
+    speechSynthesis.speak(u);
+  }
+  function stopSpeech() { speechSynthesis.cancel(); }
+  function togglePanel(id) {
+    document.getElementById(id).style.display=
+      document.getElementById(id).style.display==="block"?"none":"block";
+    if(id==="edit-panel") container.classList.toggle("edit-mode");
+  }
+  function addNewButton() {
+    const word=document.getElementById("newWord").value.trim();
+    const url=document.getElementById("newImg").value.trim();
+    const file=document.getElementById("newFile").files[0];
+    if(!word) return alert("Enter a word/phrase");
+    if(file) {
+      const reader=new FileReader();
+      reader.onload=e=>{
+        aacButtons.push({text:word,img:e.target.result});
+        saveButtons(); renderButtons();
+      };
+      reader.readAsDataURL(file);
+    } else if(url) {
+      aacButtons.push({text:word,img:url});
+      saveButtons(); renderButtons();
+    } else {
+      alert("Please select an image file or URL");
+    }
+    document.getElementById("newWord").value="";
+    document.getElementById("newImg").value="";
+    document.getElementById("newFile").value="";
+  }
+  function deleteButton(i){ if(confirm("Delete this button?")){aacButtons.splice(i,1);saveButtons();renderButtons();} }
+  function loadVoices(){ voices=speechSynthesis.getVoices(); voiceSelect.innerHTML=""; voices.forEach(v=>{let o=document.createElement("option");o.textContent=`${v.name} (${v.lang})`;voiceSelect.appendChild(o);}); }
+  speechSynthesis.onvoiceschanged=loadVoices;
+  loadButtons(); loadVoices();
+</script>
+</body>
+</html>
