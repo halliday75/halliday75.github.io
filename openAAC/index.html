@@ -1,25 +1,25 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Full AAC Web App</title>
+<title>AAC Web App with Persistent Settings</title>
 <style>
-  body { font-family: Arial,sans-serif; background:#f4f9ff; display:flex; flex-direction:column; align-items:center; margin:0; padding:15px; }
-  #sentence-bar { display:flex; flex-wrap:wrap; align-items:center; background:white; border-radius:16px; padding:15px; margin-bottom:15px; max-width:1000px; width:100%; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
-  #sentence-text { flex:1; font-size:22px; font-weight:bold; margin-right:10px; min-height:28px; }
-  #sentence-bar button { margin:5px; padding:10px 14px; font-weight:bold; border:none; border-radius:10px; color:white; cursor:pointer; }
-  #speak-btn { background:#2a9d8f; } #clear-btn { background:#f4a261; } #stop-btn { background:#e63946; } #settings-btn { background:#457b9d; }
-  #edit-btn { background:#6a4c93; } #mode-btn { background:#1d3557; }
-  #settings-panel, #edit-panel { display:none; background:white; border-radius:16px; padding:15px; max-width:1000px; width:100%; margin-bottom:15px; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
-  .container { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:20px; max-width:1000px; width:100%; }
-  .aac-btn { display:flex; flex-direction:column; align-items:center; padding:15px; background:white; border-radius:16px; box-shadow:0 4px 8px rgba(0,0,0,0.15); cursor:pointer; text-align:center; position:relative; transition:transform 0.2s; }
-  .aac-btn:hover { transform:scale(1.05); background:#eaf4ff; }
-  .aac-btn img { width:90px; height:90px; object-fit:contain; margin-bottom:10px; }
-  .aac-btn span { font-size:18px; font-weight:bold; }
-  .delete-btn { display:none; position:absolute; top:6px; right:6px; background:red; color:white; border:none; border-radius:50%; width:26px; height:26px; cursor:pointer; }
-  .edit-mode .delete-btn { display:block; }
-  @media(max-width:600px){ .container{grid-template-columns:1fr 1fr;} .aac-btn img{width:70px;height:70px;} }
+body { font-family: Arial,sans-serif; background:#f4f9ff; display:flex; flex-direction:column; align-items:center; margin:0; padding:15px; }
+#sentence-bar { display:flex; flex-wrap:wrap; align-items:center; background:white; border-radius:16px; padding:15px; margin-bottom:15px; max-width:1000px; width:100%; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
+#sentence-text { flex:1; font-size:22px; font-weight:bold; margin-right:10px; min-height:28px; }
+#sentence-bar button { margin:5px; padding:10px 14px; font-weight:bold; border:none; border-radius:10px; color:white; cursor:pointer; }
+#speak-btn { background:#2a9d8f; } #clear-btn { background:#f4a261; } #stop-btn { background:#e63946; } #settings-btn { background:#457b9d; }
+#edit-btn { background:#6a4c93; } #mode-btn { background:#1d3557; }
+#settings-panel, #edit-panel { display:none; background:white; border-radius:16px; padding:15px; max-width:1000px; width:100%; margin-bottom:15px; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
+.container { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:20px; max-width:1000px; width:100%; }
+.aac-btn { display:flex; flex-direction:column; align-items:center; padding:15px; background:white; border-radius:16px; box-shadow:0 4px 8px rgba(0,0,0,0.15); cursor:pointer; text-align:center; position:relative; transition:transform 0.2s; }
+.aac-btn:hover { transform:scale(1.05); background:#eaf4ff; }
+.aac-btn img { width:90px; height:90px; object-fit:contain; margin-bottom:10px; }
+.aac-btn span { font-size:18px; font-weight:bold; }
+.delete-btn { display:none; position:absolute; top:6px; right:6px; background:red; color:white; border:none; border-radius:50%; width:26px; height:26px; cursor:pointer; }
+.edit-mode .delete-btn { display:block; }
+@media(max-width:600px){ .container{grid-template-columns:1fr 1fr;} .aac-btn img{width:70px;height:70px;} }
 </style>
 </head>
 <body>
@@ -38,9 +38,9 @@
 <!-- Settings Panel -->
 <div id="settings-panel">
   <h2>Speech Settings</h2>
-  <label>Voice: <select id="voiceSelect"></select></label><br>
-  <label>Rate: <input id="rateRange" type="range" min="0.5" max="2" step="0.1" value="1"></label><br>
-  <label>Pitch: <input id="pitchRange" type="range" min="0.5" max="2" step="0.1" value="1"></label>
+  <label>Voice: <select id="voiceSelect" onchange="saveSettings()"></select></label><br>
+  <label>Rate: <input id="rateRange" type="range" min="0.5" max="2" step="0.1" value="1" onchange="saveSettings()"></label><br>
+  <label>Pitch: <input id="pitchRange" type="range" min="0.5" max="2" step="0.1" value="1" onchange="saveSettings()"></label>
 </div>
 
 <!-- Edit Panel -->
@@ -62,9 +62,9 @@ const voiceSelect = document.getElementById("voiceSelect");
 const rateRange = document.getElementById("rateRange");
 const pitchRange = document.getElementById("pitchRange");
 
-let voices = [], sentence = [], mode = "sentence"; // modes: "sentence" or "on-demand"
+let voices = [], sentence = [];
 
-// Load buttons from localStorage
+// Load saved buttons or default
 let aacButtons = JSON.parse(localStorage.getItem("aac_buttons")) || [
   {text:"Hello", img:"https://img.icons8.com/color/96/hello.png"},
   {text:"I want", img:"https://img.icons8.com/color/96/hand.png"},
@@ -74,20 +74,26 @@ let aacButtons = JSON.parse(localStorage.getItem("aac_buttons")) || [
   {text:"help", img:"https://img.icons8.com/color/96/helping-hand.png"}
 ];
 
-// Render AAC buttons
+// Load saved settings
+let settings = JSON.parse(localStorage.getItem("aac_settings")) || {
+  mode: "sentence",
+  voiceIndex: 0,
+  rate: 1,
+  pitch: 1
+};
+let mode = settings.mode;
+
+// Render buttons
 function renderButtons() {
-  container.innerHTML = "";
-  aacButtons.forEach((btn, i) => {
-    const div = document.createElement("div");
-    div.className = "aac-btn";
-    div.innerHTML = `<img src="${btn.img}" alt=""><span>${btn.text}</span>`;
-    div.onclick = () => {
-      if(mode === "sentence") addToSentence(btn.text);
-      else speakWord(btn.text);
-    };
-    const del = document.createElement("button");
-    del.textContent = "✖"; del.className = "delete-btn";
-    del.onclick = (e) => { e.stopPropagation(); deleteButton(i); };
+  container.innerHTML="";
+  aacButtons.forEach((btn, i)=>{
+    const div=document.createElement("div");
+    div.className="aac-btn";
+    div.innerHTML=`<img src="${btn.img}" alt=""><span>${btn.text}</span>`;
+    div.onclick=()=>{ if(mode==="sentence") addToSentence(btn.text); else speakWord(btn.text); };
+    const del=document.createElement("button");
+    del.textContent="✖"; del.className="delete-btn";
+    del.onclick=(e)=>{ e.stopPropagation(); deleteButton(i); };
     div.appendChild(del);
     container.appendChild(div);
   });
@@ -113,51 +119,45 @@ function speakWord(word){
 }
 function stopSpeech(){ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }
 
-// Settings
-function togglePanel(id){ 
-  const el = document.getElementById(id);
-  el.style.display = (el.style.display==="block")?"none":"block"; 
-}
-
 // Edit Mode
 function addNewButton() {
-  const word = document.getElementById("newWord").value.trim();
-  const url = document.getElementById("newImg").value.trim();
-  const file = document.getElementById("newFile").files[0];
+  const word=document.getElementById("newWord").value.trim();
+  const url=document.getElementById("newImg").value.trim();
+  const file=document.getElementById("newFile").files[0];
   if(!word) return alert("Enter a word/phrase");
-  
   if(file){
-    const reader = new FileReader();
-    reader.onload = e => {
-      aacButtons.push({text: word, img: e.target.result});
+    const reader=new FileReader();
+    reader.onload=e=>{
+      aacButtons.push({text:word,img:e.target.result});
       saveButtons(); renderButtons();
     };
     reader.readAsDataURL(file);
   } else if(url){
-    aacButtons.push({text: word, img: url});
+    aacButtons.push({text:word,img:url});
     saveButtons(); renderButtons();
-  } else {
-    alert("Please select an image file or enter a URL");
-  }
-  
+  } else { alert("Please select an image file or enter a URL"); }
   document.getElementById("newWord").value="";
   document.getElementById("newImg").value="";
   document.getElementById("newFile").value="";
 }
-
-function deleteButton(i){
-  if(confirm("Delete this button?")){
-    aacButtons.splice(i,1);
-    saveButtons(); renderButtons();
-  }
-}
-
+function deleteButton(i){ if(confirm("Delete this button?")){ aacButtons.splice(i,1); saveButtons(); renderButtons(); } }
 function saveButtons(){ localStorage.setItem("aac_buttons", JSON.stringify(aacButtons)); }
 
 // Mode toggle
 function toggleMode(){
-  mode = (mode === "sentence")?"on-demand":"sentence";
+  mode = (mode==="sentence")?"on-demand":"sentence";
   document.getElementById("mode-btn").textContent = `📝 Mode: ${mode==="sentence"?"Sentence":"On-Demand"}`;
+  settings.mode = mode; saveSettings();
+}
+
+// Settings Panel
+function togglePanel(id){ const el=document.getElementById(id); el.style.display=(el.style.display==="block")?"none":"block"; }
+function saveSettings(){
+  settings.voiceIndex = voiceSelect.selectedIndex;
+  settings.rate = parseFloat(rateRange.value);
+  settings.pitch = parseFloat(pitchRange.value);
+  settings.mode = mode;
+  localStorage.setItem("aac_settings", JSON.stringify(settings));
 }
 
 // Voices
@@ -165,7 +165,16 @@ function loadVoices(){
   if(!('speechSynthesis' in window)) return;
   voices = window.speechSynthesis.getVoices() || [];
   voiceSelect.innerHTML="";
-  voices.forEach(v => { let o = document.createElement("option"); o.textContent = `${v.name} (${v.lang})`; voiceSelect.appendChild(o); });
+  voices.forEach((v,i)=>{ 
+    const o=document.createElement("option"); 
+    o.textContent=`${v.name} (${v.lang})`; 
+    voiceSelect.appendChild(o); 
+  });
+  // Restore saved voice
+  if(settings.voiceIndex<voices.length) voiceSelect.selectedIndex = settings.voiceIndex;
+  rateRange.value = settings.rate;
+  pitchRange.value = settings.pitch;
+  toggleMode(); // apply saved mode text
 }
 speechSynthesis.onvoiceschanged = loadVoices;
 
@@ -173,6 +182,5 @@ speechSynthesis.onvoiceschanged = loadVoices;
 renderButtons();
 loadVoices();
 </script>
-
 </body>
 </html>
