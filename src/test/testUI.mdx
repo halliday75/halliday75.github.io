@@ -1,0 +1,132 @@
+---
+title: Building an agent in Agent Builder
+visible: true
+slug: building-an-agent-in-agent-builder
+id: building-an-agent-in-agent-builder
+---
+
+This section describes how to design an agent in Agent Builder.
+
+:::important
+The Agent Builder experience is
+scheduled to be deprecated starting June 14, 2025. Until then, you can only
+design or evaluate existing agents. We recommend you migrate your existing
+agents and start using Agents in Studio Web. For details, refer to [Migrating agents to Studio Web](https://docs.uipath.com/agents/automation-cloud/latest/user-guide/migrating-agents-to-studio-web#migrating-agents-to-studio-web).
+For
+creating new agents, refer to [Building an agent in Studio Web](https://docs.uipath.com/agents/automation-cloud/latest/user-guide/building-an-agent-in-studio-web#building-an-agent-in-studio-web).
+:::
+
+1. In UiPath®
+   Automation CloudTM, select **Agents** from
+   the left-hand navigation bar. The **Agents** workspace is
+   displayed.
+2. From the list of Preview Agents,
+   select an agent to open the Agent Builder.
+3. The Agents workspace includes three
+   tabs: **Design**, **Evaluations**, and **Traces**.
+   * Use the **Design** tab to design and define the core elements of your
+     agent. Once you define the input/output arguments, you can use this
+     space to preview your agent runs.
+   * Use the **Evaluations** tab to create evaluations and store results.
+     Evaluations objectively measure your agent's output and assess whether
+     or not it is consistent with your objectives.
+   * Use the **Traces** tab to log and represent all design and evaluation
+     time traces for this agent. This is where you can see all the agent runs
+     and the details of the run.
+4. Select the large language model you
+   want to use with your agent. Models are provisioned through UiPath AI Trust Layer.
+   a. To configure model settings,
+      select the settings icon next to the **Model** field. Here you can
+      configure the **Temperature** and **Max. tokens per response** fields.
+      * The
+        **Temperature** determines the creativity factor of the
+        LLM generation. You can set a value between 0 (Precise) and 2
+        (Creative).
+      * **Max. tokens
+        per response** refers to the maximum number of tokens to
+        generate with the agent's response.
+5. In the **General** tab, edit the
+   agent name and description. The name and description of the agent must offer details regarding the
+   purpose of the agent in simple language. The description is used to help
+   identify the agent in Studio.
+6. In the **Prompt** tab, add a well-structured system prompt and a user prompt
+   to give your agent instructions for what it should do, and constraints it should
+   follow.
+7. Select **Arguments** to access the **Arguments** window, where you can
+   configure the input and output arguments used in your prompt.
+8. In the **Tools** tab, add any
+   tools your agent can use during execution. These can be a set of Integration Service
+   activities, published processes to which you have access, or other agents. Each tool must have a detailed description that helps inform the agent how
+   and when to use this tool.
+9. Use the **Contexts** tab to add
+   any necessary context. Context Grounding indexes give an agent access to permissioned knowledge
+   bases. This helps ground agent actions or answers in your business data.
+10. Use the **Escalations** tab to
+    add a human in the loop and enable Agent Memory. Adding an escalation allows your agent to involve a human to review, approve,
+    or update output as it is running.
+11. In the **Playground** window,
+    provide input for a test run and select **Run**. You must test your agent to ensure it's operating as expected.
+12. Next, go to the **Evaluations**
+    tab to review and measure your agent. An evaluation is a pair between an input and an assertion made on the output,
+    and can be used to grade your agent during an end-to-end run.
+13. After you run the evaluations, use the **Traces** tab to review all the
+    trace logs for your agent.
+14. Once you have tested, evaluated, and
+    refined your agent, select **Publish** to publish it to Orchestrator as a
+    process.
+    * Select where to publish:
+      + **Orchestrator Personal Workspace Feed** - The process
+        is published to your personal workspace and will only be
+        available to you. This is the default selection.
+      + **Orchestrator Tenant Processes Feed**- The process is
+        published to the global tenant feed and will be available to all
+        users assigned to folders that use the tenant feed.
+    * Select a version. A version is generated automatically starting with
+      1.0.0 when you first publish, and then incremented automatically every
+      time you republish.
+      
+    :::important
+    This step is necessary for the
+    agent to be available in the **Run Job** activity.
+    :::
+
+    Select **Export** to view and package the agent definition as a JSON. You
+    can then use this JSON extract to import the agent in a different
+    organization.
+15. Finally, insert your agent into an automation using the **Run Job** activity
+    in Studio. For details, refer to [Running the agent](https://docs.uipath.com/agents/automation-cloud/latest/user-guide/building-an-agent-in-agent-builder#running-the-agent).
+
+## Running the agent
+
+Using agents as activities means you can incorporate them into workflows to
+handle parts of larger deterministic processes, have multiple agents act in
+series, and start agent execution based on triggers.
+
+To incorporate your agent into a workflow, follow these steps:
+
+1. Publish your
+   agent to Orchestrator.
+2. In Studio, use the [Run Job](https://docs.uipath.com/activities/other/latest/workflow/run-job)
+   activity to integrate your agent into a workflow.
+3. Whenever you make changes to your agent, republish the
+   updated agent to Orchestrator and upgrade the
+   corresponding process in Orchestrator. The [Run Job](https://docs.uipath.com/activities/other/latest/workflow/run-job)
+   activity always executes the version of the agent
+   currently configured in Orchestrator. This ensures
+   that your workflow consistently uses the most
+   up-to-date version of your agent.
+
+Refer to the [System activities guide](https://docs.uipath.com/activities/other/latest/workflow/run-job) to
+learn how to configure and use the **Run Job** activity in your Studio
+workflows.
+
+:::note
+Starting with UiPath.System.Activities version
+25.4.2, the execution of agents and other Orchestrator jobs has been
+consolidated and improved under the **Run Job** activity.
+Existing workflows using the [Run Agent](https://docs.uipath.com/activities/other/latest/workflow/run-agent) activity
+continue to function without changes, ensuring a smooth transition.
+When adding new agent-running functionality to your workflows, the
+system automatically suggests and implements the **Run Job**
+activity, even if you search for **Run Agent**.
+:::
