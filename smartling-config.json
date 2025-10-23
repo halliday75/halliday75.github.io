@@ -28,6 +28,16 @@
 				 "smartling.translate_paths = Report/Code",
 		                 "smartling.string_format_paths = txt:Report/Code"
             ]
+         },
+         {
+            "type"      		: "markdown",
+	    "authorizeContent"          : false,
+            "pathRegex" 		: "src\\/test/(?<path>.*)\\.mdx",
+	    "translationPathExpression" : "src/test/${locale}/${originalFile.name}",
+	    "translationCommitMessage"  : "Smartling Translation $originalFile.fullName to $locale",
+	    "smartlingDirectives"       : [
+				 "smartling.primary_placeholder_format_custom=:::(\\S*)"
+            ]
          }
      ]
 }
