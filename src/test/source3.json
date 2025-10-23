@@ -1,0 +1,189 @@
+{
+  "smartling" : {
+    "translate_paths" : [
+      {
+        "path" : "*",
+        "exclude_path" : "*/category"
+      },    
+      {
+        "path" : "*",
+        "exclude_path" : "*/created"
+      },
+{
+        "path" : "*",
+        "exclude_path" : "*/version"
+      }
+    ]
+  },
+  "samplePrompts": [
+    {
+      "category": "EvaluateRequirementQuality",
+      "title": "Multifaceted Audit",
+      "description": "Guidelines for analyzing requirements from many different perspectives.",
+      "instructions": [
+        "Generate the top 10 enhancement suggestions from diverse perspectives:",
+        "",
+        "-User Flow: Check for detailed information about the user flow and application logic",
+        "-Consistency: Examine for logical coherence and lack of contradictions",
+        "-Relevance: Check if the requirement clearly highlights the needs of the user",
+        "-Rationale: Check if it explains why it is necessary and what problem it solves",
+        "-Clarity: Check for precision and clarity in the requirement description",
+        "-Criteria: Check for measurable and achievable acceptance criteria",
+        "-Completeness: Check for inclusion of all critical functionalities",
+        "-Prerequisites: Note missing prerequisites or conditions needed before implementation",
+        "-Security: Check if the requirement addresses security and privacy concerns adequately",
+        "-Compliance: Check for any potential legal and regulatory compliance issues",
+        "-Ethics: Check if the requirements promotes fair and responsible behavior",
+        "-Terminology: Verify the use of clear, inclusive, and universally understood language",
+        "-Performance: Check for clear performance metrics and benchmarks"
+      ],
+      "created": "2024-05-30",
+      "version": "1.0.0"
+    },
+    {
+      "category": "EvaluateRequirementQuality",
+      "title": "Performance Evaluation",
+      "description": "Guidelines for analyzing requirements for performance-related aspects.",
+      "instructions": [
+        "Generate the top 10 enhancement suggestions focusing solely on performance aspects:",
+        "",
+        "-Time: Check if specific response times under various load conditions are detailed",
+        "-Throughput: Check if expected throughput rates are clearly specified",
+        "-Scalability: Check if the requirement addresses scalability under increasing loads",
+        "-Resource Usage: Check if limits on CPU, memory, and storage usage are defined",
+        "-Efficiency: Check if the requirement promotes efficient use of resources",
+        "-Load Handling: Check if strategies for handling peak load conditions are included",
+        "-Concurrency: Check if behaviors under concurrent user scenarios are specified",
+        "-Latency: Check if maximum acceptable latency figures are clearly stated",
+        "-Stability: Check if stability under stress conditions is addressed",
+        "-Capacity: Check if maximum system capacity limits are specified"
+      ],
+      "created": "2024-05-30",
+      "version": "1.0.0"
+    },
+    {
+      "category": "EvaluateRequirementQuality",
+      "title": "Security Assessment",
+      "description": "Guidelines for analyzing requirements for security-related aspects.",
+      "instructions": [
+        "Generate the top 10 enhancement suggestions focusing solely on security aspects:",
+        "",
+        "-Access: Check if it is clear who can access the application and under what conditions",
+        "-Protection: Check if encryption, anonymization & secure storage measures are defined",
+        "-Authentication: Check if identity verification and permissions controls are included",
+        "-Vulnerability: Check if measures against known vulnerabilities are addressed",
+        "-Transmission: Check if encrypted data transmissions are mandated",
+        "-Logging: Check if detailed logging and monitoring provisions are included",
+        "-Compliance: Check if adherence to relevant security standards is ensured",
+        "-Errors: Check if secure error handling practices are specified",
+        "-Response: Check if there are protocols for responding to security incidents"
+      ],
+      "created": "2024-05-30",
+      "version": "1.0.0"
+    },
+    {
+      "category": "GenerateTestsFromRequirement",
+      "title": "Boundary-Value Testing",
+      "description": "Guidelines for generating tests focused on boundary-value testing.",
+      "instructions": [
+        "Define valid ranges and identify minimum, maximum, and edge values for each input.",
+        "Focus test cases on these boundary values, including just inside and outside valid ranges.",
+        "Cover lowest, highest, and subdivided range limits in your test cases.",
+        "Ensure all input field boundaries across the application are tested."
+      ],
+      "created": "2024-05-30",
+      "version": "1.0.0"
+    },
+    {
+      "category": "GenerateTestsFromRequirement",
+      "title": "Elusive Issue Detection",
+      "description": "Guidelines for generating tests to find elusive issues.",
+      "instructions": [
+        "Generate only unconventional yet plausible test scenarios to reveal hidden issues.",
+        "Focus on test scenarios often missed in standard tests, requiring deeper insight.",
+        "Challenge system design and user behavior assumptions to find weaknesses.",
+        "Use a wide range of user behaviors, including atypical ones, to uncover issues."
+      ],
+      "created": "2024-05-30",
+      "version": "1.0.0"
+    },
+    {
+      "category": "GenerateTestsFromRequirement",
+      "title": "End-to-End Flow Verification",
+      "description": "Guidelines for generating end-to-end tests from flow diagrams.",
+      "instructions": [
+        "Verify each unique path in the flow diagram as a separate test case.",
+        "Focus exclusively on testing end-to-end paths within the diagram.",
+        "Ensure each test case represents a complete journey from the starting to an endpoint.",
+        "Achieve comprehensive coverage by testing every complete journey within the diagram."
+      ],
+      "created": "2024-05-30",
+      "version": "1.0.0"
+    },
+    {
+      "category": "GenerateTestsFromRequirement",
+      "title": "Rapid Test Idea Generation",
+      "description": "Guidelines for generating numerous ideas for testing quickly.",
+      "instructions": [
+        "Do not create any test steps, only test case titles.",
+        "Limit the test case titles to a maximum of 12 words.",
+        "Create a minimum of 50 creative test cases."
+      ],
+      "created": "2024-05-30",
+      "version": "1.0.0"
+    },
+    {
+      "category": "GenerateTestsFromRequirement",
+      "title": "Valid E2E Scenario Testing",
+      "description": "Guidelines for generating tests for valid end-to-end scenarios only.",
+      "instructions": [
+        "Create test cases exclusively for valid, complete user journeys.",
+        "Avoid test cases for invalid input or field validations.",
+        "Create expected results for each test step within each test case.",
+        "Keep test case titles under 6 words, ensuring they are clear and informative."
+      ],
+      "created": "2024-05-30",
+      "version": "1.0.0"
+    },
+    {
+      "category": "GenerateTestsFromSapTransaction",
+      "title": "SAP Business Process Testing",
+      "description": "Guidelines for generating SAP business test cases.",
+      "instructions": [
+        "Focus on valid and realistic SAP business scenarios.",
+        "Provide example values for all mandatory fields. Use realistic values derived from master data or configuration tables.",
+        "For optional fields, include a note indicating they can be skipped unless specified.",
+        "Avoid edge test cases and invalid inputs.",
+        "Create top 5 test cases with expected results."
+      ],
+      "created": "2024-05-30",
+      "version": "1.0.0"
+    },
+    {
+      "category": "ImportTestCases",
+      "title": "First-Look Test Import",
+      "description": "Guidelines for importing a select number of manual test cases from Excel.",
+      "instructions": [
+        "Only import the test cases from the first sheet.",
+        "Label all imported tests with autopilot-imported."
+      ],
+      "created": "2024-11-05",
+      "version": "1.0.0"
+    },
+    {
+      "category": "FindObsoleteTests",
+      "title": "Obsolete Tests Detection",
+      "description": "Guidelines for identifying outdated or irrelevant tests in an application testing requirement.",
+      "instructions": [
+        "Identify and mark tests that validate features, functionalities, or APIs that have been deprecated or removed from the system.",
+        "Identify tests that duplicate coverage of the same functionality without adding unique validation or value. Cross-reference with updated requirements to confirm relevance.",
+        "Flag tests targeting unsupported platforms, configurations, or environments (e.g., outdated browsers, operating systems, or hardware no longer in use).",
+        "Mark tests that are incompatible with the current system environment, or rely on outdated dependencies (e.g., libraries or tools no longer supported).",
+        "Verify that each test case traces back to current key acceptance criteria in the requirement. Flag tests that lack clear traceability or no longer reflect updated requirements.",
+        "Review test cases to ensure their steps align with the current behavior of the system as defined in updated requirements. Flag those with outdated or misaligned steps."
+      ],
+      "created": "2025-05-19",
+      "version": "1.0.0"
+    }
+  ]
+}
