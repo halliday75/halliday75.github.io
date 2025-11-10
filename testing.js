@@ -10,14 +10,14 @@ sl_tr_html_end   = sl_translate;
 sl_tr_json_start = sl_translate;
 sl_tr_json_end   = sl_translate;
 
+// ► Smartling translation block ◄
+sl_tr_start();
 
 const me = {
-  // ► Smartling translation block ◄
-  sl_tr_tart();
   enData: {
     LO_TITLE: "Log Out Alert",
     LO_MESSAGE: "You have been logged out due to inactivity",
     LO_CONTINUE: "Go to Login Screen"
   }
-  sl_tr_end();
 };
+sl_tr_end();
