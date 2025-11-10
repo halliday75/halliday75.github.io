@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Render JS Data</title>
+</head>
+<body>
+
+  <ul id="output"></ul>
+
+  <!-- Load the JS file -->
+  <script src="testing.js"></script>
+
+  <!-- Script to render the data -->
+  <script>
+    // Get ul element
+    const list = document.getElementById("output");
+
+    // Loop through the object keys and create <li> elements
+    Object.keys(me.enData).forEach(key => {
+      const li = document.createElement("li");
+      li.textContent = me.enData[key]; // the value
+      list.appendChild(li);
+    });
+  </script>
+
+</body>
+</html>
