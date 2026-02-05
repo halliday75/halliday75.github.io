@@ -235,40 +235,157 @@ class ParkingGame {
         this.worker.onmessage = (e) => {
             const { type, cars, difficulty } = e.data;
             this.nextLevelBuffer = { cars, difficulty };
-            this.statusEl.innerText = `Background Hunt: Found ${difficulty} moves...`;
+</head>
+<body>
 
-            // If this is the very first level, load it immediately
-            if (this.cars.length === 0 && difficulty > 0) {
-                this.applyLevel(this.nextLevelBuffer);
-                this.startWorker(500, 24); // Start the deep hunt
+<div id="ui">
+    <h1 style="margin:0; color: gold;">KING OF PARKING</h1>
+    <div class="stat-line">
+        Moves: <span id="move-count">0</span> | Complexity: <span id="diff-score">14 moves</span>
+    </div>
+    <button onclick="game.requestNewLevel()">NEXT PUZZLE</button>
+    <div id="status-msg">Worker idle...</div>
+</div>
+
+<div id="game-container">
+    <div id="grid"><div class="exit-gate"></div></div>
+</div>
+
+<script id="worker-code" type="text/javascript-worker">
+    self.onmessage = function(e) {
+        const { iterations, targetDiff } = e.data;
+        
+        function solve(startCars) {
+            let queue = [{ state: JSON.stringify(startCars), steps: 0 }];
+            let seen = new Set([queue[0].state]);
+            let head = 0;
+            while (head < queue.length) {
+                let { state, steps } = queue[head++];
+                let currentCars = JSON.parse(state);
+                let red = currentCars.find(c => c.type === 'red');
+                if (red.x === 4) return steps + 1; 
+                if (steps > 35) continue; 
+                for (let i = 0; i < currentCars.length; i++) {
+                    let car = currentCars[i];
+                    for (let dir of [-1, 1]) {
+                        const nx = dir === 1 ? (car.orient === 'h' ? car.x + car.len : car.x) : (car.orient === 'h' ? car.x - 1 : car.x);
+                        const ny = dir === 1 ? (car.orient === 'v' ? car.y + car.len : car.y) : (car.orient === 'v' ? car.y - 1 : car.y);
+                        let blocked = false;
+                        if (car.type === 'red' && car.orient === 'h' && dir === 1 && nx >= 6) {}
+                        else if (nx < 0 || ny < 0 || nx >= 6 || ny >= 6) blocked = true;
+                        else {
+                            blocked = currentCars.some(c => {
+                                if (c.orient === 'h') return ny === c.y && nx >= c.x && nx < c.x + c.len;
+                                return nx === c.x && ny >= c.y && ny < c.y + c.len;
+                            });
+                        }
+                        if (!blocked) {
+                            let nextCars = JSON.parse(state);
+                            nextCars[i].x += (nextCars[i].orient === 'h' ? dir : 0);
+                            nextCars[i].y += (nextCars[i].orient === 'v' ? dir : 0);
+                            let serialized = JSON.stringify(nextCars);
+                            if (!seen.has(serialized)) {
+                                seen.add(serialized);
+                                queue.push({ state: serialized, steps: steps + 1 });
+                            }
+                        }
+                    }
+                }
+            }
+            return -1;
+        }
+
+        let bestBoardForThisRun = null;
+        let maxDiffForThisRun = 0;
+
+        for(let i=0; i < iterations; i++) {
+            let testCars = [{id: 'red', x: 0, y: 2, len: 2, orient: 'h', type: 'red'}];
+            for(let j=0; j<14; j++) {
+                let orient = Math.random() > 0.5 ? 'h' : 'v';
+                let len = Math.random() > 0.8 ? 3 : 2;
+                let x = Math.floor(Math.random()*6), y = Math.floor(Math.random()*6);
+                let blocked = (orient === 'h' && x + len > 6) || (orient === 'v' && y + len > 6);
+                if (!blocked) {
+                    for(let k=0; k<len; k++) {
+                        let curX = orient === 'h' ? x+k : x; let curY = orient === 'v' ? y+k : y;
+                        if (testCars.some(c => {
+                            if (c.orient === 'h') return curY === c.y && curX >= c.x && curX < c.x + c.len;
+                            return curX === c.x && curY >= c.y && curY < c.y + c.len;
+                        })) blocked = true;
+                    }
+                }
+                if (!blocked) testCars.push({id: j, x, y, len, orient, type: j%2 === 0 ? 'blue' : 'green'});
+            }
+
+            let diff = solve(testCars);
+            if (diff > maxDiffForThisRun) { 
+                maxDiffForThisRun = diff; 
+                bestBoardForThisRun = testCars; 
+                self.postMessage({ type: 'found', cars: bestBoardForThisRun, difficulty: maxDiffForThisRun });
+            }
+            if (maxDiffForThisRun >= targetDiff) break;
+        }
+    };
+</script>
+
+<script>
+class ParkingGame {
+    constructor() {
+        this.starterLevel = {
+            difficulty: 14,
+            cars: [
+                {id: 'red', x: 0, y: 2, len: 2, orient: 'h', type: 'red'},
+                {id: 0, x: 2, y: 0, len: 3, orient: 'v', type: 'blue'},
+                {id: 1, x: 3, y: 2, len: 2, orient: 'v', type: 'green'},
+                {id: 2, x: 0, y: 3, len: 2, orient: 'h', type: 'blue'},
+                {id: 3, x: 5, y: 0, len: 3, orient: 'v', type: 'green'}
+            ]
+        };
+
+        this.cars = [];
+        this.nextLevelBuffer = null;
+        this.moves = 0;
+        this.gridEl = document.getElementById('grid');
+        this.moveEl = document.getElementById('move-count');
+        this.diffEl = document.getElementById('diff-score');
+        this.statusEl = document.getElementById('status-msg');
+
+        const blob = new Blob([document.getElementById('worker-code').textContent], { type: 'text/javascript' });
+        this.worker = new Worker(window.URL.createObjectURL(blob));
+        
+        this.worker.onmessage = (e) => {
+            const newLevel = e.data;
+            // CRITICAL FIX: Only overwrite if the new puzzle is BETTER than the current buffer
+            if (!this.nextLevelBuffer || newLevel.difficulty > this.nextLevelBuffer.difficulty) {
+                this.nextLevelBuffer = newLevel;
+                this.statusEl.innerText = `Buffer updated: ${newLevel.difficulty} moves locked.`;
             }
         };
 
-        this.startWorker(50, 12); // First level: Fast search
+        this.applyLevel(this.starterLevel);
+        this.startWorker(800, 26); // High search depth
     }
 
     startWorker(iterations, targetDiff) {
-        this.nextLevelBuffer = null;
-        this.statusEl.innerText = "Worker starting search...";
+        // We no longer nullify nextLevelBuffer here! We keep the old "best" until a "new best" arrives.
         this.worker.postMessage({ iterations, targetDiff });
     }
 
     requestNewLevel() {
         if (this.nextLevelBuffer) {
             this.applyLevel(this.nextLevelBuffer);
-            this.startWorker(500, 24); 
+            this.nextLevelBuffer = null; // Clear it only once consumed
+            this.startWorker(800, 28); 
         } else {
-            // This should rarely happen now because of the "preview" messages
-            this.statusEl.innerText = "WAITING FOR WORKER...";
+            this.statusEl.innerText = "Still searching for a complex puzzle...";
         }
     }
 
     applyLevel(levelData) {
-        this.cars = levelData.cars;
+        this.cars = JSON.parse(JSON.stringify(levelData.cars));
         this.moves = 0;
         this.diffEl.innerText = levelData.difficulty + " moves";
         this.moveEl.innerText = "0";
-        this.statusEl.innerText = "Worker idle...";
         document.querySelectorAll('.car').forEach(el => el.remove());
         this.render(true);
     }
@@ -309,10 +426,7 @@ class ParkingGame {
             this.moveEl.innerText = this.moves;
             this.render();
             if (car.type === 'red' && car.x >= 6) {
-                setTimeout(() => { 
-                    alert(`SOLVED!`); 
-                    this.requestNewLevel(); 
-                }, 500);
+                setTimeout(() => { alert(`SOLVED!`); this.requestNewLevel(); }, 300);
             }
         }
     }
@@ -337,8 +451,7 @@ class ParkingGame {
                 div.ontouchstart = (e) => { if(e.cancelable) e.preventDefault(); moveTrigger(e); };
                 this.gridEl.appendChild(div);
             }
-            div.style.left = c.x * 100/6 + '%';
-            div.style.top = c.y * 100/6 + '%';
+            div.style.left = c.x * 100/6 + '%'; div.style.top = c.y * 100/6 + '%';
         });
     }
 }
