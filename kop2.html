@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>King of Parking: Performance Edition</title>
+    <style>
+        :root {
+            --cell: min(75px, 13vmin);
+            --grass: #3d5e20;
+            --asphalt: #2c2c2c;
+            --border-color: #111;
+        }
+        body {
+            background: #111; color: white; font-family: 'Courier New', Courier, monospace;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; margin: 0; overflow: hidden; user-select: none;
+            overscroll-behavior: none;
+        }
+        
+        #game-container {
+            background: var(--grass);
+            padding: calc(var(--cell) * 0.5);
+            border: clamp(6px, 1.5vmin, 12px) solid var(--border-color);
+            box-shadow: 0 0 40px rgba(0,0,0,0.9);
+            position: relative;
+            border-radius: 8px;
+            z-index: 0;
+        }
+        
+        #grid {
+            width: calc(var(--cell) * 6); 
+            height: calc(var(--cell) * 6);
+            background: var(--asphalt);
+            border: clamp(3px, 1vmin, 6px) solid var(--border-color);
+            position: relative;
+            z-index: 5;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0JyBoZWlnaHQ9JzQnIHZpZXdCb3g9JzAgMCA0IDQnPgo8cGF0aCBZmlsbD0nIzAwMDAwMCcgb3BhY2l0eT0nMC4xJyBkPSdNMSAzaDF2MUgxVjN6bTItMmgxVjFIM3YxeicvPjwvc3ZnPg==');
+        }
+
+        .exit-gate {
+            position: absolute;
+            top: 33.333%;
+            right: -14%;
+            width: 14%; 
+            height: 16.666%;
+            background: var(--asphalt);
+            border-top: clamp(3px, 1vmin, 6px) solid var(--border-color);
+            border-bottom: clamp(3px, 1vmin, 6px) solid var(--border-color);
+            z-index: 1; 
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPSc0JyBoZWlnaHQ9JzQnIHZpZXdCb3g9JzAgMCA0IDQnPgo8cGF0aCBZmlsbD0nIzAwMDAwMCcgb3BhY2l0eT0nMC4xJyBkPSdNMSAzaDF2MUgxVjN6bTItMmgxVjFIM3YxeicvPjwvc3ZnPg==');
+        }
+        
+        .exit-gate::after {
+            content: ''; position: absolute; left: -10%; top: 0; bottom: 0; width: 20%; background: var(--asphalt);
+        }
+
+        .car {
+            position: absolute; 
+            transition: left 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95), top 0.3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+            cursor: pointer; box-sizing: border-box;
+            border: 2px solid rgba(0,0,0,0.6);
+            box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+            border-radius: 15%;
+            overflow: hidden;
+            z-index: 10; 
+            touch-action: none;
+        }
+
+        .car::before {
+            content: ''; position: absolute;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .car::after {
+            content: ''; position: absolute;
+            background: rgba(255,255,255,0.15);
+            border-radius: 4px;
+        }
+
+        .car.h::before { top: 15%; bottom: 15%; left: 15%; right: 40%; border-radius: 4px; }
+        .car.h::after { top: 20%; bottom: 20%; right: 10%; width: 20%; }
+        .car.v::before { left: 15%; right: 15%; top: 15%; bottom: 40%; border-radius: 4px; }
+        .car.v::after { left: 20%; right: 20%; bottom: 10%; height: 20%; }
+
+        .car.red { 
+            background: linear-gradient(#f22, #900) !important; 
+            border: 2px solid gold; 
+            z-index: 20; 
+        }
+        .car.blue { background: linear-gradient(#33f, #006); }
+        .car.green { background: linear-gradient(#3f3, #060); }
+        
+        #ui { 
+            margin-bottom: 20px; 
+            text-align: center; 
+            width: 90%; 
+            max-width: 500px; 
+        }
+        #status-msg { color: gold; font-weight: bold; height: 24px; margin-top: 10px; font-size: 0.9rem; }
+        
+        button { 
+            background: gold; border: none; padding: 12px 24px; 
+            font-weight: bold; cursor: pointer; border-radius: 4px; 
+            color: black; box-shadow: 0 4px 0 #c90; 
+            font-size: 1rem;
+        }
+        button:active { transform: translateY(2px); box-shadow: 0 2px 0 #c90; }
+        .stat-line { font-size: 1.1rem; margin: 10px 0; color: #ccc; }
+        span { color: gold; }
+
+        @media (max-width: 600px) {
+            #ui h1 { font-size: 1.5rem; }
+            .stat-line { font-size: 0.9rem; }
+            button { padding: 10px 16px; font-size: 0.9rem; }
+            #ui { margin-bottom: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="ui">
+    <h1 style="margin:0; color: gold; text-shadow: 2px 2px 4px #000;">KING OF PARKING</h1>
+    <div class="stat-line">
+        Moves: <span id="move-count">0</span> | 
+        Complexity: <span id="diff-score">Warming Up...</span>
+    </div>
+    <button onclick="game.newHighDifficultyLevel()">GENERATE NEW PUZZLE</button>
+    <div id="status-msg"></div>
+</div>
+
+<div id="game-container">
+    <div id="grid">
+        <div class="exit-gate"></div>
+    </div>
+</div>
+
+<script>
+class Car {
+    constructor(id, x, y, len, orient, type) {
+        this.id = id; this.x = x; this.y = y; this.len = len; this.orient = orient; this.type = type;
+    }
+}
+
+class ParkingGame {
+    constructor() {
+        this.gridSize = 6;
+        this.moves = 0;
+        this.cars = [];
+        this.nextLevel = null;
+        this.isGenerating = false;
+        
+        this.gridEl = document.getElementById('grid');
+        this.moveEl = document.getElementById('move-count');
+        this.diffEl = document.getElementById('diff-score');
+        this.statusEl = document.getElementById('status-msg');
+        
+        this.newHighDifficultyLevel();
+    }
+
+    getCarAt(x, y, cars = this.cars) {
+        return cars.find(c => {
+            if (c.orient === 'h') return y === c.y && x >= c.x && x < c.x + c.len;
+            return x === c.x && y >= c.y && y < c.y + c.len;
+        });
+    }
+
+    canMove(car, dir, cars = this.cars) {
+        const nx = dir === 1 ? (car.orient === 'h' ? car.x + car.len : car.x) : (car.orient === 'h' ? car.x - 1 : car.x);
+        const ny = dir === 1 ? (car.orient === 'v' ? car.y + car.len : car.y) : (car.orient === 'v' ? car.y - 1 : car.y);
+        if (car.type === 'red' && car.orient === 'h' && dir === 1 && nx >= 6) return true;
+        if (nx < 0 || ny < 0 || nx >= 6 || ny >= 6) return false;
+        return !this.getCarAt(nx, ny, cars);
+    }
+
+    solve(startCars) {
+        let queue = [{ state: JSON.stringify(startCars), steps: 0 }];
+        let seen = new Set([queue[0].state]);
+        let head = 0;
+        while (head < queue.length) {
+            let { state, steps } = queue[head++];
+            let currentCars = JSON.parse(state);
+            let red = currentCars.find(c => c.type === 'red');
+            if (red.x === 4) return steps + 1; 
+            if (steps > 32) continue; // Slightly tighter solve depth for performance
+            for (let i = 0; i < currentCars.length; i++) {
+                let car = currentCars[i];
+                for (let dir of [-1, 1]) {
+                    if (this.canMove(car, dir, currentCars)) {
+                        let nextCars = JSON.parse(state);
+                        nextCars[i].x += (nextCars[i].orient === 'h' ? dir : 0);
+                        nextCars[i].y += (nextCars[i].orient === 'v' ? dir : 0);
+                        let serialized = JSON.stringify(nextCars);
+                        if (!seen.has(serialized)) {
+                            seen.add(serialized);
+                            queue.push({ state: serialized, steps: steps + 1 });
+                        }
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+    newHighDifficultyLevel() {
+        if (this.nextLevel) {
+            this.applyLevel(this.nextLevel);
+            this.nextLevel = null;
+            this.prepareNextLevelInBackground(false);
+        } else {
+            // First time load or forced reset: Generate a quick level immediately
+            this.prepareNextLevelInBackground(true);
+        }
+    }
+
+    applyLevel(levelData) {
+        this.cars = levelData.cars;
+        this.moves = 0;
+        this.diffEl.innerText = levelData.difficulty + " moves";
+        this.moveEl.innerText = "0";
+        this.statusEl.innerText = "";
+        const oldCars = document.querySelectorAll('.car');
+        oldCars.forEach(el => el.remove());
+        this.render(true);
+    }
+
+    prepareNextLevelInBackground(isInitialLoad = false) {
+        if (this.isGenerating) return;
+        this.isGenerating = true;
+        
+        // Strategy: First board search is shallow (fast), subsequent are deep (hard)
+        const iterationsToRun = isInitialLoad ? 15 : 400;
+        const targetMoves = isInitialLoad ? 10 : 22;
+        
+        let bestBoard = [];
+        let maxDiff = 0;
+        let count = 0;
+
+        const processIteration = () => {
+            // Run only ONE iteration per frame to prevent lag
+            let testCars = [new Car('red', 0, 2, 2, 'h', 'red')];
+            for (let j = 0; j < 14; j++) {
+                let orient = Math.random() > 0.5 ? 'h' : 'v';
+                let len = Math.random() > 0.8 ? 3 : 2;
+                let x = Math.floor(Math.random() * 6), y = Math.floor(Math.random() * 6);
+                if (this.isSpaceEmpty(x, y, len, orient, testCars)) {
+                    testCars.push(new Car(j, x, y, len, orient, j % 2 === 0 ? 'blue' : 'green'));
+                }
+            }
+
+            let diff = this.solve(testCars);
+            if (diff > maxDiff) { 
+                maxDiff = diff; 
+                bestBoard = JSON.parse(JSON.stringify(testCars)); 
+            }
+            count++;
+
+            // If it's initial load and we have a decent board, show it now
+            if (isInitialLoad && (maxDiff >= targetMoves || count >= iterationsToRun)) {
+                this.isGenerating = false;
+                this.applyLevel({ cars: bestBoard, difficulty: maxDiff });
+                this.prepareNextLevelInBackground(false); // Start the background deep search
+                return;
+            }
+
+            // Continue background search if not done
+            if (count < iterationsToRun && maxDiff < targetMoves) {
+                // Yield control back to browser for 30ms to ensure 60fps play
+                setTimeout(processIteration, 30);
+            } else {
+                this.isGenerating = false;
+                this.nextLevel = { cars: bestBoard, difficulty: maxDiff };
+                console.log("Background Level Buffered.");
+            }
+        };
+
+        processIteration();
+    }
+
+    isSpaceEmpty(x, y, len, orient, list) {
+        if (orient === 'h' && x + len > 6) return false;
+        if (orient === 'v' && y + len > 6) return false;
+        for(let i=0; i<len; i++) {
+            if (this.getCarAt(orient === 'h' ? x+i : x, orient === 'v' ? y+i : y, list)) return false;
+        }
+        return true;
+    }
+
+    handleMove(car, dir) {
+        let moved = false;
+        if (car.type === 'red' && dir === 1) {
+            let pathClear = true;
+            for (let nextX = car.x + car.len; nextX < 6; nextX++) {
+                if (this.getCarAt(nextX, car.y)) { pathClear = false; break; }
+            }
+            if (pathClear) {
+                while (this.canMove(car, 1)) {
+                    car.x += 1; moved = true;
+                    if (car.x >= 6) break;
+                }
+            } else {
+                if (this.canMove(car, 1)) { car.x += 1; moved = true; }
+            }
+        } else {
+            if (this.canMove(car, dir)) {
+                car.x += (car.orient === 'h' ? dir : 0);
+                car.y += (car.orient === 'v' ? dir : 0);
+                moved = true;
+            }
+        }
+
+        if (moved) {
+            this.moves++;
+            this.moveEl.innerText = this.moves;
+            this.render();
+            if (car.type === 'red' && car.x >= 6) {
+                setTimeout(() => { 
+                    alert(`SOLVED IN ${this.moves} MOVES!`); 
+                    this.newHighDifficultyLevel(); 
+                }, 500);
+            }
+        }
+    }
+
+    render(forceNew = false) {
+        this.cars.forEach(c => {
+            let div = document.getElementById(`car-${c.id}`);
+            if (!div || forceNew) {
+                div = document.createElement('div');
+                div.id = `car-${c.id}`;
+                div.className = `car ${c.orient} ${c.type}`;
+                
+                const cellSizePct = 100/6;
+                div.style.width = (c.orient === 'h' ? c.len : 1) * cellSizePct + '%';
+                div.style.height = (c.orient === 'v' ? c.len : 1) * cellSizePct + '%';
+                
+                div.onmousedown = (e) => {
+                    e.preventDefault();
+                    const rect = div.getBoundingClientRect();
+                    const currentCellPixelSize = this.gridEl.clientWidth / 6;
+                    const offset = c.orient === 'h' ? e.clientX - rect.left : e.clientY - rect.top;
+                    this.handleMove(c, offset > (c.len * currentCellPixelSize)/2 ? 1 : -1);
+                };
+                
+                div.ontouchstart = (e) => {
+                    if (e.cancelable) { e.preventDefault(); }
+                    const rect = div.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    const currentCellPixelSize = this.gridEl.clientWidth / 6;
+                    const offset = c.orient === 'h' ? touch.clientX - rect.left : touch.clientY - rect.top;
+                    this.handleMove(c, offset > (c.len * currentCellPixelSize)/2 ? 1 : -1);
+                };
+
+                this.gridEl.appendChild(div);
+            }
+            
+            const cellSizePct = 100/6;
+            div.style.left = c.x * cellSizePct + '%';
+            div.style.top = c.y * cellSizePct + '%';
+        });
+    }
+}
+
+const game = new ParkingGame();
+</script>
+</body>
+</html>
