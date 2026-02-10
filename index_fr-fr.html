@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/testSite/styles.css" />
+    <link rel="alternate" href="https://www.bentley.com/" hreflang="en-US"" />
+    <link rel="alternate" href="https://www.bentley.com/testPage" hreflang="en-US"" />
+    <title>Test22</title>
+    <script>
+      function searchForm() {
+        let term = document.forms["search"]["searchTerm"].value;
+        if (term == "") {
+          alert("Searchbox is empty");
+          document.getElementById("results").innerHTML = "";
+          return false;
+        } else {
+           document.getElementById("results").innerHTML = "<p>No search results found</p>";
+        }
+      }
+    </script>
+    <script>
+        // request permission on page load
+        document.addEventListener('DOMContentLoaded', function() {
+         if (!Notification) {
+          alert('Desktop notifications not available in your browser. Try Chromium.');
+          return;
+         }
+        
+         if (Notification.permission !== 'granted')
+          Notification.requestPermission();
+        });
+        
+        
+        function notifyMe() {
+         if (Notification.permission !== 'granted')
+          Notification.requestPermission();
+         else {
+          var notification = new Notification('Work Available to be claimed', {
+           icon: 'https://d33wubrfki0l68.cloudfront.net/4764a9cca504331fbaaa480fb7102b751022672f/eb18c/static/button-click-smartling-8740728eba63174f6309d309a1c62bca.svg',
+           body: 'New Translation Job Available - Click here to open your Dashboard',
+          });
+          notification.onclick = function() {
+           window.open('https://dashboard.smartling.com/app/account-jobs/?filter=AVAILABLE_TO_ACCEPT');
+          };
+         }
+        }
+    </script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+    <body>
+        <button onclick="notifyMe()" style="font-size:5em;">Avertis-moi !</button>
+        <p>This is a test to observe Visual Context</p>
+        <section class="section recall">
+            <p class="recall-date">16 octobre 2023</p>
+            <h2>Rappel de Barres de protéines végétaliennes fermentées au beurre d'arachide et chocolat de marque Genuine Health en raison de la présence de moisissures</h2>
+            <!--divider--> <hr />
+            <p>Rappel de Barres de protéines végétaliennes fermentées au beurre d'arachide et chocolat de marque Genuine Health en raison de la présence de moisissures</p>
+            <p><strong>Ne pas utiliser, vendre, servir ou distribuer le produit visé</strong></p>
+            <p>Pour plus de détails et une liste des lots touchés, visite : <a href="https://recalls-rappels.canada.ca/en/alert-recall/genuine-health-brand-fermented-vegan-proteins-peanut-butter-chocolate-bar-recalled-due" target="_blank">https://recalls-rappels.canada.ca/fr/avis-rappel/rappel-barres-proteines-vegetaliennes-fermentees-au-beurre-arachide-et-chocolat-marque</a>
+            </p>
+        </section>
+
+        <section class="section recall">
+            <p class="recall-date">17 octobre 2023</p>
+            <h2>La barre de chocolat au beurre de cacahuète Fermented Vegan Proteins+ de la marque Genuine Health est rappelée en raison de la présence de moisissures.</h2>
+            <!--divider--> <hr>
+            <p>La barre de chocolat au beurre de cacahuète Fermented Vegan Proteins+ de la marque Genuine Health est rappelée en raison de la présence de moisissures.</p>
+            <p><strong>N'utilise pas, ne vend pas, ne sert pas et ne distribue pas le produit concerné.</strong></p>
+            <p>Pour plus de détails et une liste des lots concernés, visite le site <a href="https://recalls-rappels.canada.ca/en/alert-recall/genuine-health-brand-fermented-vegan-proteins-peanut-butter-chocolate-bar-recalled-due" target="_blank">: https://recalls-rappels.canada.ca/en/alert-recall/genuine-health-brand-fermented-vegan-proteins-peanut-butter-chocolate-bar-recalled-due</a>
+            </p>
+        </section>
+        <style data-emotion="css naxvau" data-s="">.css-naxvau{cursor:pointer;padding:8px;}.css-naxvau:not(:last-child){margin-bottom:8px;}.css-naxvau:hover{border-radius:2px;background-color:#3d4f58;color:#0ad05b;}</style>
+        <div style="display:none;">
+        <p>
+            Ingère ceci 
+        </p>
+        <p class ="dontingest">
+            Ne l'ingère pas
+        </p>
+        <div class="searchBox">
+            <form name="search" >
+                <input type="text" placeholder="Search Here" name="searchTerm"/>
+                <input type="button" value="Va" onclick="return searchForm()"/>
+            </form>
+            <p id="results">
+
+            </p>
+        </div>
+        <h2 class="sl_nosplit"><span style="font-size: 98px; line-height: 1.2;">Sécurités</span><br><span style="font-size: 98px;">  qui est prêt pour </span><br><span style="font-size: 98px;"><span class="lora">tout.</span></span></h2>
+        <p class="sl_nosplit"><span class="TextRun SCXW36674427 BCX0" lang="EN-US" data-contrast="none"><span class="NormalTextRun SCXW36674427 BCX0">Afin de favoriser et d'exploiter les sources d'énergie renouvelables pour alimenter la croissance rapide de la population au Botswana, BIUST explore le potentiel d'utilisation de la source thermale de Kasane pour générer de l'énergie géothermique. </span>L'<span class="NormalTextRun SCXW36674427 BCX0">évaluation complète du site a nécessité la capture, la combinaison et l'analyse de</span><span class="NormalTextRun SCXW36674427 BCX0"> nombreux </span><span class="NormalTextRun SCXW36674427 BCX0">types de données géophysiques. En créant un modèle géophysique intuitif au sein d'une plateforme unique, l'équipe a acquis une compréhension plus approfondie des risques et des avantages de la région. </span> En conséquence <span class="NormalTextRun SCXW36674427 BCX0">, ils</span><span class="NormalTextRun SCXW36674427 BCX0"> prévoient d'</span>identifier Kasane Hot Spring comme l'emplacement le plus approprié pour l'énergie géothermique au Botswana, ce qui contribuera à atténuer durablement les limitations énergétiques du pays.</span></p>		
+        <p>
+            <strong>4.</strong><strong>Activer les données du commerce de détail pour atteindre et mesurer tout au long du parcours d'achat d'un client.<br /><br /></strong>sous l'arbre à sparterie.
+        </p>
+        </div>
+    </body>
+</html>
