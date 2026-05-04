@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RSVP Reader</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<style>
+body { margin:0; background:#000; color:#fff; font-family:system-ui; }
+
+.screen { display:none; height:100vh; }
+.screen.active { display:block; }
+
+.library { padding:16px; }
+.book { padding:14px; border-bottom:1px solid #222; }
+
+.topbar {
+  height:40px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  border-bottom:1px solid #111;
+  position:relative;
+  font-size:13px;
+  color:#aaa;
+}
+
+.progress {
+  position:absolute;
+  bottom:0;
+  left:0;
+  height:2px;
+  background:#fff;
+  width:0%;
+}
+
+.display {
+  height:calc(100% - 100px);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.word {
+  font-size:clamp(32px,8vw,72px);
+  text-align:center;
+}
+
+.orp { color:#ff3b3b; }
+
+.bottom {
+  height:60px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#aaa;
+}
+
+.speed {
+  position:absolute;
+  bottom:80px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:40px;
+  opacity:0;
+}
+.speed.show { opacity:1; }
+
+.menu {
+  position:absolute;
+  inset:0;
+  background:#000;
+  display:none;
+  overflow:auto;
+}
+.menu.show { display:block; }
+
+.menu div {
+  padding:16px;
+  border-bottom:1px solid #111;
+}
+.activeChapter { color:#ff3b3b; }
+</style>
+</head>
+
+<body>
+
+<div id="library" class="screen active">
+  <div class="library">
+    <h2>Library</h2>
+    <input type="file" id="fileInput" accept=".epub"/>
+    <div id="books"></div>
+  </div>
+</div>
+
+<div id="reader" class="screen">
+  <div class="topbar">
+    <div id="chapterTitle"></div>
+    <div id="progress" class="progress"></div>
+  </div>
+
+  <div id="display" class="display">
+    <div id="word" class="word"></div>
+    <div id="speedHUD" class="speed"></div>
+  </div>
+
+  <div class="bottom">
+    <span id="wpm">300 WPM</span>
+  </div>
+
+  <div id="menu" class="menu"></div>
+</div>
+
+<script>
+let db;
+let currentBook=null;
+let words=[], chapters=[];
+let i=0, speed=300;
+let hold=0, timer;
+let current=0;
+
+/* DOM */
+const libraryEl = document.getElementById("library");
+const readerEl = document.getElementById("reader");
+const booksEl = document.getElementById("books");
+const fileInput = document.getElementById("fileInput");
+
+const wordEl = document.getElementById("word");
+const progressEl = document.getElementById("progress");
+const chapterTitleEl = document.getElementById("chapterTitle");
+const menuEl = document.getElementById("menu");
+const displayEl = document.getElementById("display");
+const speedHUD = document.getElementById("speedHUD");
+const wpmEl = document.getElementById("wpm");
+
+/* DB */
+const req=indexedDB.open("RSVP",1);
+req.onupgradeneeded=e=>{
+  db=e.target.result;
+  db.createObjectStore("books",{keyPath:"id"});
+};
+req.onsuccess=e=>{
+  db=e.target.result;
+  loadLibrary();
+};
+
+/* LIBRARY */
+function loadLibrary(){
+  const tx=db.transaction("books","readonly");
+  tx.objectStore("books").getAll().onsuccess=e=>{
+    const list=e.target.result.sort((a,b)=>b.lastOpened-a.lastOpened);
+    booksEl.innerHTML=list.map(b=>`
+      <div class="book" onclick="openBook('${b.id}')">
+        ${b.title}<br>
+        ${Math.floor((b.progress||0)/b.words.length*100)}%
+      </div>
+    `).join("");
+  };
+}
+
+/* OPEN */
+function openBook(id){
+  const tx=db.transaction("books","readonly");
+  tx.objectStore("books").get(id).onsuccess=e=>{
+    const b=e.target.result;
+    currentBook=b;
+    words=b.words||[];
+    chapters=b.chapters||[];
+    i=b.progress||0;
+    speed=b.speed||300;
+
+    showReader();
+    render(words[i]);
+    updateChapter();
+  };
+}
+
+function showReader(){
+  libraryEl.classList.remove("active");
+  readerEl.classList.add("active");
+}
+
+/* SAVE */
+setInterval(()=>{
+  if(!currentBook) return;
+  currentBook.progress=i;
+  currentBook.speed=speed;
+  currentBook.lastOpened=Date.now();
+  db.transaction("books","readwrite").objectStore("books").put(currentBook);
+},2000);
+
+/* ORP */
+function getORP(w){
+  return Math.min(3, Math.floor((w||"").length*0.35));
+}
+
+function render(word){
+  if(!word){ wordEl.textContent=""; return; }
+
+  const p=getORP(word);
+  wordEl.innerHTML=word.split("").map((c,idx)=>
+    idx===p?`<span class="orp">${c}</span>`:c
+  ).join("");
+
+  progressEl.style.width=(i/words.length)*100+"%";
+}
+
+/* HOLD */
+function step(){
+  if(!hold) return;
+
+  if(hold===1 && i<words.length-1) i++;
+  if(hold===-1 && i>0) i--;
+
+  render(words[i]);
+  updateChapter();
+
+  timer=setTimeout(step,60000/speed);
+}
+
+displayEl.addEventListener("touchstart", e=>{
+  if(menuEl.classList.contains("show")) return;
+
+  hold = e.touches[0].clientX < innerWidth/2 ? -1 : 1;
+  step();
+
+  startY=e.touches[0].clientY;
+  startSpeed=speed;
+});
+
+displayEl.addEventListener("touchend", ()=>{ hold=0; clearTimeout(timer); });
+
+/* SPEED */
+let startY=0,startSpeed=0;
+displayEl.addEventListener("touchmove", e=>{
+  const dy=startY-e.touches[0].clientY;
+  let s=startSpeed+Math.floor(dy/5);
+  s=Math.max(100,Math.min(800,s));
+  setSpeed(s);
+});
+
+function setSpeed(s){
+  speed=s;
+  wpmEl.textContent=s+" WPM";
+
+  speedHUD.textContent=s;
+  speedHUD.classList.add("show");
+  setTimeout(()=>speedHUD.classList.remove("show"),500);
+}
+
+/* CHAPTERS */
+function updateChapter(){
+  for(let c=0;c<chapters.length;c++){
+    if(i>=chapters[c].start) current=c;
+  }
+  chapterTitleEl.textContent=chapters[current]?.title||"";
+}
+
+chapterTitleEl.onclick=()=>{
+  menuEl.innerHTML=chapters.map((c,idx)=>`
+    <div class="${idx===current?'activeChapter':''}"
+         onclick="jump(${idx})">${c.title}</div>
+  `).join("");
+  menuEl.classList.add("show");
+};
+
+function jump(idx){
+  i=chapters[idx].start;
+  menuEl.classList.remove("show");
+  render(words[i]);
+  updateChapter();
+}
+
+/* EPUB WITH TRUE ANCHOR MAPPING */
+async function parseEPUB(file){
+  const zip = await JSZip.loadAsync(file);
+
+  const container = new DOMParser().parseFromString(
+    await zip.file("META-INF/container.xml").async("text"),
+    "application/xml"
+  );
+
+  const root = container.querySelector("rootfile").getAttribute("full-path");
+
+  const opf = new DOMParser().parseFromString(
+    await zip.file(root).async("text"),
+    "application/xml"
+  );
+
+  const manifest = {};
+  opf.querySelectorAll("item").forEach(i=>{
+    manifest[i.getAttribute("id")] = i.getAttribute("href");
+  });
+
+  const spine = [...opf.querySelectorAll("itemref")]
+    .map(i => manifest[i.getAttribute("idref")]);
+
+  const base = root.substring(0, root.lastIndexOf("/") + 1);
+
+  /* TOC */
+  let toc = [];
+
+  const navItem = Object.values(manifest).find(h=>h.includes("nav"));
+  if(navItem){
+    const html = await zip.file(base+navItem)?.async("text");
+    if(html){
+      const doc = new DOMParser().parseFromString(html,"text/html");
+      toc = [...doc.querySelectorAll("nav a")].map(a=>({
+        title:a.textContent.trim(),
+        href:a.getAttribute("href")
+      }));
+    }
+  }
+
+  if(!toc.length){
+    const ncxItem = Object.values(manifest).find(h=>h.endsWith(".ncx"));
+    if(ncxItem){
+      const xml = await zip.file(base+ncxItem)?.async("text");
+      const doc = new DOMParser().parseFromString(xml,"application/xml");
+      toc = [...doc.querySelectorAll("navPoint")].map(n=>({
+        title:n.querySelector("text")?.textContent,
+        href:n.querySelector("content")?.getAttribute("src")
+      }));
+    }
+  }
+
+  let fullWords = [];
+  let offset = 0;
+  chapters = [];
+
+  for(const s of spine){
+    const path = base + s;
+    if(!zip.file(path)) continue;
+
+    const html = await zip.file(path).async("text");
+    const doc = new DOMParser().parseFromString(html,"text/html");
+
+    const walker = document.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
+
+    let localIndex = 0;
+    let node;
+    const idMap = {};
+
+    while(node = walker.nextNode()){
+      const parent = node.parentElement;
+      const wordsInNode = node.nodeValue.match(/\S+/g) || [];
+
+      if(parent && parent.id){
+        idMap[parent.id] = offset + localIndex;
+      }
+
+      fullWords.push(...wordsInNode);
+      localIndex += wordsInNode.length;
+    }
+
+    /* map TOC */
+    toc.forEach(t=>{
+      if(!t.href) return;
+
+      const [file, anchor] = t.href.split("#");
+
+      if(file && file.includes(s)){
+        const pos = anchor ? idMap[anchor] : offset;
+
+        chapters.push({
+          title:t.title,
+          start: pos ?? offset
+        });
+      }
+    });
+
+    offset += localIndex;
+  }
+
+  /* fallback */
+  if(!chapters.length){
+    let fallbackOffset = 0;
+    for(const s of spine){
+      chapters.push({
+        title:s.split("/").pop(),
+        start:fallbackOffset
+      });
+      fallbackOffset += Math.floor(fullWords.length/spine.length);
+    }
+  }
+
+  return fullWords;
+}
+
+/* LOAD */
+fileInput.onchange=async e=>{
+  const file=e.target.files[0];
+  if(!file) return;
+
+  const w=await parseEPUB(file);
+
+  const book={
+    id:Date.now()+"",
+    title:file.name,
+    words:w,
+    chapters,
+    progress:0,
+    speed:300,
+    lastOpened:Date.now()
+  };
+
+  db.transaction("books","readwrite")
+    .objectStore("books")
+    .put(book);
+
+  loadLibrary();
+};
+</script>
+
+</body>
+</html>
