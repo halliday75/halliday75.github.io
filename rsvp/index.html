@@ -633,8 +633,8 @@ function updateWPM(showHud = true) {
   }
 }
 
-document.getElementById("minusBtn").onclick = () => { speed = Math.max(50, speed - 25); updateWPM(); };
-document.getElementById("plusBtn").onclick = () => { speed = Math.min(1200, speed + 25); updateWPM(); };
+document.getElementById("minusBtn").onclick = () => { speed = Math.max(50, speed - 10); updateWPM(); };
+document.getElementById("plusBtn").onclick = () => { speed = Math.min(1200, speed + 10); updateWPM(); };
 
 function toggleFocus() {
   isFocusMode = !isFocusMode;
