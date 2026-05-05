@@ -76,10 +76,7 @@ body {
   position:relative;
   font-size:13px;
   color:#aaa;
-  transition:opacity 0.3s;
 }
-
-.topbar.hidden { opacity:0; pointer-events:none; }
 
 /* prevent overlap */
 #chapterTitle {
@@ -121,37 +118,10 @@ body {
   justify-content:center;
   align-items:center;
   text-align:center;
-  position:relative;
 }
 
 .word {
   font-size:clamp(32px,8vw,72px);
-  position:relative;
-}
-
-/* NEW focus layout */
-.focus-container {
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.focus-prev,
-.focus-next {
-  position:absolute;
-  opacity:0.25;
-  white-space:nowrap;
-}
-
-.focus-prev {
-  right:100%;
-  margin-right:20px;
-}
-
-.focus-next {
-  left:100%;
-  margin-left:20px;
 }
 
 .orp { color:#ff3b3b; }
@@ -163,10 +133,7 @@ body {
   display:flex;
   justify-content:center;
   align-items:center;
-  transition:opacity 0.3s;
 }
-
-.bottom.hidden { opacity:0; pointer-events:none; }
 
 .wpm-control {
   display:flex;
@@ -205,32 +172,16 @@ body {
 .menu {
   position:absolute;
   inset:0;
-  background:rgba(0,0,0,0.95);
+  background:#000;
   display:none;
   overflow:auto;
-  z-index:10;
 }
-
 .menu.show { display:block; }
 
-.menu-content {
-  max-width:600px;
-  margin:auto;
-}
-
-.menu-close {
-  position:sticky;
-  top:0;
-  text-align:right;
-  padding:10px;
-  font-size:18px;
-}
-
-.menu div.item {
+.menu div {
   padding:16px;
   border-bottom:1px solid #111;
 }
-
 .activeChapter { color:#ff3b3b; }
 </style>
 </head>
@@ -251,10 +202,10 @@ body {
 </div>
 
 <div id="reader" class="screen">
-  <div id="topbar" class="topbar">
-    <div id="focusBtn" class="top-btn left-btn" onclick="toggleFocus()">Focus</div>
+  <div class="topbar">
+    <div class="top-btn left-btn" onclick="toggleFocus()">Focus</div>
     <div id="chapterTitle"></div>
-    <div id="backBtn" class="top-btn right-btn" onclick="goBack()">Back</div>
+    <div class="top-btn right-btn" onclick="goBack()">Back</div>
     <div id="progress" class="progress"></div>
   </div>
 
@@ -263,7 +214,7 @@ body {
     <div id="speedHUD" class="speed"></div>
   </div>
 
-  <div id="bottomBar" class="bottom">
+  <div class="bottom">
     <div class="wpm-control">
       <div class="wpm-btn" id="minusBtn">−</div>
       <div id="wpm">300</div>
@@ -302,11 +253,6 @@ const wpmEl = document.getElementById("wpm");
 
 const minusBtn = document.getElementById("minusBtn");
 const plusBtn = document.getElementById("plusBtn");
-
-const topbar = document.getElementById("topbar");
-const bottomBar = document.getElementById("bottomBar");
-const focusBtn = document.getElementById("focusBtn");
-const backBtn = document.getElementById("backBtn");
 
 /* DB */
 const req=indexedDB.open("RSVP",1);
@@ -396,13 +342,10 @@ function render(word){
   if(focusMode){
     const prev = words[i-1] || "";
     const next = words[i+1] || "";
-
     wordEl.innerHTML = `
-      <div class="focus-container">
-        <span class="focus-prev">${format(prev)}</span>
-        <span>${format(word)}</span>
-        <span class="focus-next">${format(next)}</span>
-      </div>
+      <span class="fade">${format(prev)}</span>
+      <span>${format(word)}</span>
+      <span class="fade">${format(next)}</span>
     `;
   } else {
     wordEl.innerHTML = format(word);
@@ -416,13 +359,7 @@ function toggleFocus(){
   render(words[i]);
 }
 
-/* SHOW/HIDE UI BASED ON HOLD */
-function setUIVisible(visible){
-  topbar.classList.toggle("hidden", !visible);
-  bottomBar.classList.toggle("hidden", !visible);
-}
-
-/* SPEED unchanged */
+/* SPEED */
 function changeSpeed(delta){
   speed = Math.max(100, Math.min(800, speed + delta));
   updateWPM(true);
@@ -455,6 +392,21 @@ function updateWPM(showHUD=false){
   }
 }
 
+/* SMART DELAY */
+function getDelay(word){
+  let base = 60000 / speed;
+
+  if(/[.!?]/.test(word)) base *= 2.2;
+  else if(/[,:;]/.test(word)) base *= 1.5;
+
+  if(word.length > 8) base *= 1.3;
+  if(word.length > 12) base *= 1.6;
+
+  if(word.length <= 3) base *= 0.85;
+
+  return base;
+}
+
 /* HOLD */
 function step(){
   if(!hold) return;
@@ -476,70 +428,16 @@ displayEl.addEventListener("touchstart", e=>{
   e.preventDefault();
 
   hold = e.touches[0].clientX < innerWidth/2 ? -1 : 1;
-
-  setUIVisible(false); // hide while reading
   step();
 }, { passive:false });
 
 function stopHold(){
   hold=0;
   clearTimeout(timer);
-  setUIVisible(true); // show when stopped
 }
 
 displayEl.addEventListener("touchend", stopHold);
 displayEl.addEventListener("touchcancel", stopHold);
-
-/* SMART DELAY unchanged */
-function getDelay(word){
-  let base = 60000 / speed;
-
-  if(/[.!?]/.test(word)) base *= 2.2;
-  else if(/[,:;]/.test(word)) base *= 1.5;
-
-  if(word.length > 8) base *= 1.3;
-  if(word.length > 12) base *= 1.6;
-
-  if(word.length <= 3) base *= 0.85;
-
-  return base;
-}
-
-/* CHAPTER MENU unchanged */
-chapterTitleEl.onclick=()=>{
-  menuEl.innerHTML = `
-    <div class="menu-content">
-      <div class="menu-close" onclick="closeMenu()">✕</div>
-      ${chapters.map((c,idx)=>`
-        <div class="item ${idx===current?'activeChapter':''}"
-             onclick="jump(${idx})">${c.title}</div>
-      `).join("")}
-    </div>
-  `;
-  menuEl.classList.add("show");
-
-  focusBtn.style.display="none";
-  backBtn.style.display="none";
-};
-
-function closeMenu(){
-  menuEl.classList.remove("show");
-  focusBtn.style.display="";
-  backBtn.style.display="";
-}
-
-menuEl.addEventListener("click", e=>{
-  if(e.target === menuEl){
-    closeMenu();
-  }
-});
-
-function jump(idx){
-  i=chapters[idx].start;
-  closeMenu();
-  render(words[i]);
-  updateChapter();
-}
 
 /* CHAPTERS */
 function updateChapter(){
@@ -551,8 +449,23 @@ function updateChapter(){
   chapterTitleEl.textContent=chapters[current]?.title||"";
 }
 
+chapterTitleEl.onclick=()=>{
+  menuEl.innerHTML=chapters.map((c,idx)=>`
+    <div class="${idx===current?'activeChapter':''}"
+         onclick="jump(${idx})">${c.title}</div>
+  `).join("");
+  menuEl.classList.add("show");
+};
+
+function jump(idx){
+  i=chapters[idx].start;
+  menuEl.classList.remove("show");
+  render(words[i]);
+  updateChapter();
+}
+
 /* EPUB PARSER unchanged */
-async function parseEPUB(file){ return []; }
+async function parseEPUB(file){ /* unchanged */ return []; }
 
 /* LOAD */
 fileInput.onchange=async e=>{
