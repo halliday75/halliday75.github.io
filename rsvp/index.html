@@ -1,496 +1,703 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>RSVP Reader</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>RSVP Reader Pro</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-<style>
-body {
-  margin:0;
-  background:#000;
-  color:#fff;
-  font-family:system-ui;
-  user-select:none;
-  overflow:hidden;
-}
+  <style>
+    /* GLOBAL FIX: Ensures padding doesn't cause overflow */
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-/* screens */
-.screen {
-  display:none;
-  height:100dvh;
-}
-.screen.active { display:block; }
+    :root {
+      --bg: #000;
+      --fg: #fff;
+      --accent: #ff3b3b;
+      --ui-gray: #111;
+      --card-bg: #161616;
+      --text-muted: #888;
+    }
 
-/* ---------- LIBRARY ---------- */
-.library {
-  padding:20px;
-  max-width:700px;
-  margin:auto;
-  height:100%;
-  overflow:auto;
-}
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      user-select: none;
+      overflow: hidden;
+      width: 100vw;
+      height: 100dvh;
+    }
 
-.upload input { display:none; }
+    /* ---------- SCREEN MANAGEMENT ---------- */
+    .screen {
+      display: none;
+      height: 100dvh;
+      width: 100%;
+      flex-direction: column;
+    }
+    .screen.active {
+      display: flex;
+    }
 
-.upload label {
-  display:block;
-  padding:14px;
-  border:1px dashed #333;
-  border-radius:12px;
-  text-align:center;
-  color:#aaa;
-  margin-bottom:20px;
-}
+    /* ---------- LIBRARY UI ---------- */
+    .library-header {
+      padding: 30px 20px 10px 20px;
+    }
 
-.book {
-  background:#111;
-  padding:16px;
-  border-radius:12px;
-  margin-bottom:12px;
-}
+    .library-content {
+      flex: 1;
+      padding: 0 20px 20px 20px;
+      overflow-y: auto;
+      max-width: 650px;
+      margin: 0 auto;
+      width: 100%;
+    }
 
-.book-title {
-  font-size:16px;
-  margin-bottom:6px;
-}
+    .upload-zone {
+      margin-bottom: 25px;
+    }
 
-.book-progress {
-  height:4px;
-  background:#222;
-  border-radius:4px;
-  overflow:hidden;
-}
+    #fileInput { display: none; }
 
-.book-progress div {
-  height:100%;
-  background:#ff3b3b;
-}
+    .upload-label {
+      display: block;
+      padding: 30px;
+      border: 2px dashed #333;
+      border-radius: 16px;
+      text-align: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .upload-label:active {
+      border-color: var(--accent);
+      background: #0a0a0a;
+    }
 
-/* ---------- READER ---------- */
-.topbar {
-  height:40px;
-  display:flex;
-  align-items:center;
-  border-bottom:1px solid #111;
-  position:relative;
-  font-size:13px;
-  color:#aaa;
-}
+    .book-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      border: 1px solid #222;
+    }
 
-/* prevent overlap */
-#chapterTitle {
-  position:absolute;
-  left:70px;
-  right:70px;
-  text-align:center;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
+    .book-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+      gap: 15px;
+    }
 
-.top-btn {
-  position:absolute;
-  top:0;
-  height:100%;
-  display:flex;
-  align-items:center;
-  padding:0 10px;
-  font-size:12px;
-  z-index:2;
-}
+    .book-title {
+      font-weight: 700;
+      font-size: 17px;
+      line-height: 1.3;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
 
-.left-btn { left:0; }
-.right-btn { right:0; }
+    .delete-btn {
+      background: rgba(255, 59, 59, 0.1);
+      color: var(--accent);
+      border: 1px solid rgba(255, 59, 59, 0.2);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
 
-.progress {
-  position:absolute;
-  bottom:0;
-  left:0;
-  height:2px;
-  background:#fff;
-  width:0%;
-}
+    .progress-container {
+      height: 4px;
+      background: #222;
+      border-radius: 2px;
+      overflow: hidden;
+    }
 
-.display {
-  height:calc(100dvh - 120px);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-}
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
 
-.word {
-  font-size:clamp(32px,8vw,72px);
-}
+    /* ---------- READER UI ---------- */
+    .topbar {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border-bottom: 1px solid #111;
+      background: var(--bg);
+      z-index: 10;
+      transition: opacity 0.3s;
+    }
 
-.orp { color:#ff3b3b; }
-.fade { opacity:0.3; }
+    .nav-btn {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--fg);
+      padding: 10px;
+    }
 
-/* ---------- WPM ---------- */
-.bottom {
-  height:80px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
+    #chapterTitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 50%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+    }
 
-.wpm-control {
-  display:flex;
-  align-items:center;
-  gap:20px;
-}
+    .reader-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
 
-.wpm-btn {
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  border:1px solid #333;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:20px;
-}
+    .word-box {
+      font-size: clamp(32px, 10vw, 75px);
+      font-weight: 800;
+      text-align: center;
+      letter-spacing: -1px;
+    }
 
-#wpm {
-  min-width:80px;
-  text-align:center;
-}
+    .orp { color: var(--accent); }
 
-/* HUD */
-.speed {
-  position:absolute;
-  bottom:100px;
-  left:50%;
-  transform:translateX(-50%);
-  font-size:40px;
-  opacity:0;
-}
-.speed.show { opacity:1; }
+    /* Focus Mode */
+    .focus-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .context-word {
+      position: absolute;
+      opacity: 0.15;
+      font-weight: 400;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .prev-word { right: 100%; margin-right: 35px; }
+    .next-word { left: 100%; margin-left: 35px; }
 
-/* menu */
-.menu {
-  position:absolute;
-  inset:0;
-  background:#000;
-  display:none;
-  overflow:auto;
-}
-.menu.show { display:block; }
+    /* Bottom Bar */
+    .bottom-bar {
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-top: 1px solid #111;
+      transition: opacity 0.3s;
+    }
 
-.menu div {
-  padding:16px;
-  border-bottom:1px solid #111;
-}
-.activeChapter { color:#ff3b3b; }
-</style>
+    .wpm-controls {
+      display: flex;
+      align-items: center;
+      gap: 35px;
+    }
+
+    .wpm-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 1px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background: #080808;
+    }
+
+    #wpmDisplay {
+      font-size: 20px;
+      font-weight: 800;
+      min-width: 80px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* HUDs & Overlays */
+    .speed-hud {
+      position: absolute;
+      top: 20%;
+      font-size: 70px;
+      font-weight: 900;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      color: rgba(255,255,255,0.1);
+    }
+    .speed-hud.show { opacity: 1; }
+
+    .menu-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+    }
+    .menu-overlay.active { display: flex; }
+    
+    .menu-header {
+      padding: 20px;
+      border-bottom: 1px solid #222;
+      text-align: right;
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    .menu-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .menu-item {
+      padding: 20px;
+      border-bottom: 1px solid #111;
+      font-size: 16px;
+      color: #aaa;
+    }
+    .menu-item.active {
+      color: var(--fg);
+      background: #0a0a0a;
+      border-left: 4px solid var(--accent);
+    }
+
+    .ui-hidden { opacity: 0; pointer-events: none; }
+
+    .progress-line {
+      position: fixed;
+      top: 59px;
+      left: 0;
+      height: 2px;
+      background: var(--accent);
+      width: 0%;
+      z-index: 11;
+    }
+  </style>
 </head>
-
 <body>
 
-<div id="library" class="screen active">
-  <div class="library">
-    <h2>Library</h2>
-
-    <div class="upload">
+<div id="libScreen" class="screen active">
+  <div class="library-header">
+    <h1>Library</h1>
+  </div>
+  <div class="library-content">
+    <div class="upload-zone">
       <input type="file" id="fileInput" accept=".epub"/>
-      <label for="fileInput">Tap to add EPUB</label>
+      <label for="fileInput" class="upload-label">
+        <strong>+ Add EPUB</strong><br>
+        <span style="font-size: 12px; opacity: 0.5">Drag and drop or tap to browse</span>
+      </label>
     </div>
-
-    <div id="books"></div>
+    <div id="bookContainer"></div>
   </div>
 </div>
 
-<div id="reader" class="screen">
-  <div class="topbar">
-    <div class="top-btn left-btn" onclick="toggleFocus()">Focus</div>
-    <div id="chapterTitle"></div>
-    <div class="top-btn right-btn" onclick="goBack()">Back</div>
-    <div id="progress" class="progress"></div>
+<div id="readScreen" class="screen">
+  <div id="uiTop" class="topbar">
+    <div class="nav-btn" onclick="toggleFocus()">Focus</div>
+    <div id="chapterTitle" onclick="openMenu()">Loading...</div>
+    <div class="nav-btn" onclick="exitReader()">Back</div>
   </div>
 
-  <div id="display" class="display">
-    <div id="word" class="word"></div>
-    <div id="speedHUD" class="speed"></div>
+  <div class="progress-line" id="topProgress"></div>
+
+  <div class="reader-view" id="mainTouch">
+    <div id="speedHUD" class="speed-hud">300</div>
+    <div id="wordDisplay" class="word-box"></div>
   </div>
 
-  <div class="bottom">
-    <div class="wpm-control">
+  <div id="uiBottom" class="bottom-bar">
+    <div class="wpm-controls">
       <div class="wpm-btn" id="minusBtn">−</div>
-      <div id="wpm">300</div>
+      <div id="wpmDisplay">300</div>
       <div class="wpm-btn" id="plusBtn">+</div>
     </div>
   </div>
+</div>
 
-  <div id="menu" class="menu"></div>
+<div id="menuOverlay" class="menu-overlay">
+  <div class="menu-header" onclick="closeMenu()">✕ CLOSE</div>
+  <div id="chapterList" class="menu-list"></div>
 </div>
 
 <script>
+/**
+ * APP STATE
+ */
 let db;
-let currentBook=null;
-let words=[], chapters=[];
-let i=0, speed=300;
-let hold=0, timer;
-let current=0;
-let focusMode=false;
+let currentBook = null;
+let words = [];
+let chapters = [];
+let wordIndex = 0;
+let speed = 300;
+let holdDirection = 0; // -1: back, 0: stop, 1: fwd
+let timer = null;
+let isFocusMode = false;
+let currentChapterIndex = 0;
 
-/* FIXED: step always 10 */
-let adjustTimer=null;
-
-/* DOM */
-const libraryEl = document.getElementById("library");
-const readerEl = document.getElementById("reader");
-const booksEl = document.getElementById("books");
-const fileInput = document.getElementById("fileInput");
-
-const wordEl = document.getElementById("word");
-const progressEl = document.getElementById("progress");
-const chapterTitleEl = document.getElementById("chapterTitle");
-const menuEl = document.getElementById("menu");
-const displayEl = document.getElementById("display");
-const speedHUD = document.getElementById("speedHUD");
-const wpmEl = document.getElementById("wpm");
-
-const minusBtn = document.getElementById("minusBtn");
-const plusBtn = document.getElementById("plusBtn");
-
-/* DB */
-const req=indexedDB.open("RSVP",1);
-req.onupgradeneeded=e=>{
-  db=e.target.result;
-  db.createObjectStore("books",{keyPath:"id"});
+/* --- DATABASE SETUP --- */
+const request = indexedDB.open("RSVP_FINAL_DB", 5);
+request.onupgradeneeded = e => {
+  db = e.target.result;
+  if (!db.objectStoreNames.contains("books")) {
+    db.createObjectStore("books", { keyPath: "id" });
+  }
 };
-req.onsuccess=e=>{
-  db=e.target.result;
-  loadLibrary();
+request.onsuccess = e => { 
+  db = e.target.result; 
+  loadLibrary(); 
 };
 
-/* LIBRARY */
-function loadLibrary(){
-  const tx=db.transaction("books","readonly");
-  tx.objectStore("books").getAll().onsuccess=e=>{
-    const list=e.target.result.sort((a,b)=>b.lastOpened-a.lastOpened);
-
-    if(!list.length){
-      booksEl.innerHTML="<div style='color:#666;text-align:center'>No books yet</div>";
+/**
+ * LIBRARY FUNCTIONS
+ */
+function loadLibrary() {
+  const container = document.getElementById("bookContainer");
+  const tx = db.transaction("books", "readonly");
+  tx.objectStore("books").getAll().onsuccess = e => {
+    const list = e.target.result.sort((a,b) => b.lastOpened - a.lastOpened);
+    if (!list.length) {
+      container.innerHTML = `<div style="text-align:center; color:#444; padding-top:40px">Your library is empty.</div>`;
       return;
     }
-
-    booksEl.innerHTML=list.map(b=>{
-      const pct=Math.floor((b.progress||0)/b.words.length*100);
+    container.innerHTML = list.map(b => {
+      const progress = Math.floor((b.wordIndex / b.words.length) * 100) || 0;
       return `
-        <div class="book" onclick="openBook('${b.id}')">
-          <div class="book-title">${b.title}</div>
-          <div class="book-progress"><div style="width:${pct}%"></div></div>
+        <div class="book-card" onclick="openBook('${b.id}')">
+          <div class="book-info">
+            <div class="book-title">${b.title}</div>
+            <div class="delete-btn" onclick="deleteBook('${b.id}', event)">Delete</div>
+          </div>
+          <div class="progress-container">
+            <div class="progress-fill" style="width: ${progress}%"></div>
+          </div>
         </div>
       `;
     }).join("");
   };
 }
 
-/* NAV */
-function goBack(){
-  readerEl.classList.remove("active");
-  libraryEl.classList.add("active");
-  loadLibrary();
+function deleteBook(id, e) {
+  e.stopPropagation();
+  if (confirm("Delete this book and its progress?")) {
+    db.transaction("books", "readwrite").objectStore("books").delete(id).onsuccess = loadLibrary;
+  }
 }
 
-/* OPEN */
-function openBook(id){
-  const tx=db.transaction("books","readonly");
-  tx.objectStore("books").get(id).onsuccess=e=>{
-    const b=e.target.result;
-    currentBook=b;
-    words=b.words||[];
-    chapters=b.chapters||[];
-    i=b.progress||0;
-    speed=b.speed||300;
+/**
+ * EPUB PARSER (ROBUST VERSION)
+ */
+async function parseEPUB(file) {
+  const zip = await JSZip.loadAsync(file);
+  
+  // 1. Find the OPF file
+  const containerXml = await zip.file("META-INF/container.xml").async("string");
+  const opfPath = new DOMParser().parseFromString(containerXml, "text/xml")
+                   .querySelector("rootfile").getAttribute("full-path");
+  
+  const opfDir = opfPath.includes("/") ? opfPath.substring(0, opfPath.lastIndexOf("/") + 1) : "";
+  const opfContent = await zip.file(opfPath).async("string");
+  const opfDoc = new DOMParser().parseFromString(opfContent, "text/xml");
 
-    libraryEl.classList.remove("active");
-    readerEl.classList.add("active");
+  // 2. Map Manifest
+  const manifest = {};
+  opfDoc.querySelectorAll("item").forEach(el => {
+    manifest[el.getAttribute("id")] = el.getAttribute("href");
+  });
 
-    render(words[i]);
-    updateChapter();
-    updateWPM();
+  // 3. Define Spine (Reading order)
+  const spine = Array.from(opfDoc.querySelectorAll("itemref")).map(el => manifest[el.getAttribute("idref")]);
+
+  // Helper to fix relative paths
+  const resolvePath = (rel) => {
+    let absolute = opfDir + rel;
+    const parts = absolute.split("/");
+    const stack = [];
+    for (const part of parts) {
+      if (part === "..") stack.pop();
+      else if (part !== ".") stack.push(part);
+    }
+    return stack.join("/");
   };
-}
 
-/* SAVE */
-setInterval(()=>{
-  if(!currentBook) return;
-  currentBook.progress=i;
-  currentBook.speed=speed;
-  currentBook.lastOpened=Date.now();
-  db.transaction("books","readwrite").objectStore("books").put(currentBook);
-},2000);
+  // 4. Try to get Table of Contents (Nav or NCX)
+  let tocData = {}; // href -> Title
+  const navItem = opfDoc.querySelector("item[properties~='nav']");
+  const ncxId = opfDoc.querySelector("spine").getAttribute("toc");
 
-/* ORP */
-function getORP(w){
-  return Math.min(3, Math.floor((w||"").length*0.35));
-}
-
-/* RENDER */
-function render(word){
-  if(!word){ wordEl.textContent=""; return; }
-
-  function format(w){
-    return w.split("").map((c,idx)=>
-      idx===getORP(w)?`<span class="orp">${c}</span>`:c
-    ).join("");
+  if (navItem) {
+    try {
+      const navStr = await zip.file(resolvePath(navItem.getAttribute("href"))).async("string");
+      const navDoc = new DOMParser().parseFromString(navStr, "text/html");
+      navDoc.querySelectorAll("nav a").forEach(a => {
+        const href = a.getAttribute("href").split("#")[0];
+        if (!tocData[href]) tocData[href] = a.textContent.trim();
+      });
+    } catch (e) {}
+  } else if (ncxId) {
+    try {
+      const ncxStr = await zip.file(resolvePath(manifest[ncxId])).async("string");
+      const ncxDoc = new DOMParser().parseFromString(ncxStr, "text/xml");
+      ncxDoc.querySelectorAll("navPoint").forEach(pt => {
+        const href = pt.querySelector("content").getAttribute("src").split("#")[0];
+        const label = pt.querySelector("text").textContent.trim();
+        if (!tocData[href]) tocData[href] = label;
+      });
+    } catch (e) {}
   }
 
-  if(focusMode){
-    const prev = words[i-1] || "";
-    const next = words[i+1] || "";
-    wordEl.innerHTML = `
-      <span class="fade">${format(prev)}</span>
-      <span>${format(word)}</span>
-      <span class="fade">${format(next)}</span>
-    `;
-  } else {
-    wordEl.innerHTML = format(word);
-  }
+  // 5. Extract Text and build Chapters
+  let allWords = [];
+  let bookChapters = [];
 
-  progressEl.style.width=(i/words.length)*100+"%";
-}
+  for (const href of spine) {
+    const fileData = zip.file(resolvePath(href));
+    if (!fileData) continue;
 
-function toggleFocus(){
-  focusMode=!focusMode;
-  render(words[i]);
-}
+    const html = await fileData.async("string");
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    
+    // Clean up title: Priority TOC -> H1/H2 -> Filename
+    let title = tocData[href] || tocData[href.split('/').pop()];
+    if (!title) {
+      const h = doc.querySelector("h1, h2, h3");
+      title = h ? h.textContent.trim() : href.split('/').pop().replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
+    }
 
-/* SPEED */
-function changeSpeed(delta){
-  speed = Math.max(100, Math.min(800, speed + delta));
-  updateWPM(true);
-}
+    // Filter "garbage" names (split/part files)
+    const lowerTitle = title.toLowerCase();
+    const isFragment = lowerTitle.includes('split') || lowerTitle.includes('part') || lowerTitle.includes('fm00');
+    
+    if (!isFragment || bookChapters.length === 0) {
+      bookChapters.push({ title: title.substring(0, 60), start: allWords.length });
+    }
 
-function startAdjust(delta){
-  changeSpeed(delta);
-  adjustTimer = setInterval(()=>changeSpeed(delta),120);
-}
-
-function stopAdjust(){
-  clearInterval(adjustTimer);
-}
-
-minusBtn.addEventListener("mousedown", ()=>startAdjust(-10));
-plusBtn.addEventListener("mousedown", ()=>startAdjust(10));
-document.addEventListener("mouseup", stopAdjust);
-
-minusBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); startAdjust(-10); });
-plusBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); startAdjust(10); });
-document.addEventListener("touchend", stopAdjust);
-
-function updateWPM(showHUD=false){
-  wpmEl.textContent = speed;
-
-  if(showHUD){
-    speedHUD.textContent = speed;
-    speedHUD.classList.add("show");
-    setTimeout(()=>speedHUD.classList.remove("show"),400);
-  }
-}
-
-/* SMART DELAY */
-function getDelay(word){
-  let base = 60000 / speed;
-
-  if(/[.!?]/.test(word)) base *= 2.2;
-  else if(/[,:;]/.test(word)) base *= 1.5;
-
-  if(word.length > 8) base *= 1.3;
-  if(word.length > 12) base *= 1.6;
-
-  if(word.length <= 3) base *= 0.85;
-
-  return base;
-}
-
-/* HOLD */
-function step(){
-  if(!hold) return;
-
-  if(hold===1 && i<words.length-1) i++;
-  if(hold===-1 && i>0) i--;
-
-  const word = words[i];
-  render(word);
-  updateChapter();
-
-  timer=setTimeout(step, getDelay(word));
-}
-
-/* TOUCH */
-displayEl.addEventListener("touchstart", e=>{
-  if(menuEl.classList.contains("show")) return;
-
-  e.preventDefault();
-
-  hold = e.touches[0].clientX < innerWidth/2 ? -1 : 1;
-  step();
-}, { passive:false });
-
-function stopHold(){
-  hold=0;
-  clearTimeout(timer);
-}
-
-displayEl.addEventListener("touchend", stopHold);
-displayEl.addEventListener("touchcancel", stopHold);
-
-/* CHAPTERS */
-function updateChapter(){
-  for(let c=0;c<chapters.length;c++){
-    if(i>=chapters[c].start){
-      current=c;
+    const textContent = (doc.body.innerText || doc.body.textContent).replace(/\s+/g, ' ').trim();
+    if (textContent) {
+      const chunk = textContent.split(' ').filter(w => w.length > 0);
+      allWords = allWords.concat(chunk);
     }
   }
-  chapterTitleEl.textContent=chapters[current]?.title||"";
+
+  return { words: allWords, chapters: bookChapters };
 }
 
-chapterTitleEl.onclick=()=>{
-  menuEl.innerHTML=chapters.map((c,idx)=>`
-    <div class="${idx===current?'activeChapter':''}"
-         onclick="jump(${idx})">${c.title}</div>
-  `).join("");
-  menuEl.classList.add("show");
-};
-
-function jump(idx){
-  i=chapters[idx].start;
-  menuEl.classList.remove("show");
-  render(words[i]);
-  updateChapter();
+/**
+ * READER CORE
+ */
+function openBook(id) {
+  db.transaction("books", "readonly").objectStore("books").get(id).onsuccess = e => {
+    currentBook = e.target.result;
+    words = currentBook.words;
+    chapters = currentBook.chapters;
+    wordIndex = currentBook.wordIndex || 0;
+    speed = currentBook.speed || 300;
+    
+    document.getElementById("libScreen").classList.remove("active");
+    document.getElementById("readScreen").classList.add("active");
+    
+    updateWPM(false);
+    renderCurrentWord();
+    updateChapterUI();
+  };
 }
 
-/* EPUB PARSER unchanged */
-async function parseEPUB(file){ /* unchanged */ return []; }
+function exitReader() {
+  saveProgress();
+  document.getElementById("readScreen").classList.remove("active");
+  document.getElementById("libScreen").classList.add("active");
+  loadLibrary();
+}
 
-/* LOAD */
-fileInput.onchange=async e=>{
-  const file=e.target.files[0];
-  if(!file) return;
+function saveProgress() {
+  if (!currentBook) return;
+  currentBook.wordIndex = wordIndex;
+  currentBook.speed = speed;
+  currentBook.lastOpened = Date.now();
+  db.transaction("books", "readwrite").objectStore("books").put(currentBook);
+}
 
-  const w=await parseEPUB(file);
+// Auto-save progress every 5 seconds
+setInterval(saveProgress, 5000);
 
-  const book={
-    id:Date.now()+"",
-    title:file.name,
-    words:w,
-    chapters,
-    progress:0,
-    speed:300,
-    lastOpened:Date.now()
+/**
+ * RSVP RENDERING & SPEED ENGINE
+ */
+function getORP(word) {
+  const len = word.length;
+  if (len <= 1) return 0;
+  if (len <= 5) return 1;
+  if (len <= 9) return 2;
+  return 3;
+}
+
+function renderCurrentWord() {
+  const word = words[wordIndex] || "";
+  const orp = getORP(word);
+  
+  const format = (w) => {
+    if (!w) return "";
+    return w.split('').map((c, i) => i === orp ? `<span class="orp">${c}</span>` : c).join('');
   };
 
-  db.transaction("books","readwrite")
-    .objectStore("books")
-    .put(book);
+  const display = document.getElementById("wordDisplay");
+  if (isFocusMode) {
+    display.innerHTML = `
+      <div class="focus-group">
+        <span class="context-word prev-word">${format(words[wordIndex-1])}</span>
+        <span>${format(word)}</span>
+        <span class="context-word next-word">${format(words[wordIndex+1])}</span>
+      </div>
+    `;
+  } else {
+    display.innerHTML = format(word);
+  }
 
-  loadLibrary();
+  // Top progress line
+  const pct = (wordIndex / words.length) * 100;
+  document.getElementById("topProgress").style.width = pct + "%";
+}
+
+/* SMART SPEED LOGIC: Granular delays for punctuation */
+function getDelay() {
+  let baseMs = 60000 / speed;
+  const word = words[wordIndex] || "";
+  
+  if (/[.!?]/.test(word)) baseMs *= 2.0;       // Sentence ends
+  else if (/[,;:]/.test(word)) baseMs *= 1.5;  // Pauses
+  
+  if (word.length > 8) baseMs *= 1.2;          // Long words
+  
+  return baseMs;
+}
+
+function step() {
+  if (holdDirection === 0) return;
+  
+  if (holdDirection === 1 && wordIndex < words.length - 1) wordIndex++;
+  else if (holdDirection === -1 && wordIndex > 0) wordIndex--;
+  
+  renderCurrentWord();
+  updateChapterUI();
+  
+  timer = setTimeout(step, getDelay());
+}
+
+/**
+ * INTERACTION HANDLERS
+ */
+const touchArea = document.getElementById("mainTouch");
+touchArea.addEventListener("touchstart", e => {
+  e.preventDefault();
+  const side = e.touches[0].clientX < window.innerWidth / 2 ? -1 : 1;
+  holdDirection = side;
+  
+  document.getElementById("uiTop").classList.add("ui-hidden");
+  document.getElementById("uiBottom").classList.add("ui-hidden");
+  
+  step();
+});
+
+document.addEventListener("touchend", () => {
+  holdDirection = 0;
+  clearTimeout(timer);
+  document.getElementById("uiTop").classList.remove("ui-hidden");
+  document.getElementById("uiBottom").classList.remove("ui-hidden");
+});
+
+function updateWPM(showHud = true) {
+  document.getElementById("wpmDisplay").textContent = speed;
+  if (showHud) {
+    const hud = document.getElementById("speedHUD");
+    hud.textContent = speed;
+    hud.classList.add("show");
+    setTimeout(() => hud.classList.remove("show"), 400);
+  }
+}
+
+document.getElementById("minusBtn").onclick = () => { speed = Math.max(50, speed - 25); updateWPM(); };
+document.getElementById("plusBtn").onclick = () => { speed = Math.min(1200, speed + 25); updateWPM(); };
+
+function toggleFocus() {
+  isFocusMode = !isFocusMode;
+  renderCurrentWord();
+}
+
+/**
+ * CHAPTER MANAGEMENT
+ */
+function updateChapterUI() {
+  for (let i = 0; i < chapters.length; i++) {
+    if (wordIndex >= chapters[i].start) currentChapterIndex = i;
+  }
+  document.getElementById("chapterTitle").textContent = chapters[currentChapterIndex]?.title || "Reading";
+}
+
+function openMenu() {
+  const list = document.getElementById("chapterList");
+  list.innerHTML = chapters.map((c, i) => `
+    <div class="menu-item ${i === currentChapterIndex ? 'active' : ''}" onclick="jumpToChapter(${i})">
+      ${c.title}
+    </div>
+  `).join("");
+  document.getElementById("menuOverlay").classList.add("active");
+}
+
+function closeMenu() {
+  document.getElementById("menuOverlay").classList.remove("active");
+}
+
+function jumpToChapter(index) {
+  wordIndex = chapters[index].start;
+  closeMenu();
+  renderCurrentWord();
+  updateChapterUI();
+}
+
+/**
+ * FILE INPUT HANDLER
+ */
+document.getElementById("fileInput").onchange = async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  try {
+    const data = await parseEPUB(file);
+    const book = {
+      id: "book_" + Date.now(),
+      title: file.name.replace(".epub", ""),
+      words: data.words,
+      chapters: data.chapters,
+      wordIndex: 0,
+      speed: 300,
+      lastOpened: Date.now()
+    };
+
+    const tx = db.transaction("books", "readwrite");
+    tx.objectStore("books").put(book).onsuccess = loadLibrary;
+  } catch (err) {
+    alert("Error parsing EPUB file.");
+    console.error(err);
+  }
 };
 </script>
-
 </body>
 </html>
