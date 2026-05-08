@@ -20,6 +20,12 @@
       --ui-gray: #111;
       --card-bg: #161616;
       --text-muted: #888;
+      /* Typography variables */
+      --reader-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --reader-font-size: clamp(32px, 10vw, 35px);
+      --reader-font-weight: 400;
+      --reader-letter-spacing: -1px;
+      --reader-line-height: 1.2;
     }
 
     body {
@@ -148,6 +154,7 @@
       font-weight: 500;
       color: var(--fg);
       padding: 10px;
+      cursor: pointer;
     }
 
     #chapterTitle {
@@ -158,6 +165,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       text-align: center;
+      cursor: pointer;
     }
 
     .reader-view {
@@ -170,9 +178,13 @@
     }
 
     .word-box {
-      font-size: clamp(32px, 10vw, 35px);
+      font-family: var(--reader-font);
+      font-size: var(--reader-font-size);
+      font-weight: var(--reader-font-weight);
+      letter-spacing: var(--reader-letter-spacing);
+      line-height: var(--reader-line-height);
       text-align: center;
-      letter-spacing: -1px;
+      transition: font-family 0.3s, font-size 0.3s, font-weight 0.3s;
     }
 
     .orp { color: var(--accent); }
@@ -202,6 +214,21 @@
       justify-content: center;
       border-top: 1px solid #111;
       transition: opacity 0.3s;
+      gap: 40px;
+    }
+
+    .settings-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: #080808;
+      cursor: pointer;
+      color: var(--fg);
     }
 
     .wpm-controls {
@@ -220,6 +247,7 @@
       justify-content: center;
       font-size: 24px;
       background: #080808;
+      cursor: pointer;
     }
 
     #wpmDisplay {
@@ -259,6 +287,7 @@
       text-align: right;
       font-weight: bold;
       color: var(--accent);
+      cursor: pointer;
     }
 
     .menu-list {
@@ -271,6 +300,7 @@
       border-bottom: 1px solid #111;
       font-size: 16px;
       color: #aaa;
+      cursor: pointer;
     }
     .menu-item.active {
       color: var(--fg);
@@ -288,6 +318,161 @@
       background: var(--accent);
       width: 0%;
       z-index: 11;
+    }
+
+    /* ---------- SETTINGS MENU ---------- */
+    .settings-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+    }
+    .settings-overlay.active { display: flex; }
+
+    .settings-header {
+      padding: 20px;
+      border-bottom: 1px solid #222;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .settings-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .settings-close {
+      color: var(--accent);
+      font-weight: bold;
+      cursor: pointer;
+      padding: 10px;
+    }
+
+    .settings-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .setting-group {
+      margin-bottom: 30px;
+    }
+
+    .setting-label {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .font-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+    }
+
+    .font-option {
+      padding: 15px;
+      background: var(--card-bg);
+      border: 2px solid #222;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .font-option.selected {
+      border-color: var(--accent);
+      background: rgba(255, 59, 59, 0.1);
+    }
+
+    .font-option:active {
+      background: #1a1a1a;
+    }
+
+    .font-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .font-preview {
+      font-size: 18px;
+      opacity: 0.5;
+    }
+
+    .size-slider-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .size-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 6px;
+      background: #222;
+      border-radius: 3px;
+      outline: none;
+    }
+
+    .size-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .size-value {
+      font-size: 16px;
+      font-weight: 700;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .toggle-options {
+      display: flex;
+      gap: 10px;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      padding: 12px;
+      background: var(--card-bg);
+      border: 2px solid #222;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
+
+    .toggle-btn.selected {
+      border-color: var(--accent);
+      background: rgba(255, 59, 59, 0.1);
+    }
+
+    .preset-btn {
+      padding: 12px 20px;
+      background: var(--card-bg);
+      border: 1px solid #222;
+      border-radius: 8px;
+      color: var(--fg);
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+
+    .preset-btn:active {
+      background: #1a1a1a;
     }
   </style>
 </head>
@@ -324,6 +509,7 @@
   </div>
 
   <div id="uiBottom" class="bottom-bar">
+    <div class="settings-btn" onclick="openSettings()">⚙</div>
     <div class="wpm-controls">
       <div class="wpm-btn" id="minusBtn">−</div>
       <div id="wpmDisplay">300</div>
@@ -335,6 +521,78 @@
 <div id="menuOverlay" class="menu-overlay">
   <div class="menu-header" onclick="closeMenu()">✕ CLOSE</div>
   <div id="chapterList" class="menu-list"></div>
+</div>
+
+<!-- Settings Overlay -->
+<div id="settingsOverlay" class="settings-overlay">
+  <div class="settings-header">
+    <div class="settings-title">Typography Settings</div>
+    <div class="settings-close" onclick="closeSettings()">✕ CLOSE</div>
+  </div>
+  <div class="settings-content">
+    <!-- Font Family -->
+    <div class="setting-group">
+      <div class="setting-label">Typeface</div>
+      <div class="font-grid" id="fontFamilyGrid">
+        <!-- Generated by JS -->
+      </div>
+    </div>
+
+    <!-- Font Size -->
+    <div class="setting-group">
+      <div class="setting-label">Font Size</div>
+      <div class="size-slider-container">
+        <span style="font-size: 12px;">A</span>
+        <input type="range" class="size-slider" id="sizeSlider" min="16" max="120" value="35">
+        <span style="font-size: 24px;">A</span>
+        <div class="size-value" id="sizeValue">35px</div>
+      </div>
+    </div>
+
+    <!-- Font Weight -->
+    <div class="setting-group">
+      <div class="setting-label">Font Weight</div>
+      <div class="toggle-options" id="fontWeightOptions">
+        <div class="toggle-btn" data-weight="300">Light</div>
+        <div class="toggle-btn selected" data-weight="400">Regular</div>
+        <div class="toggle-btn" data-weight="600">Semibold</div>
+        <div class="toggle-btn" data-weight="700">Bold</div>
+      </div>
+    </div>
+
+    <!-- Letter Spacing -->
+    <div class="setting-group">
+      <div class="setting-label">Letter Spacing</div>
+      <div class="toggle-options" id="letterSpacingOptions">
+        <div class="toggle-btn" data-spacing="-2">Tight</div>
+        <div class="toggle-btn selected" data-spacing="-1">Default</div>
+        <div class="toggle-btn" data-spacing="0">Normal</div>
+        <div class="toggle-btn" data-spacing="2">Wide</div>
+      </div>
+    </div>
+
+    <!-- Line Height -->
+    <div class="setting-group">
+      <div class="setting-label">Line Height (Focus Mode)</div>
+      <div class="toggle-options" id="lineHeightOptions">
+        <div class="toggle-btn" data-height="1">Compact</div>
+        <div class="toggle-btn selected" data-height="1.2">Default</div>
+        <div class="toggle-btn" data-height="1.5">Relaxed</div>
+        <div class="toggle-btn" data-height="2">Spacious</div>
+      </div>
+    </div>
+
+    <!-- Presets -->
+    <div class="setting-group">
+      <div class="setting-label">Quick Presets</div>
+      <div>
+        <button class="preset-btn" onclick="applyPreset('classic')">Classic</button>
+        <button class="preset-btn" onclick="applyPreset('modern')">Modern</button>
+        <button class="preset-btn" onclick="applyPreset('minimal')">Minimal</button>
+        <button class="preset-btn" onclick="applyPreset('large')">Large Print</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -352,6 +610,59 @@ let timer = null;
 let isFocusMode = false;
 let currentChapterIndex = 0;
 
+// Typography settings
+let typographySettings = {
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  fontSize: 35,
+  fontWeight: 400,
+  letterSpacing: -1,
+  lineHeight: 1.2
+};
+
+// Available fonts
+const availableFonts = [
+  { name: 'System', family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', preview: 'Aa' },
+  { name: 'Georgia', family: 'Georgia, serif', preview: 'Aa' },
+  { name: 'Times', family: '"Times New Roman", serif', preview: 'Aa' },
+  { name: 'Mono', family: '"Courier New", monospace', preview: 'Aa' },
+  { name: 'Arial', family: 'Arial, sans-serif', preview: 'Aa' },
+  { name: 'Verdana', family: 'Verdana, sans-serif', preview: 'Aa' },
+  { name: 'Helvetica', family: '"Helvetica Neue", sans-serif', preview: 'Aa' },
+  { name: 'Garamond', family: 'Garamond, serif', preview: 'Aa' }
+];
+
+// Typography presets
+const presets = {
+  classic: {
+    fontFamily: 'Georgia, serif',
+    fontSize: 32,
+    fontWeight: 400,
+    letterSpacing: 0,
+    lineHeight: 1.5
+  },
+  modern: {
+    fontFamily: '"Helvetica Neue", sans-serif',
+    fontSize: 35,
+    fontWeight: 300,
+    letterSpacing: -1,
+    lineHeight: 1.2
+  },
+  minimal: {
+    fontFamily: 'Arial, sans-serif',
+    fontSize: 28,
+    fontWeight: 400,
+    letterSpacing: -2,
+    lineHeight: 1
+  },
+  large: {
+    fontFamily: 'Verdana, sans-serif',
+    fontSize: 60,
+    fontWeight: 600,
+    letterSpacing: 1,
+    lineHeight: 1.5
+  }
+};
+
 /* --- DATABASE SETUP --- */
 const request = indexedDB.open("RSVP_FINAL_DB", 5);
 request.onupgradeneeded = e => {
@@ -362,8 +673,129 @@ request.onupgradeneeded = e => {
 };
 request.onsuccess = e => { 
   db = e.target.result; 
-  loadLibrary(); 
+  loadLibrary();
+  loadTypographySettings();
 };
+
+/**
+ * TYPOGRAPHY SETTINGS FUNCTIONS
+ */
+function loadTypographySettings() {
+  const saved = localStorage.getItem('rsvpTypography');
+  if (saved) {
+    typographySettings = { ...typographySettings, ...JSON.parse(saved) };
+  }
+  applyTypographySettings();
+}
+
+function saveTypographySettings() {
+  localStorage.setItem('rsvpTypography', JSON.stringify(typographySettings));
+}
+
+function applyTypographySettings() {
+  const root = document.documentElement.style;
+  root.setProperty('--reader-font', typographySettings.fontFamily);
+  root.setProperty('--reader-font-size', `clamp(16px, 10vw, ${typographySettings.fontSize}px)`);
+  root.setProperty('--reader-font-weight', typographySettings.fontWeight);
+  root.setProperty('--reader-letter-spacing', typographySettings.letterSpacing + 'px');
+  root.setProperty('--reader-line-height', typographySettings.lineHeight);
+  
+  // Update UI elements
+  document.getElementById('sizeSlider').value = typographySettings.fontSize;
+  document.getElementById('sizeValue').textContent = typographySettings.fontSize + 'px';
+  
+  // Update font family grid
+  document.querySelectorAll('.font-option').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.family === typographySettings.fontFamily);
+  });
+  
+  // Update weight buttons
+  document.querySelectorAll('#fontWeightOptions .toggle-btn').forEach(btn => {
+    btn.classList.toggle('selected', parseInt(btn.dataset.weight) === typographySettings.fontWeight);
+  });
+  
+  // Update letter spacing buttons
+  document.querySelectorAll('#letterSpacingOptions .toggle-btn').forEach(btn => {
+    btn.classList.toggle('selected', parseInt(btn.dataset.spacing) === typographySettings.letterSpacing);
+  });
+  
+  // Update line height buttons
+  document.querySelectorAll('#lineHeightOptions .toggle-btn').forEach(btn => {
+    btn.classList.toggle('selected', parseFloat(btn.dataset.height) === typographySettings.lineHeight);
+  });
+}
+
+function openSettings() {
+  document.getElementById('settingsOverlay').classList.add('active');
+  generateFontGrid();
+  applyTypographySettings();
+}
+
+function closeSettings() {
+  document.getElementById('settingsOverlay').classList.remove('active');
+  saveTypographySettings();
+}
+
+function generateFontGrid() {
+  const grid = document.getElementById('fontFamilyGrid');
+  grid.innerHTML = availableFonts.map(font => `
+    <div class="font-option ${font.family === typographySettings.fontFamily ? 'selected' : ''}" 
+         data-family="${font.family}"
+         onclick="selectFont('${font.family.replace(/'/g, "\\'")}')">
+      <div class="font-name">${font.name}</div>
+      <div class="font-preview" style="font-family: ${font.family}">${font.preview}</div>
+    </div>
+  `).join('');
+}
+
+function selectFont(family) {
+  typographySettings.fontFamily = family;
+  applyTypographySettings();
+  renderCurrentWord();
+}
+
+// Font size slider
+document.getElementById('sizeSlider').addEventListener('input', (e) => {
+  typographySettings.fontSize = parseInt(e.target.value);
+  applyTypographySettings();
+  renderCurrentWord();
+});
+
+// Font weight options
+document.querySelectorAll('#fontWeightOptions .toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    typographySettings.fontWeight = parseInt(btn.dataset.weight);
+    applyTypographySettings();
+    renderCurrentWord();
+  });
+});
+
+// Letter spacing options
+document.querySelectorAll('#letterSpacingOptions .toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    typographySettings.letterSpacing = parseInt(btn.dataset.spacing);
+    applyTypographySettings();
+    renderCurrentWord();
+  });
+});
+
+// Line height options
+document.querySelectorAll('#lineHeightOptions .toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    typographySettings.lineHeight = parseFloat(btn.dataset.height);
+    applyTypographySettings();
+    renderCurrentWord();
+  });
+});
+
+function applyPreset(presetName) {
+  const preset = presets[presetName];
+  if (preset) {
+    typographySettings = { ...typographySettings, ...preset };
+    applyTypographySettings();
+    renderCurrentWord();
+  }
+}
 
 /**
  * LIBRARY FUNCTIONS
