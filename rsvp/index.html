@@ -2048,5 +2048,69 @@ document.addEventListener('keydown', e => {
 
 console.log('🚀 RSVP Reader Pro - EPUB parser restored from original');
 </script>
+    <!-- PWA Install Prompt -->
+  <div id="installPrompt" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--card-bg);border-top:1px solid var(--card-border);padding:16px 20px;z-index:150;display:flex;align-items:center;justify-content:space-between;gap:15px;">
+    <div>
+      <div style="font-weight:700;margin-bottom:4px;color:var(--fg);">Install App</div>
+      <div style="font-size:12px;color:var(--text-muted);">Read faster, even offline</div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="dismissInstall()" style="padding:10px 16px;background:var(--ui-gray);border:none;border-radius:8px;color:var(--fg);cursor:pointer;font-size:13px;">Later</button>
+      <button onclick="installApp()" style="padding:10px 20px;background:var(--accent);border:none;border-radius:8px;color:white;cursor:pointer;font-size:13px;font-weight:600;">Install</button>
+    </div>
+  </div>
+
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registered:', registration.scope);
+          })
+          .catch(error => {
+            console.log('Service Worker registration failed:', error);
+          });
+      });
+    }
+    
+    // PWA Install Prompt
+    let deferredPrompt;
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      
+      // Show install prompt after 30 seconds
+      setTimeout(() => {
+        if (deferredPrompt) {
+          document.getElementById('installPrompt').style.display = 'flex';
+        }
+      }, 30000);
+    });
+    
+    function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          }
+          deferredPrompt = null;
+        });
+      }
+      document.getElementById('installPrompt').style.display = 'none';
+    }
+    
+    function dismissInstall() {
+      document.getElementById('installPrompt').style.display = 'none';
+    }
+    
+    window.addEventListener('appinstalled', () => {
+      deferredPrompt = null;
+      document.getElementById('installPrompt').style.display = 'none';
+      console.log('PWA was installed');
+    });
+  </script>  
 </body>
 </html>
