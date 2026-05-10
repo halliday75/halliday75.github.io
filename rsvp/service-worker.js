@@ -1,8 +1,8 @@
 const CACHE_NAME = 'rsvp-reader-v1';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
+  '/rsvp/',
+  '/rsvp/index.html',
+  '/rsvp/manifest.json',
   'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
   'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital@0;1&family=EB+Garamond:ital@0;1&display=swap'
