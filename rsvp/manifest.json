@@ -2,7 +2,7 @@
   "name": "RSVP Speed Reader Pro",
   "short_name": "RSVP Reader",
   "description": "Read faster with RSVP technology. Import EPUB & TXT books and speed read word-by-word with customizable typography.",
-  "start_url": "/rsvp/index.html",
+  "start_url": "/rsvp/app.html",
   "scope": "/rsvp/",
   "display": "standalone",
   "orientation": "portrait",
