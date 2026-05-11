@@ -1,0 +1,2116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- PWA Meta Tags -->
+  <meta name="application-name" content="RSVP Speed Reader Pro">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="RSVP Reader">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Speed reading app with RSVP technology. Import EPUB & TXT books and read faster with customizable typography.">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/rsvp/manifest.json">
+  
+  <!-- iOS Icons -->
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital@0;1&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>RSVP Reader Pro</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital@0;1&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #000;
+      --fg: #fff;
+      --fg-secondary: #aaa;
+      --accent: #ff3b3b;
+      --accent-dim: rgba(255, 59, 59, 0.2);
+      --accent-glow: rgba(255, 59, 59, 0.4);
+      --ui-gray: #111;
+      --card-bg: #161616;
+      --card-border: #222;
+      --text-muted: #888;
+      --overlay-bg: #000;
+      --divider: #111;
+      --slider-track: #222;
+      --reader-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --reader-font-size: clamp(32px, 10vw, 35px);
+      --reader-font-weight: 400;
+      --reader-letter-spacing: -1px;
+      --reader-line-height: 1.2;
+      --transition-speed: 0.3s;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      user-select: none;
+      overflow: auto;
+      width: 100vw;
+      height: 100dvh;
+      background: var(--bg);
+      color: var(--fg);
+      transition: background var(--transition-speed), color var(--transition-speed);
+    }
+
+    .screen {
+      display: none;
+      height: 100dvh;
+      width: 100%;
+      flex-direction: column;
+    }
+    .screen.active {
+      display: flex;
+    }
+
+    /* ---------- THEMES ---------- */
+    .theme-light {
+      --bg: #f5f5f5;
+      --fg: #111;
+      --fg-secondary: #555;
+      --accent: #e60000;
+      --accent-dim: rgba(230, 0, 0, 0.12);
+      --accent-glow: rgba(230, 0, 0, 0.3);
+      --ui-gray: #e0e0e0;
+      --card-bg: #ffffff;
+      --card-border: #ddd;
+      --text-muted: #666;
+      --overlay-bg: #f5f5f5;
+      --divider: #ddd;
+      --slider-track: #ddd;
+    }
+
+        .theme-oled {
+      --bg: #000000;
+      --fg: #e0e0e0;
+      --fg-secondary: #888;
+      --accent: #ff1a1a;
+      --accent-dim: rgba(255, 26, 26, 0.12);
+      --accent-glow: rgba(255, 26, 26, 0.3);
+      --ui-gray: #050505;
+      --card-bg: #080808;
+      --card-border: #1a1a1a;
+      --text-muted: #666;
+      --overlay-bg: #000000;
+      --divider: #0d0d0d;
+      --slider-track: #141414;
+    }
+
+    /* ---------- TAB NAVIGATION ---------- */
+    .tab-nav {
+      display: flex;
+      background: var(--ui-gray);
+      border-bottom: 1px solid var(--divider);
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ---------- LIBRARY UI ---------- */
+    .library-header {
+      padding: 20px 20px 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .library-header h1 {
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .library-content {
+      flex: 1;
+      padding: 0 20px 20px 20px;
+      overflow-y: auto;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .upload-zone {
+      margin-bottom: 20px;
+    }
+
+    #fileInput { display: none; }
+
+    .upload-label {
+      display: block;
+      padding: 25px;
+      border: 2px dashed var(--card-border);
+      border-radius: 16px;
+      text-align: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--card-bg);
+    }
+    .upload-label:active {
+      border-color: var(--accent);
+      background: var(--ui-gray);
+    }
+
+    .book-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      border: 1px solid var(--card-border);
+      transition: all 0.2s;
+    }
+    .book-card:active {
+      background: var(--ui-gray);
+    }
+
+    .book-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+      gap: 15px;
+    }
+
+    .book-title {
+      font-weight: 700;
+      font-size: 17px;
+      line-height: 1.3;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      color: var(--fg);
+    }
+
+    .book-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    .delete-btn {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid var(--accent-dim);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .progress-container {
+      height: 4px;
+      background: var(--slider-track);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+
+    .search-bar {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+    }
+    .search-input {
+      flex: 1;
+      padding: 12px 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      color: var(--fg);
+      font-size: 14px;
+    }
+    .search-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* ---------- STATS DASHBOARD ---------- */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
+    }
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 5px;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .chart-container {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
+      margin-bottom: 15px;
+      height: 250px;
+      min-height: 250px;
+      position: relative;
+    }
+    
+    .chart-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    
+        #statsTab {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    #statsTab .library-content {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 30px;
+    }
+    
+    #libraryTab {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    #libraryTab .library-content {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* ---------- READER UI ---------- */
+    .topbar {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--divider);
+      background: var(--bg);
+      z-index: 10;
+      transition: opacity 0.3s;
+    }
+
+    .nav-btn {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--fg);
+      padding: 10px 8px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      white-space: nowrap;
+    }
+
+    #chapterTitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 45%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+      cursor: pointer;
+      flex-shrink: 1;
+    }
+
+    .reader-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ---------- WORD DISPLAY ---------- */
+    .word-display {
+      font-family: var(--reader-font);
+      font-size: var(--reader-font-size);
+      font-weight: var(--reader-font-weight);
+      letter-spacing: var(--reader-letter-spacing);
+      line-height: var(--reader-line-height);
+      text-align: center;
+      transition: font-family 0.3s, font-size 0.3s;
+      width: 100%;
+    }
+
+    .orp { color: var(--accent); }
+
+    /* ---------- FOCUS MODE (Original logic restored) ---------- */
+    .focus-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    
+    .focus-word-center {
+      font-family: var(--reader-font);
+      font-size: var(--reader-font-size);
+      font-weight: var(--reader-font-weight);
+      letter-spacing: var(--reader-letter-spacing);
+      text-align: center;
+      z-index: 2;
+    }
+    
+    .context-word {
+      position: absolute;
+      font-family: var(--reader-font);
+      font-size: var(--reader-font-size);
+      font-weight: 400;
+      letter-spacing: var(--reader-letter-spacing);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0.55;
+      colour: white;
+    }
+    
+    .prev-word {
+      right: 100%;
+      margin-right: 15px;
+    }
+    
+    .next-word {
+      left: 100%;
+      margin-left: 15px;
+    }
+    
+    .context-word .orp {
+      opacity: 0.3;
+    }
+    
+    /* Bottom Bar */
+    .bottom-bar {
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-top: 1px solid var(--divider);
+      transition: opacity 0.3s;
+      gap: 30px;
+      padding: 0 20px;
+    }
+
+    .settings-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: var(--card-bg);
+      cursor: pointer;
+      color: var(--fg);
+      transition: all 0.2s;
+    }
+    .settings-btn:active {
+      background: var(--ui-gray);
+      transform: scale(0.95);
+    }
+
+    .wpm-controls {
+      display: flex;
+      align-items: center;
+      gap: 35px;
+    }
+
+    .wpm-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background: var(--card-bg);
+      cursor: pointer;
+      color: var(--fg);
+      transition: all 0.2s;
+    }
+    .wpm-btn:active {
+      background: var(--ui-gray);
+      transform: scale(0.9);
+    }
+
+    #wpmDisplay {
+      font-size: 20px;
+      font-weight: 800;
+      min-width: 80px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* HUDs & Overlays */
+    .speed-hud {
+      position: absolute;
+      top: 55%;
+      font-size: 50px;
+      font-weight: 900;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      color: var(--accent-dim);
+    }
+    .speed-hud.show { opacity: 1; }
+
+    .menu-overlay, .settings-overlay, .bookmarks-overlay, .theme-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--overlay-bg);
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      animation: slideUp 0.3s ease;
+    }
+    .menu-overlay.active, .settings-overlay.active, .bookmarks-overlay.active, .theme-overlay.active { 
+      display: flex; 
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .menu-header, .settings-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--divider);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .menu-header div, .settings-close {
+      color: var(--accent);
+      font-weight: bold;
+      cursor: pointer;
+      padding: 10px;
+    }
+
+    .menu-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .menu-item {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--divider);
+      font-size: 16px;
+      color: var(--fg-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .menu-item:active {
+      background: var(--ui-gray);
+    }
+    .menu-item.active {
+      color: var(--fg);
+      background: var(--ui-gray);
+      border-left: 4px solid var(--accent);
+      font-weight: 600;
+    }
+
+    .ui-hidden { opacity: 0; pointer-events: none; }
+
+    .progress-line {
+      position: fixed;
+      top: 59px;
+      left: 0;
+      height: 2px;
+      background: var(--accent);
+      width: 0%;
+      z-index: 11;
+      transition: width 0.1s linear;
+    }
+
+    /* ---------- SETTINGS MENU ---------- */
+    .settings-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .setting-group {
+      margin-bottom: 25px;
+    }
+
+    .setting-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .font-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 8px;
+    }
+
+    .font-option {
+      padding: 12px;
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--fg);
+    }
+    .font-option.selected {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+    .font-option:active {
+      background: var(--ui-gray);
+    }
+
+    .font-name {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .font-preview {
+      font-size: 16px;
+      opacity: 0.5;
+    }
+
+    .size-slider-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .size-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 6px;
+      background: var(--slider-track);
+      border-radius: 3px;
+      outline: none;
+    }
+    .size-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .size-value {
+      font-size: 16px;
+      font-weight: 700;
+      min-width: 60px;
+      text-align: center;
+      color: var(--fg);
+    }
+
+    .toggle-options {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      min-width: 70px;
+      padding: 12px;
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 13px;
+      color: var(--fg);
+    }
+    .toggle-btn.selected {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+    .toggle-btn:active {
+      background: var(--ui-gray);
+    }
+
+    .preset-btn {
+      padding: 10px 18px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: var(--fg);
+      cursor: pointer;
+      font-size: 13px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+    .preset-btn:active {
+      background: var(--ui-gray);
+      transform: scale(0.97);
+    }
+
+    /* ---------- BOOKMARKS ---------- */
+    .bookmark-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--divider);
+      color: var(--fg);
+      transition: all 0.2s;
+    }
+    
+    .bookmark-content {
+      flex: 1;
+      cursor: pointer;
+    }
+    .bookmark-content:active {
+      opacity: 0.7;
+    }
+    
+    .bookmark-delete {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid var(--accent-dim);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-left: 12px;
+      transition: all 0.2s;
+    }
+    
+    .bookmark-delete:active {
+      background: var(--accent);
+      color: white;
+      transform: scale(0.95);
+    }
+    
+    .bookmark-context {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-style: italic;
+      line-height: 1.4;
+    }
+    
+    .bookmark-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ---------- TOAST ---------- */
+    .toast {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-weight: 600;
+      z-index: 200;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+      font-size: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .toast.show { 
+      opacity: 1; 
+      transform: translateX(-50%) translateY(-10px);
+    }
+
+    /* Session Timer */
+    .session-timer {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 8px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      margin-bottom: 10px;
+      font-variant-numeric: tabular-nums;
+      opacity: 0.7;
+    }
+
+    /* Swipe hint */
+    .swipe-hint {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 30px;
+      opacity: 0.15;
+      pointer-events: none;
+      transition: opacity 0.5s;
+      font-weight: 300;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<!-- ============ LIBRARY SCREEN ============ -->
+<div id="libScreen" class="screen active">
+  <div class="tab-nav">
+    <div class="tab-btn active" data-tab="library">📚 Library</div>
+    <div class="tab-btn" data-tab="stats">📊 Stats</div>
+  </div>
+  
+  <div id="libraryTab" class="tab-content">
+    <div class="library-header">
+      <h1>Library</h1>
+      <div class="settings-btn" onclick="openThemeSettings()">🎨</div>
+    </div>
+    <div class="search-bar">
+      <input type="text" class="search-input" id="searchBooks" placeholder="🔍 Search books...">
+    </div>
+    <div class="library-content">
+      <div class="upload-zone">
+        <input type="file" id="fileInput" accept=".epub,.txt"/>
+        <label for="fileInput" class="upload-label">
+          <strong>+ Add Book</strong><br>
+          <span style="font-size: 12px; opacity: 0.5">EPUB or TXT files (drag & drop supported)</span>
+        </label>
+      </div>
+      <div id="bookContainer"></div>
+    </div>
+  </div>
+
+  <div id="statsTab" class="tab-content" style="display:none;">
+    <div class="library-header">
+      <h1>Reading Stats</h1>
+    </div>
+    <div class="library-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="totalWords">0</div>
+          <div class="stat-label">Total Words Read</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="totalTime">0m</div>
+          <div class="stat-label">Total Time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="avgSpeed">0</div>
+          <div class="stat-label">Avg WPM</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="streakDays">0</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="wpmChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <canvas id="dailyChart"></canvas>
+      </div>
+      <button class="preset-btn" onclick="resetStats()" style="margin-top:10px;">Reset All Stats</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ READER SCREEN ============ -->
+<div id="readScreen" class="screen">
+  <div id="uiTop" class="topbar">
+    <div class="nav-btn" onclick="exitReader()">← Back</div>
+    <div id="chapterTitle" onclick="openChapterMenu()">Loading...</div>
+    <div style="display:flex;gap:5px;">
+      <div class="nav-btn" id="focusToggleBtn" onclick="toggleFocusMode()">Focus</div>
+      <div class="nav-btn" onclick="addBookmark()">🔖</div>
+    </div>
+  </div>
+
+  <div class="progress-line" id="topProgress"></div>
+
+  <div class="reader-view" id="mainTouch">
+    <div class="swipe-hint">‹</div>
+    <div class="session-timer" id="sessionTimer">00:00</div>
+    <div id="speedHUD" class="speed-hud">300</div>
+    <div id="wordDisplay" class="word-display"></div>
+  </div>
+
+  <div id="uiBottom" class="bottom-bar">
+    <div class="settings-btn" onclick="openReaderSettings()">⚙</div>
+    <div class="wpm-controls">
+      <div class="wpm-btn" id="minusBtn">−</div>
+      <div id="wpmDisplay">300</div>
+      <div class="wpm-btn" id="plusBtn">+</div>
+    </div>
+    <div class="settings-btn" onclick="openBookmarksList()">📑</div>
+  </div>
+</div>
+
+<!-- Chapter Menu -->
+<div id="menuOverlay" class="menu-overlay">
+  <div class="menu-header">
+    <span style="font-weight:700;color:var(--fg);">Chapters</span>
+    <div onclick="closeMenu()">✕ CLOSE</div>
+  </div>
+  <div id="chapterList" class="menu-list"></div>
+</div>
+
+<!-- Bookmarks -->
+<div id="bookmarksOverlay" class="bookmarks-overlay">
+  <div class="menu-header">
+    <span style="font-weight:700;color:var(--fg);">Bookmarks</span>
+    <div onclick="closeBookmarks()">✕ CLOSE</div>
+  </div>
+  <div id="bookmarksList" class="menu-list"></div>
+</div>
+
+<!-- Reader Settings -->
+<div id="settingsOverlay" class="settings-overlay">
+  <div class="settings-header">
+    <span style="font-weight:700;color:var(--fg);">Reader Settings</span>
+    <div class="settings-close" onclick="closeReaderSettings()">✕ CLOSE</div>
+  </div>
+  <div class="settings-content" id="settingsContent"></div>
+</div>
+
+<!-- Theme Settings -->
+<div id="themeOverlay" class="theme-overlay">
+  <div class="settings-header">
+    <span style="font-weight:700;color:var(--fg);">Appearance</span>
+    <div class="settings-close" onclick="closeThemeSettings()">✕ CLOSE</div>
+  </div>
+  <div class="settings-content">
+    <div class="setting-group">
+      <div class="setting-label">Theme</div>
+      <div class="toggle-options">
+        <div class="toggle-btn selected" data-theme="dark" onclick="setTheme('dark')">🌙 Dark</div>
+        <div class="toggle-btn" data-theme="light" onclick="setTheme('light')">☀️ Light</div>
+        <div class="toggle-btn" data-theme="oled" onclick="setTheme('oled')">🖤 OLED</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/**
+ * ============================================
+ * RSVP READER PRO
+ * Word mode + Focus mode with context words
+ * Fixed EPUB parser from original version
+ * ============================================
+ */
+
+// ============ STATE ============
+let db;
+let currentBook = null;
+let words = [];
+let chapters = [];
+let bookmarks = [];
+let wordIndex = 0;
+let speed = 300;
+let holdDirection = 0;
+let timer = null;
+let isFocusMode = false;
+let currentChapterIndex = 0;
+let sessionStartTime = null;
+let sessionWordsRead = 0;
+let sessionTimerInterval = null;
+
+let typographySettings = {
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  fontSize: 35,
+  fontWeight: 400,
+  letterSpacing: -1,
+  lineHeight: 1.2
+};
+
+let globalStats = {
+  totalWords: 0,
+  totalTimeMs: 0,
+  sessions: [],
+  dailyLog: {},
+  streak: { current: 0, lastDate: null }
+};
+
+let currentTheme = 'dark';
+
+const availableFonts = [
+  { name: 'System', family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', preview: 'Aa' },
+  { name: 'Georgia', family: 'Georgia, serif', preview: 'Aa' },
+  { name: 'Times', family: '"Times New Roman", serif', preview: 'Aa' },
+  { name: 'Mono', family: '"Courier New", monospace', preview: 'Aa' },
+  { name: 'Arial', family: 'Arial, sans-serif', preview: 'Aa' },
+  { name: 'Verdana', family: 'Verdana, sans-serif', preview: 'Aa' },
+  { name: 'Helvetica', family: '"Helvetica Neue", sans-serif', preview: 'Aa' },
+  { name: 'Dyslexic', family: '"OpenDyslexic", "Atkinson Hyperlegible", sans-serif', preview: 'Aa' }
+];
+
+const presets = {
+  classic: { fontFamily: 'Georgia, serif', fontSize: 32, fontWeight: 400, letterSpacing: 0, lineHeight: 1.5 },
+  modern: { fontFamily: '"Helvetica Neue", sans-serif', fontSize: 35, fontWeight: 300, letterSpacing: -1, lineHeight: 1.2 },
+  minimal: { fontFamily: 'Arial, sans-serif', fontSize: 28, fontWeight: 400, letterSpacing: -2, lineHeight: 1 },
+  large: { fontFamily: 'Verdana, sans-serif', fontSize: 60, fontWeight: 600, letterSpacing: 1, lineHeight: 1.5 }
+};
+
+// ============ DATABASE ============
+const request = indexedDB.open("RSVP_PRO_DB", 7);
+request.onupgradeneeded = e => {
+  db = e.target.result;
+  if (!db.objectStoreNames.contains("books")) {
+    db.createObjectStore("books", { keyPath: "id" });
+  }
+  if (!db.objectStoreNames.contains("bookmarks")) {
+    db.createObjectStore("bookmarks", { keyPath: "id" });
+  }
+};
+request.onsuccess = e => { 
+  db = e.target.result; 
+  loadAllData();
+};
+
+function loadAllData() {
+  loadLibrary();
+  loadStats();
+  loadTheme();
+  loadTypographySettings();
+  initTabNavigation();
+  setupSearchFilter();
+}
+
+// ============ THEME ============
+function loadTheme() {
+  currentTheme = localStorage.getItem('rsvpTheme') || 'dark';
+  applyTheme();
+}
+
+function applyTheme() {
+  document.body.className = currentTheme === 'light' ? 'theme-light' : 
+                           currentTheme === 'oled' ? 'theme-oled' : '';
+  localStorage.setItem('rsvpTheme', currentTheme);
+  document.querySelectorAll('[data-theme]').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.theme === currentTheme);
+  });
+}
+
+function setTheme(theme) { currentTheme = theme; applyTheme(); }
+function openThemeSettings() { document.getElementById('themeOverlay').classList.add('active'); applyTheme(); }
+function closeThemeSettings() { document.getElementById('themeOverlay').classList.remove('active'); }
+
+// ============ TABS ============
+function initTabNavigation() {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const tab = btn.dataset.tab;
+      document.getElementById('libraryTab').style.display = tab === 'library' ? 'block' : 'none';
+      document.getElementById('statsTab').style.display = tab === 'stats' ? 'block' : 'none';
+      if (tab === 'stats') updateStatsDisplay();
+    });
+  });
+}
+
+// ============ SEARCH ============
+function setupSearchFilter() {
+  document.getElementById('searchBooks').addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    document.querySelectorAll('.book-card').forEach(card => {
+      const title = card.querySelector('.book-title')?.textContent.toLowerCase() || '';
+      card.style.display = title.includes(query) ? 'block' : 'none';
+    });
+  });
+}
+
+// ============ TOAST ============
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ============ STATS ============
+function loadStats() {
+  const saved = localStorage.getItem('rsvpGlobalStats');
+  if (saved) globalStats = JSON.parse(saved);
+  updateStreak();
+}
+
+function saveStats() { localStorage.setItem('rsvpGlobalStats', JSON.stringify(globalStats)); }
+
+function updateStreak() {
+  const today = new Date().toDateString();
+  if (globalStats.streak.lastDate !== today) {
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    globalStats.streak.current = (globalStats.streak.lastDate === yesterday) ? globalStats.streak.current + 1 : 1;
+    globalStats.streak.lastDate = today;
+    saveStats();
+  }
+}
+
+function trackSessionEnd() {
+  if (!sessionStartTime) return;
+  const duration = Date.now() - sessionStartTime;
+  globalStats.totalWords += sessionWordsRead;
+  globalStats.totalTimeMs += duration;
+  if (sessionWordsRead > 0 && duration > 1000) {
+    globalStats.sessions.push({
+      date: new Date().toISOString(),
+      duration: duration,
+      words: sessionWordsRead,
+      avgSpeed: Math.round(sessionWordsRead / (duration / 60000))
+    });
+  }
+  const today = new Date().toDateString();
+  if (!globalStats.dailyLog[today]) globalStats.dailyLog[today] = 0;
+  globalStats.dailyLog[today] += sessionWordsRead;
+  updateStreak();
+  saveStats();
+  sessionStartTime = null;
+  sessionWordsRead = 0;
+}
+
+function startSessionTimer() {
+  sessionStartTime = Date.now();
+  sessionWordsRead = 0;
+  if (sessionTimerInterval) clearInterval(sessionTimerInterval);
+  sessionTimerInterval = setInterval(updateSessionTimer, 1000);
+}
+
+function updateSessionTimer() {
+  if (!sessionStartTime) return;
+  const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
+  const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+  const secs = (elapsed % 60).toString().padStart(2, '0');
+  document.getElementById('sessionTimer').textContent = `${mins}:${secs}`;
+}
+
+function trackWordRead() { sessionWordsRead++; }
+
+function updateStatsDisplay() {
+  document.getElementById('totalWords').textContent = globalStats.totalWords.toLocaleString();
+  document.getElementById('totalTime').textContent = Math.floor(globalStats.totalTimeMs / 60000) + 'm';
+  const sessions = globalStats.sessions;
+  if (sessions.length > 0) {
+    document.getElementById('avgSpeed').textContent = Math.round(sessions.reduce((sum, s) => sum + s.avgSpeed, 0) / sessions.length);
+  }
+  document.getElementById('streakDays').textContent = globalStats.streak.current;
+  updateCharts();
+}
+
+function resetStats() {
+  if (confirm('Reset all reading statistics?')) {
+    globalStats = { totalWords: 0, totalTimeMs: 0, sessions: [], dailyLog: {}, streak: { current: 0, lastDate: null } };
+    saveStats();
+    updateStatsDisplay();
+    showToast('Statistics reset');
+  }
+}
+
+// ============ CHARTS ============
+let wpmChartInstance, dailyChartInstance;
+
+function updateCharts() {
+  const ctx1 = document.getElementById('wpmChart')?.getContext('2d');
+  if (!ctx1) return;
+  const sessions = globalStats.sessions.slice(-20);
+  if (wpmChartInstance) wpmChartInstance.destroy();
+  wpmChartInstance = new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: sessions.map((_, i) => `#${i + 1}`),
+      datasets: [{ label: 'WPM', data: sessions.map(s => s.avgSpeed), borderColor: '#ff3b3b', backgroundColor: 'rgba(255, 59, 59, 0.1)', tension: 0.4, fill: true }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, grid: { color: currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)' } }, x: { grid: { display: false } } }
+    }
+  });
+  
+  const ctx2 = document.getElementById('dailyChart')?.getContext('2d');
+  if (!ctx2) return;
+  const dailyData = Object.entries(globalStats.dailyLog).slice(-14);
+  if (dailyChartInstance) dailyChartInstance.destroy();
+  dailyChartInstance = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: dailyData.map(([date]) => new Date(date).toLocaleDateString('en', { month: 'short', day: 'numeric' })),
+      datasets: [{ label: 'Words', data: dailyData.map(([, words]) => words), backgroundColor: 'rgba(255, 59, 59, 0.6)', borderRadius: 4 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, grid: { color: currentTheme === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)' } }, x: { grid: { display: false } } }
+    }
+  });
+}
+
+// ============ TYPOGRAPHY ============
+function loadTypographySettings() {
+  const saved = localStorage.getItem('rsvpTypography');
+  if (saved) typographySettings = { ...typographySettings, ...JSON.parse(saved) };
+  applyTypographySettings();
+}
+
+function saveTypographySettings() { localStorage.setItem('rsvpTypography', JSON.stringify(typographySettings)); }
+
+function applyTypographySettings() {
+  const root = document.documentElement.style;
+  root.setProperty('--reader-font', typographySettings.fontFamily);
+  root.setProperty('--reader-font-size', `clamp(16px, 10vw, ${typographySettings.fontSize}px)`);
+  root.setProperty('--reader-font-weight', typographySettings.fontWeight);
+  root.setProperty('--reader-letter-spacing', typographySettings.letterSpacing + 'px');
+  root.setProperty('--reader-line-height', typographySettings.lineHeight);
+}
+
+function generateSettingsContent() {
+  const container = document.getElementById('settingsContent');
+  if (!container) return;
+  
+  container.innerHTML = `
+    <div class="setting-group">
+      <div class="setting-label">Typeface</div>
+      <div class="font-grid" id="fontFamilyGrid"></div>
+    </div>
+    <div class="setting-group">
+      <div class="setting-label">Font Size</div>
+      <div class="size-slider-container">
+        <span style="font-size:12px;color:var(--fg-secondary);">A</span>
+        <input type="range" class="size-slider" id="sizeSlider" min="16" max="120" value="${typographySettings.fontSize}">
+        <span style="font-size:24px;color:var(--fg-secondary);">A</span>
+        <div class="size-value" id="sizeValue">${typographySettings.fontSize}px</div>
+      </div>
+    </div>
+    <div class="setting-group">
+      <div class="setting-label">Font Weight</div>
+      <div class="toggle-options" id="weightOptions">
+        ${[{w:300,l:'Light'},{w:400,l:'Regular'},{w:600,l:'Semibold'},{w:700,l:'Bold'}].map(item => `
+          <div class="toggle-btn ${typographySettings.fontWeight === item.w ? 'selected' : ''}" data-weight="${item.w}">${item.l}</div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="setting-group">
+      <div class="setting-label">Letter Spacing</div>
+      <div class="toggle-options" id="spacingOptions">
+        ${[{v:-2,l:'Tight'},{v:-1,l:'Default'},{v:0,l:'Normal'},{v:2,l:'Wide'}].map(item => `
+          <div class="toggle-btn ${typographySettings.letterSpacing === item.v ? 'selected' : ''}" data-spacing="${item.v}">${item.l}</div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="setting-group">
+      <div class="setting-label">Line Height</div>
+      <div class="toggle-options" id="lineHeightOptions">
+        ${[{h:1,l:'Compact'},{h:1.2,l:'Default'},{h:1.5,l:'Relaxed'},{h:2,l:'Spacious'}].map(item => `
+          <div class="toggle-btn ${typographySettings.lineHeight === item.h ? 'selected' : ''}" data-height="${item.h}">${item.l}</div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="setting-group">
+      <div class="setting-label">Quick Presets</div>
+      <button class="preset-btn" id="presetClassic">Classic</button>
+      <button class="preset-btn" id="presetModern">Modern</button>
+      <button class="preset-btn" id="presetMinimal">Minimal</button>
+      <button class="preset-btn" id="presetLarge">Large Print</button>
+    </div>
+  `;
+  
+  // Build font grid programmatically to avoid quote issues
+  const fontGrid = document.getElementById('fontFamilyGrid');
+  availableFonts.forEach(font => {
+    const div = document.createElement('div');
+    div.className = 'font-option' + (font.family === typographySettings.fontFamily ? ' selected' : '');
+    div.innerHTML = `
+      <div class="font-name">${font.name}</div>
+      <div class="font-preview" style="font-family: ${font.family}">${font.preview}</div>
+    `;
+    div.addEventListener('click', () => selectFont(font.family));
+    fontGrid.appendChild(div);
+  });
+  
+  // Bind slider
+  const sizeSlider = document.getElementById('sizeSlider');
+  if (sizeSlider) {
+    sizeSlider.addEventListener('input', (e) => {
+      typographySettings.fontSize = parseInt(e.target.value);
+      document.getElementById('sizeValue').textContent = e.target.value + 'px';
+      saveTypographySettings();
+      applyTypographySettings();
+      renderCurrentWord();
+    });
+  }
+  
+  // Bind weight buttons
+  document.querySelectorAll('#weightOptions .toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setWeight(parseInt(btn.dataset.weight));
+      // Update selected state
+      document.querySelectorAll('#weightOptions .toggle-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+  });
+  
+  // Bind spacing buttons
+  document.querySelectorAll('#spacingOptions .toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setLetterSpacing(parseInt(btn.dataset.spacing));
+      document.querySelectorAll('#spacingOptions .toggle-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+  });
+  
+  // Bind line height buttons
+  document.querySelectorAll('#lineHeightOptions .toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setLineHeight(parseFloat(btn.dataset.height));
+      document.querySelectorAll('#lineHeightOptions .toggle-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+  });
+  
+  // Bind preset buttons
+  document.getElementById('presetClassic')?.addEventListener('click', () => applyPreset('classic'));
+  document.getElementById('presetModern')?.addEventListener('click', () => applyPreset('modern'));
+  document.getElementById('presetMinimal')?.addEventListener('click', () => applyPreset('minimal'));
+  document.getElementById('presetLarge')?.addEventListener('click', () => applyPreset('large'));
+}
+
+// Fix font selection - store by index instead of passing family string
+function selectFont(family) {
+  typographySettings.fontFamily = family;
+  saveTypographySettings();
+  applyTypographySettings();
+  renderCurrentWord();
+  // Refresh settings to update selected state
+  generateSettingsContent();
+}
+
+function setWeight(weight) {
+  typographySettings.fontWeight = weight;
+  saveTypographySettings();
+  applyTypographySettings();
+  renderCurrentWord();
+}
+
+function setLetterSpacing(spacing) {
+  typographySettings.letterSpacing = spacing;
+  saveTypographySettings();
+  applyTypographySettings();
+  renderCurrentWord();
+}
+
+function setLineHeight(height) {
+  typographySettings.lineHeight = height;
+  saveTypographySettings();
+  applyTypographySettings();
+  renderCurrentWord();
+}
+
+// Fixed: Apply font size directly instead of using clamp
+function applyTypographySettings() {
+  const root = document.documentElement.style;
+  root.setProperty('--reader-font', typographySettings.fontFamily);
+  root.setProperty('--reader-font-size', typographySettings.fontSize + 'px');
+  root.setProperty('--reader-font-weight', typographySettings.fontWeight);
+  root.setProperty('--reader-letter-spacing', typographySettings.letterSpacing + 'px');
+  root.setProperty('--reader-line-height', typographySettings.lineHeight);
+}
+
+function applyPreset(presetName) {
+  const preset = presets[presetName];
+  if (preset) {
+    typographySettings = { ...typographySettings, ...preset };
+    saveTypographySettings();
+    applyTypographySettings();
+    renderCurrentWord();
+    generateSettingsContent();
+    showToast(`${presetName.charAt(0).toUpperCase() + presetName.slice(1)} preset applied`);
+  }
+}
+
+function openReaderSettings() { generateSettingsContent(); document.getElementById('settingsOverlay').classList.add('active'); }
+function closeReaderSettings() { document.getElementById('settingsOverlay').classList.remove('active'); saveTypographySettings(); }
+
+// ============ FOCUS MODE ============
+function toggleFocusMode() {
+  isFocusMode = !isFocusMode;
+  const toggleBtn = document.getElementById('focusToggleBtn');
+  if (isFocusMode) {
+    toggleBtn.textContent = 'Word';
+    toggleBtn.style.color = 'var(--accent)';
+  } else {
+    toggleBtn.textContent = 'Focus';
+    toggleBtn.style.color = '';
+  }
+  renderCurrentWord();
+  showToast(isFocusMode ? 'Focus mode on' : 'Word mode');
+}
+
+// ============ BOOKMARKS ============
+function loadBookmarks() {
+  if (!currentBook) return;
+  const tx = db.transaction("bookmarks", "readonly");
+  tx.objectStore("bookmarks").getAll().onsuccess = e => {
+    bookmarks = e.target.result.filter(b => b.bookId === currentBook.id);
+    bookmarks.sort((a, b) => b.timestamp - a.timestamp);
+  };
+}
+
+function addBookmark() {
+  if (!currentBook || wordIndex === undefined) return;
+  if (bookmarks.some(b => Math.abs(b.wordIndex - wordIndex) < 5)) { showToast('Bookmark already exists nearby'); return; }
+  const context = words.slice(Math.max(0, wordIndex - 5), wordIndex + 6).join(' ');
+  const bookmark = {
+    id: 'bm_' + Date.now(), bookId: currentBook.id, wordIndex: wordIndex,
+    chapter: chapters[currentChapterIndex]?.title || 'Unknown', context: context, timestamp: Date.now()
+  };
+  db.transaction("bookmarks", "readwrite").objectStore("bookmarks").put(bookmark).onsuccess = () => {
+    loadBookmarks();
+    showToast('Bookmark saved 🔖');
+  };
+}
+
+function deleteBookmark(id, event) {
+  event.stopPropagation();
+  db.transaction("bookmarks", "readwrite").objectStore("bookmarks").delete(id).onsuccess = () => {
+    loadBookmarks();
+    if (document.getElementById('bookmarksOverlay').classList.contains('active')) openBookmarksList();
+    showToast('Bookmark deleted');
+  };
+}
+
+function openBookmarksList() {
+  loadBookmarks();
+  setTimeout(() => {
+    const list = document.getElementById('bookmarksList');
+    if (bookmarks.length === 0) {
+      list.innerHTML = '<div class="menu-item" style="color:var(--text-muted);text-align:center;">No bookmarks yet<br><span style="font-size:12px;">Tap 🔖 while reading to add</span></div>';
+    } else {
+      list.innerHTML = bookmarks.map((b, i) => `
+        <div class="bookmark-item">
+          <div class="bookmark-content" onclick="jumpToBookmark('${b.id}')">
+            <div style="font-weight:600;">📑 Bookmark ${bookmarks.length - i}</div>
+            <div class="bookmark-context">"${b.context.substring(0, 80)}..."</div>
+            <div class="bookmark-meta">${b.chapter} • ${new Date(b.timestamp).toLocaleDateString()}</div>
+          </div>
+          <button class="bookmark-delete" onclick="deleteBookmark('${b.id}', event)">✕</button>
+        </div>
+      `).join('');
+    }
+    document.getElementById('bookmarksOverlay').classList.add('active');
+  }, 100);
+}
+
+function closeBookmarks() { document.getElementById('bookmarksOverlay').classList.remove('active'); }
+function jumpToBookmark(id) {
+  const bm = bookmarks.find(b => b.id === id);
+  if (bm) { wordIndex = bm.wordIndex; closeBookmarks(); renderCurrentWord(); updateChapterUI(); showToast('📍 Jumped to bookmark'); }
+}
+
+// ============ LIBRARY ============
+function loadLibrary() {
+  const container = document.getElementById("bookContainer");
+  const tx = db.transaction("books", "readonly");
+  tx.objectStore("books").getAll().onsuccess = e => {
+    const list = e.target.result.sort((a,b) => b.lastOpened - a.lastOpened);
+    if (!list.length) {
+      container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding-top:40px;">Your library is empty.<br>Add an EPUB or TXT file to start reading.</div>';
+      return;
+    }
+    container.innerHTML = list.map(b => {
+      const progress = Math.floor((b.wordIndex / b.words.length) * 100) || 0;
+      return `
+        <div class="book-card" onclick="openBook('${b.id}')">
+          <div class="book-info">
+            <div style="flex:1;">
+              <div class="book-title">${b.title}</div>
+              <div class="book-meta">${b.words.length.toLocaleString()} words • ${progress}% complete</div>
+            </div>
+            <div class="delete-btn" onclick="deleteBook('${b.id}', event)">Delete</div>
+          </div>
+          <div class="progress-container"><div class="progress-fill" style="width: ${progress}%"></div></div>
+        </div>
+      `;
+    }).join("");
+  };
+}
+
+function deleteBook(id, e) {
+  e.stopPropagation();
+  if (confirm("Delete this book and its progress?")) {
+    const tx = db.transaction(["books", "bookmarks"], "readwrite");
+    tx.objectStore("books").delete(id);
+    tx.objectStore("bookmarks").openCursor().onsuccess = (ev) => {
+      const cursor = ev.target.result;
+      if (cursor) { if (cursor.value.bookId === id) cursor.delete(); cursor.continue(); }
+    };
+    tx.oncomplete = loadLibrary;
+  }
+}
+
+// ============ EPUB PARSER (ORIGINAL WORKING VERSION) ============
+async function parseEPUB(file) {
+  // Read the file as an ArrayBuffer first
+  const arrayBuffer = await file.arrayBuffer();
+  
+  try {
+    // Try to load as ZIP with explicit options for large files
+    const zip = await JSZip.loadAsync(arrayBuffer, {
+      optimizedBinaryString: false,
+      createFolders: false
+    });
+    
+    // Verify it has the required EPUB structure
+    const containerFile = zip.file("META-INF/container.xml");
+    if (!containerFile) {
+      throw new Error("Not a valid EPUB (missing container.xml)");
+    }
+    
+    // 1. Find the OPF file
+    const containerXml = await containerFile.async("string");
+    const opfPath = new DOMParser().parseFromString(containerXml, "text/xml")
+                     .querySelector("rootfile")?.getAttribute("full-path");
+    
+    if (!opfPath) {
+      throw new Error("No rootfile found in container.xml");
+    }
+    
+    const opfDir = opfPath.includes("/") ? opfPath.substring(0, opfPath.lastIndexOf("/") + 1) : "";
+    
+    // Handle case where OPF file might be encoded differently
+    let opfContent;
+    try {
+      const opfFile = zip.file(opfPath);
+      if (!opfFile) throw new Error("OPF file not found: " + opfPath);
+      opfContent = await opfFile.async("string");
+    } catch (e) {
+      // Try with text encoding
+      const opfFile = zip.file(opfPath);
+      if (!opfFile) throw e;
+      opfContent = await opfFile.async("text");
+    }
+    
+    const opfDoc = new DOMParser().parseFromString(opfContent, "text/xml");
+
+    // 2. Map Manifest - skip non-text items
+    const manifest = {};
+    const textTypes = ['application/xhtml+xml', 'text/html', 'application/xml', 'text/xml', 'text/plain'];
+    
+    opfDoc.querySelectorAll("item").forEach(el => {
+      const id = el.getAttribute("id");
+      const href = el.getAttribute("href");
+      const mediaType = el.getAttribute("media-type");
+      if (id && href) {
+        manifest[id] = { href, mediaType };
+      }
+    });
+
+    // 3. Define Spine - only include text content
+    const spine = Array.from(opfDoc.querySelectorAll("itemref"))
+      .map(el => {
+        const idref = el.getAttribute("idref");
+        return manifest[idref];
+      })
+      .filter(item => item && textTypes.includes(item.mediaType))
+      .map(item => item.href);
+
+    if (spine.length === 0) {
+      // If no text items found by media type, try all spine items
+      console.warn('No text items found by media type, trying all spine items');
+      const allSpine = Array.from(opfDoc.querySelectorAll("itemref"))
+        .map(el => {
+          const idref = el.getAttribute("idref");
+          return manifest[idref];
+        })
+        .filter(item => item)
+        .map(item => item.href);
+      
+      if (allSpine.length === 0) {
+        throw new Error("No spine items found");
+      }
+      spine.push(...allSpine);
+    }
+
+    // Helper to fix relative paths
+    const resolvePath = (rel) => {
+      let absolute = opfDir + rel;
+      const parts = absolute.split("/");
+      const stack = [];
+      for (const part of parts) {
+        if (part === "..") stack.pop();
+        else if (part !== ".") stack.push(part);
+      }
+      return stack.join("/");
+    };
+
+    // 4. Try to get Table of Contents
+    let tocData = {};
+    
+    // Try Nav document
+    const navItem = opfDoc.querySelector("item[properties~='nav']");
+    if (navItem) {
+      try {
+        const navPath = resolvePath(navItem.getAttribute("href"));
+        const navFile = zip.file(navPath);
+        if (navFile) {
+          const navStr = await navFile.async("string");
+          const navDoc = new DOMParser().parseFromString(navStr, "text/html");
+          navDoc.querySelectorAll("a[href]").forEach(a => {
+            const href = a.getAttribute("href")?.split("#")[0];
+            if (href && !tocData[href]) tocData[href] = a.textContent.trim();
+          });
+        }
+      } catch (e) { console.log('Nav parsing skipped:', e.message); }
+    }
+    
+    // Try NCX
+    const ncxId = opfDoc.querySelector("spine")?.getAttribute("toc");
+    if (ncxId && manifest[ncxId]) {
+      try {
+        const ncxPath = resolvePath(manifest[ncxId].href);
+        const ncxFile = zip.file(ncxPath);
+        if (ncxFile) {
+          const ncxStr = await ncxFile.async("string");
+          const ncxDoc = new DOMParser().parseFromString(ncxStr, "text/xml");
+          ncxDoc.querySelectorAll("navPoint").forEach(pt => {
+            const content = pt.querySelector("content");
+            const text = pt.querySelector("text");
+            if (content && text) {
+              const href = content.getAttribute("src")?.split("#")[0];
+              const label = text.textContent.trim();
+              if (href && !tocData[href]) tocData[href] = label;
+            }
+          });
+        }
+      } catch (e) { console.log('NCX parsing skipped:', e.message); }
+    }
+
+    // 5. Extract Text and build Chapters
+    let allWords = [];
+    let bookChapters = [];
+    let processedFiles = 0;
+
+    for (const href of spine) {
+      const resolvedPath = resolvePath(href);
+      const fileData = zip.file(resolvedPath);
+      
+      if (!fileData) {
+        console.warn(`File not found: ${resolvedPath}`);
+        continue;
+      }
+
+      // Skip image files and other non-text content
+      if (/\.(jpg|jpeg|png|gif|svg|webp|bmp|ico|tiff|mp3|mp4|css|js|otf|ttf|woff)$/i.test(resolvedPath)) {
+        console.log(`Skipping non-text file: ${resolvedPath}`);
+        continue;
+      }
+
+      try {
+        let textContent;
+        
+        // Try to get text content
+        try {
+          const html = await fileData.async("string");
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          
+          // Remove non-content elements
+          doc.querySelectorAll('script, style, nav, header, footer, img, svg, video, audio, iframe, [role="navigation"], .nav, .header, .footer').forEach(el => el.remove());
+          
+          textContent = (doc.body?.innerText || doc.body?.textContent || '').replace(/\s+/g, ' ').trim();
+        } catch (e) {
+          // If string parsing fails, try binary and convert
+          console.warn(`String parse failed for ${resolvedPath}, trying binary:`, e.message);
+          const binaryContent = await fileData.async("uint8array");
+          const decoder = new TextDecoder('utf-8', { fatal: false });
+          const text = decoder.decode(binaryContent);
+          const doc = new DOMParser().parseFromString(text, "text/html");
+          doc.querySelectorAll('script, style, img, svg').forEach(el => el.remove());
+          textContent = (doc.body?.innerText || doc.body?.textContent || text).replace(/\s+/g, ' ').trim();
+        }
+        
+        if (textContent && textContent.length > 10) {
+          // Get title for this section
+          let title = tocData[href] || tocData[href.split('/').pop()];
+          if (!title) {
+            const tempDoc = new DOMParser().parseFromString(textContent, "text/html");
+            const h = tempDoc.querySelector("h1, h2, h3, title");
+            title = h ? h.textContent.trim() : href.split('/').pop().replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
+          }
+          
+          const lowerTitle = title.toLowerCase();
+          const isFragment = lowerTitle.includes('split') || lowerTitle.includes('part') || lowerTitle.includes('fm00') || lowerTitle.includes('fragment');
+          
+          if (!isFragment || bookChapters.length === 0) {
+            bookChapters.push({ title: title.substring(0, 60), start: allWords.length });
+          }
+          
+          const chunk = textContent.split(/\s+/).filter(w => w.length > 0 && !/^[^\w]+$/.test(w));
+          allWords = allWords.concat(chunk);
+          processedFiles++;
+        }
+      } catch (err) {
+        console.warn(`Error processing ${resolvedPath}:`, err.message);
+      }
+    }
+
+    if (allWords.length === 0) {
+      throw new Error("No readable text found in EPUB");
+    }
+
+    console.log(`Successfully parsed ${allWords.length} words in ${bookChapters.length} chapters from ${processedFiles} files`);
+    return { words: allWords, chapters: bookChapters };
+
+  } catch (error) {
+    console.error('EPUB parsing failed:', error.message);
+    
+    // Last resort: try to extract any text from the binary content
+    try {
+      const uint8Array = new Uint8Array(arrayBuffer);
+      const decoder = new TextDecoder('utf-8', { fatal: false });
+      const text = decoder.decode(uint8Array);
+      
+      // Look for text between HTML tags
+      const textMatches = text.match(/>([^<]{20,})</g);
+      if (textMatches && textMatches.length > 0) {
+        const extractedText = textMatches
+          .map(match => match.slice(1, -1))
+          .join(' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+        
+        if (extractedText.length > 100) {
+          const allWords = extractedText.split(' ').filter(w => w.length > 0 && !/^[^\w]+$/.test(w));
+          console.log(`Last resort: extracted ${allWords.length} words`);
+          return { 
+            words: allWords, 
+            chapters: [{ title: 'Content', start: 0 }] 
+          };
+        }
+      }
+    } catch (lastError) {
+      console.error('Last resort extraction failed:', lastError.message);
+    }
+    
+    throw new Error(`Could not parse this EPUB. It may be corrupted or use an unsupported format. (${error.message})`);
+  }
+}
+// ============ TXT PARSER ============
+async function parseTXT(file) {
+  const text = await file.text();
+  const allWords = text.split(/\s+/).filter(w => w.length > 0);
+  let bookChapters = [{ title: 'Start', start: 0 }];
+  let wordCount = 0;
+  const paragraphs = text.split(/\n\s*\n/);
+  for (const para of paragraphs) {
+    const paraWords = para.split(/\s+/).filter(w => w.length > 0);
+    if (paraWords.length === 0) continue;
+    if (/^(chapter|part|section|book)\s+\d+/i.test(para.trim()) || /^[IVX]+\./.test(para.trim())) {
+      bookChapters.push({ title: para.trim().substring(0, 60), start: wordCount });
+    }
+    wordCount += paraWords.length;
+  }
+  bookChapters = bookChapters.filter((c, i, arr) => i === arr.length - 1 || arr[i + 1].start - c.start > 100);
+  return { words: allWords, chapters: bookChapters.length > 1 ? bookChapters : [{ title: 'Full Text', start: 0 }] };
+}
+
+// ============ READER CORE ============
+function openBook(id) {
+  db.transaction("books", "readonly").objectStore("books").get(id).onsuccess = e => {
+    currentBook = e.target.result;
+    words = currentBook.words;
+    chapters = currentBook.chapters;
+    wordIndex = currentBook.wordIndex || 0;
+    speed = currentBook.speed || 300;
+    
+    document.getElementById("libScreen").classList.remove("active");
+    document.getElementById("readScreen").classList.add("active");
+    
+    loadBookmarks();
+    startSessionTimer();
+    updateWPM(false);
+    renderCurrentWord();
+    updateChapterUI();
+    
+    const toggleBtn = document.getElementById('focusToggleBtn');
+    if (isFocusMode) {
+      toggleBtn.textContent = 'Word'; toggleBtn.style.color = 'var(--accent)';
+    } else {
+      toggleBtn.textContent = 'Focus'; toggleBtn.style.color = '';
+    }
+    
+    showToast(`Reading: ${currentBook.title}`);
+  };
+}
+
+function exitReader() {
+  if (holdDirection !== 0) { holdDirection = 0; clearTimeout(timer); }
+  saveProgress();
+  trackSessionEnd();
+  if (sessionTimerInterval) clearInterval(sessionTimerInterval);
+  document.getElementById("readScreen").classList.remove("active");
+  document.getElementById("libScreen").classList.add("active");
+  document.getElementById("uiTop").classList.remove("ui-hidden");
+  document.getElementById("uiBottom").classList.remove("ui-hidden");
+  loadLibrary();
+  updateStatsDisplay();
+}
+
+function saveProgress() {
+  if (!currentBook) return;
+  currentBook.wordIndex = wordIndex;
+  currentBook.speed = speed;
+  currentBook.lastOpened = Date.now();
+  db.transaction("books", "readwrite").objectStore("books").put(currentBook);
+}
+
+setInterval(saveProgress, 5000);
+
+// ============ RSVP RENDERING ============
+function getORP(word) {
+  const len = word.length;
+  if (len <= 1) return 0;
+  if (len <= 5) return 1;
+  if (len <= 9) return 2;
+  return 3;
+}
+
+function formatWordWithORP(w) {
+  if (!w) return "";
+  const orp = getORP(w);
+  return w.split('').map((c, i) => i === orp ? `<span class="orp">${c}</span>` : c).join('');
+}
+
+function formatWordPlain(w) {
+  if (!w) return "";
+  return w; // Just return the word as-is, no ORP highlighting
+}
+
+function renderCurrentWord() {
+  const word = words[wordIndex] || "";
+  const prevWord = words[wordIndex - 1] || "";
+  const nextWord = words[wordIndex + 1] || "";
+  const display = document.getElementById("wordDisplay");
+  
+  if (isFocusMode) {
+    // Context words get plain formatting (no red letter)
+    // Center word gets ORP highlighting
+    display.innerHTML = `
+      <div class="focus-group">
+        <span class="context-word prev-word">${formatWordPlain(prevWord)}</span>
+        <span class="focus-word-center">${formatWordWithORP(word)}</span>
+        <span class="context-word next-word">${formatWordPlain(nextWord)}</span>
+      </div>
+    `;
+    display.className = '';
+  } else {
+    display.innerHTML = formatWordWithORP(word);
+    display.className = 'word-display';
+  }
+
+  document.getElementById("topProgress").style.width = ((wordIndex / words.length) * 100) + "%";
+}
+
+function getDelay() {
+  let baseMs = 60000 / speed;
+  const word = words[wordIndex] || "";
+  if (/[.!?]/.test(word)) baseMs *= 2.0;
+  else if (/[,;:]/.test(word)) baseMs *= 1.5;
+  if (word.length > 8) baseMs *= 1.2;
+  return baseMs;
+}
+
+function step() {
+  if (holdDirection === 0) return;
+  
+  if (holdDirection === 1 && wordIndex < words.length - 1) {
+    wordIndex++;
+    trackWordRead();
+  } else if (holdDirection === -1 && wordIndex > 0) {
+    wordIndex--;
+  }
+  
+  if (holdDirection === 1 && wordIndex >= words.length - 1) {
+    holdDirection = 0;
+    document.getElementById("uiTop").classList.remove("ui-hidden");
+    document.getElementById("uiBottom").classList.remove("ui-hidden");
+    showToast('Book finished! 🎉');
+    return;
+  }
+  
+  renderCurrentWord();
+  updateChapterUI();
+  timer = setTimeout(step, getDelay());
+}
+
+// ============ TOUCH HANDLERS ============
+const touchArea = document.getElementById("mainTouch");
+let touchStartX = 0, touchStartY = 0, lastTap = 0, gestureInProgress = false, swipeActive = false;
+
+touchArea.addEventListener("touchstart", e => {
+  e.preventDefault();
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+  
+  if (holdDirection === 0) swipeActive = touchStartX < 40;
+  
+  const now = Date.now();
+  if (now - lastTap < 300) {
+    holdDirection = holdDirection === 0 ? (touchStartX < window.innerWidth / 2 ? -1 : 1) : 0;
+    if (holdDirection !== 0) step();
+    else { clearTimeout(timer); document.getElementById("uiTop").classList.remove("ui-hidden"); document.getElementById("uiBottom").classList.remove("ui-hidden"); }
+    lastTap = 0;
+    return;
+  }
+  lastTap = now;
+  gestureInProgress = false;
+  
+  holdDirection = touchStartX < window.innerWidth / 2 ? -1 : 1;
+  document.getElementById("uiTop").classList.add("ui-hidden");
+  document.getElementById("uiBottom").classList.add("ui-hidden");
+
+document.getElementById("sessionTimer").style.opacity = '0';
+  step();
+});
+
+touchArea.addEventListener("touchmove", e => {
+  if (swipeActive && holdDirection === 0) {
+    if (e.touches[0].clientX - touchStartX > 60) { swipeActive = false; exitReader(); showToast('← Back to library'); return; }
+  }
+  if (holdDirection === 0) return;
+  const deltaY = touchStartY - e.touches[0].clientY;
+  if (Math.abs(deltaY) > 35 && !gestureInProgress) {
+    gestureInProgress = true;
+    speed = Math.max(50, Math.min(1200, speed + (deltaY > 0 ? 10 : -10)));
+    updateWPM(true);
+    touchStartY = e.touches[0].clientY;
+  }
+});
+
+document.addEventListener("touchend", () => {
+  swipeActive = false;
+  holdDirection = 0;
+  clearTimeout(timer);
+  document.getElementById("uiTop").classList.remove("ui-hidden");
+  document.getElementById("uiBottom").classList.remove("ui-hidden");
+  
+document.getElementById("sessionTimer").style.opacity = '0.7';
+});
+
+function updateWPM(showHud = true) {
+  document.getElementById("wpmDisplay").textContent = speed;
+  if (showHud) {
+    const hud = document.getElementById("speedHUD");
+    hud.textContent = speed;
+    hud.classList.add("show");
+    setTimeout(() => hud.classList.remove("show"), 400);
+  }
+}
+
+document.getElementById("minusBtn").onclick = () => { speed = Math.max(50, speed - 10); updateWPM(); };
+document.getElementById("plusBtn").onclick = () => { speed = Math.min(1200, speed + 10); updateWPM(); };
+
+// ============ CHAPTERS ============
+function updateChapterUI() {
+  for (let i = 0; i < chapters.length; i++) {
+    if (wordIndex >= chapters[i].start) currentChapterIndex = i;
+  }
+  document.getElementById("chapterTitle").textContent = chapters[currentChapterIndex]?.title || "Reading";
+}
+
+function openChapterMenu() {
+  document.getElementById("chapterList").innerHTML = chapters.map((c, i) => `
+    <div class="menu-item ${i === currentChapterIndex ? 'active' : ''}" onclick="jumpToChapter(${i})">
+      ${c.title}
+      <span style="font-size:11px;color:var(--text-muted);display:block;">Word ${c.start.toLocaleString()}</span>
+    </div>
+  `).join("");
+  document.getElementById("menuOverlay").classList.add("active");
+}
+
+function closeMenu() { document.getElementById("menuOverlay").classList.remove("active"); }
+function jumpToChapter(index) { wordIndex = chapters[index].start; closeMenu(); renderCurrentWord(); updateChapterUI(); showToast(`Jumped to: ${chapters[index].title}`); }
+
+// ============ FILE INPUT ============
+document.getElementById("fileInput").onchange = async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    let data;
+    if (file.name.toLowerCase().endsWith('.epub')) {
+      data = await parseEPUB(file);
+    } else if (file.name.toLowerCase().endsWith('.txt')) {
+      data = await parseTXT(file);
+    } else {
+      alert("Unsupported file format. Please use EPUB or TXT files.");
+      return;
+    }
+    if (!data.words || data.words.length === 0) {
+      alert("No readable text found in this file.");
+      return;
+    }
+    const book = {
+      id: "book_" + Date.now(),
+      title: file.name.replace(/\.(epub|txt)$/i, ""),
+      words: data.words,
+      chapters: data.chapters,
+      wordIndex: 0,
+      speed: speed,
+      lastOpened: Date.now()
+    };
+    db.transaction("books", "readwrite").objectStore("books").put(book).onsuccess = () => {
+      loadLibrary();
+      showToast(`Loaded: ${book.title} (${book.words.length.toLocaleString()} words)`);
+    };
+  } catch (err) {
+    alert("Error parsing file. Please try another file.");
+    console.error(err);
+  }
+};
+
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    document.getElementById('fileInput').files = e.dataTransfer.files;
+    document.getElementById('fileInput').dispatchEvent(new Event('change'));
+  }
+});
+
+// ============ KEYBOARD ============
+document.addEventListener('keydown', e => {
+  if (document.getElementById('readScreen').classList.contains('active')) {
+    switch(e.key) {
+      case 'ArrowLeft': e.preventDefault(); speed = Math.max(50, speed - 10); updateWPM(true); break;
+      case 'ArrowRight': e.preventDefault(); speed = Math.min(1200, speed + 10); updateWPM(true); break;
+      case 'f': toggleFocusMode(); break;
+      case 'b': addBookmark(); break;
+      case 'Escape': exitReader(); break;
+    }
+  }
+});
+
+console.log('🚀 RSVP Reader Pro - EPUB parser restored from original');
+</script>
+    <!-- PWA Install Prompt -->
+  <div id="installPrompt" style="display:none;">
+    <div>
+      <div style="font-weight:700;margin-bottom:4px;color:var(--fg);">Install App</div>
+      <div style="font-size:12px;color:var(--text-muted);">Read faster, even offline</div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="dismissInstall()" style="padding:10px 16px;background:var(--ui-gray);border:none;border-radius:8px;color:var(--fg);cursor:pointer;font-size:13px;">Later</button>
+      <button onclick="installApp()" style="padding:10px 20px;background:var(--accent);border:none;border-radius:8px;color:white;cursor:pointer;font-size:13px;font-weight:600;">Install</button>
+    </div>
+  </div>
+
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/rsvp/service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registered:', registration.scope);
+          })
+          .catch(error => {
+            console.log('Service Worker registration failed:', error);
+          });
+      });
+    }
+    
+    // PWA Install Prompt
+    let deferredPrompt;
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      
+      // Show install prompt after 30 seconds
+      setTimeout(() => {
+        if (deferredPrompt) {
+          document.getElementById('installPrompt').style.display = 'flex';
+        }
+      }, 30000);
+    });
+    
+    function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          }
+          deferredPrompt = null;
+        });
+      }
+      document.getElementById('installPrompt').style.display = 'none';
+    }
+    
+    function dismissInstall() {
+      document.getElementById('installPrompt').style.display = 'none';
+    }
+    
+    window.addEventListener('appinstalled', () => {
+      deferredPrompt = null;
+      document.getElementById('installPrompt').style.display = 'none';
+      console.log('PWA was installed');
+    });
+  </script>  
+</body>
+</html>
