@@ -1,0 +1,14 @@
+<data>
+  <g:condition>
+    <string>Wird dieser String aufgenommen?</string>
+  </g:condition>
+   <g:country>
+      Irland
+   </g:country>
+   <g:availability>
+      Auf Lager
+   </g:availability>
+   <g:price>
+      Unbekannt
+   </g:price>
+</data>

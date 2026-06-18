@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+    <title>Schaltfläche „Authentifizierung“.</title>
+  
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+  <body>
+    <button onclick="listProjects()" id="list-projects" style="display:none"> Listenprojekte</button> <button onclick="authenticate()">authentifizieren </button>
+
+    <script>
+      let accessToken;
+
+      function authenticate() {
+        const url = "https://api.smartling.com/auth-api/v2/authenticate";
+        const userIdentifier = "your_user_identifier";
+        const userSecret = "your_user_secret";
+
+        const data = new FormData();
+        data.append("userIdentifier", userIdentifier);
+        data.append("userSecret", userSecret);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", url);
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            accessToken = response.response.data.accessToken;
+            console.log(`Access token: ${accessToken}`);
+            document.getElementById("list-projects").style.display = "block";
+          } else {
+            console.error("Error:", xhr.statusText);
+          }
+        };
+        xhr.onerror = function () {
+          console.error("Error:", xhr.statusText);
+        };
+        xhr.send(data);
+      }
+
+      function listProjects() {
+        const url =
+          "https://api.smartling.com/projects-api/v2/projects?limit=10&offset=0";
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", url);
+        xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            const response = JSON.parse(xhr.responseText);
+            console.log(response);
+          } else {
+            console.error("Error:", xhr.statusText);
+          }
+        };
+        xhr.onerror = function () {
+          console.error("Error:", xhr.statusText);
+        };
+        xhr.send();
+      }
+    </script>
+  </body>
+</html>
